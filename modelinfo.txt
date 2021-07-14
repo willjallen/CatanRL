@@ -1,0 +1,115 @@
+============INPUTS========================
+
+
+------------Categorical:------------------ 
+Game:
+curent player playing [0, 3]
+
+Trade:
+trading player [0,2] (OHE)
+Offered resource cards [0, 4] (OHE)
+Expected resource cards [0, 4] (OHE)
+
+Player:
+turn to play [0,1] (OHE)
+pending trade [0,1] (OHE)
+available actions [0, 7] (OHE)
+
+Player's cards (P_0):
+	resource cards [0,4]
+	-># of each [0, 9]
+	dev cards [0,20]
+	-># of each [0, 9]
+	buildings [0,2]
+	-># of each [0, 1]
+
+Other player's (P_1, P_2, P_3) cards:
+	resource cards [0,4]
+	-># of each [0, 9]
+	dev cards [0,20]
+	-># of each [0, 9]
+	buildings [0,2]
+	-># of each [0, 1]
+
+------------Numerical:------------------
+int victoryPoints [0,10]
+int currTurn [0,?]
+int currStep [0,?]
+
+------------Spacial:------------------
+48 action points * 
+(Re_0, Rs_0, Re_1, Rs_1, Re_2, Rs_2, port, robber, Building, player #, buildable)
+
+
+Re_0 (OHE) [5]
+Rs_0 (norm[0, 12]) [1]
+Re_1 (OHE) [5]
+Rs_1 (norm[0, 12]) [1]
+Re_2 (OHE) [5]
+Rs_2 (norm[0, 12]) [1]
+
+
+
+============OUTPUTS========================
+
+Model outputs:
+
+
+------------Categorical:------------------ 
+Action type (OHE) [Max 8]
+0000000001 action_type_no_op     
+0000000010 action_type_purchase_resource
+0000000100 action_type_purchase_building  
+0000001000 action_type_purchase_dev_card
+0000010000 action_type_play_item
+0000100000 action_type_play_robber
+0001000000 action_type_do_trade
+0010000000 action_type_accept_trade
+0100000000 action_type_reject_trade
+1000000000 action_type_end_turn
+
+// Maybe use pointer networks?
+Resource Type 1 (OHE)
+00001 resource_type_wood
+00010 resource_type_wheat
+00100 resource_type_ore 
+01000 resource_type_sheep
+10000 resource_type_brick
+
+Resource Type 2 (OHE)
+00001 resource_type_wood
+00010 resource_type_wheat
+00100 resource_type_ore 
+01000 resource_type_sheep
+10000 resource_type_brick
+
+Building type (OHE)
+001 building_type_road
+010	building_type_settlement
+100	building_type_city
+
+Dev Card type (OHE)
+000 dev_type_knight
+000 dev_type_VP
+000 dev_type_knight
+
+Player (OHE)
+0001 Player 1
+0010 Player 2
+0100 Player 3
+1000 Player 4
+
+------------Numerical:------------------
+Win Probability
+
+------------Spacial:------------------
+48 action points [Choose x, y]
+
+
+purchase(build, [xLoc, yLoc]);
+
+p1 
+p2
+
+
+
