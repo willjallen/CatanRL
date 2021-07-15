@@ -2,6 +2,8 @@
 # skips 0 and 1 because there are already equal to True and False
 class Statuses:
 
+    status_list = ['NONE', 'NONE', 'ALL_GOOD', 'ERR_CARDS', 'ERR_BLOCKED', 'ERR_BAD_POINT', 'ERR_NOT_CON', 'ERR_ISOLATED', 'ERR_HARBOR', 'ERR_NOT_EXIST', 'ERR_BAD_OWNER', 'ERR_UPGRADE_CITY', 'ERR_DECK', 'ERR_INPUT', 'ERR_TEST']
+
     # the action was successfully completed
     ALL_GOOD = 2
 
