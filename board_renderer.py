@@ -163,11 +163,11 @@ class BoardRenderer:
     @staticmethod
     def get_hex_type_string(hex_type):
         if hex_type == TileType.Hills:
-            return "H"
+            return "B"
         elif hex_type == TileType.Mountains:
-            return "M"
+            return "O"
         elif hex_type == TileType.Pasture:
-            return "P"
+            return "S"
         elif hex_type == TileType.Forest:
             return "F"
         elif hex_type == TileType.Fields:
