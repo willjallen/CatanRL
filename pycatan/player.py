@@ -375,6 +375,21 @@ class Player:
             elif c == ResCard.Ore:
                 card_name = "Ore"
 
+            elif c == DevCard.Road:
+                card_name = "Road"
+
+            elif c == DevCard.VictoryPoint:
+                card_name = "VP"
+
+            elif c == DevCard.Knight:
+                card_name = "Knight"
+
+            elif c == DevCard.Monopoly:
+                card_name = "Monopoly"
+
+            elif c == DevCard.YearOfPlenty:
+                card_name = "YOP"
+
             else:
                 print("INVALID CARD %s" % c)
                 continue

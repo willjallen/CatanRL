@@ -85,6 +85,8 @@ class Game:
         # removes that dev card from the deck
         del self.dev_deck[0]
 
+        return Statuses.ALL_GOOD
+
     # gives players the proper cards for a given roll
     def add_yield_for_roll(self, roll):
         self.board.add_yield(roll)
@@ -283,7 +285,7 @@ class Game:
                     return Statuses.ERR_INPUT
 
             # moves the robber
-            result = self.move_robber(r=args["robber_pos"][0], i=args["robber_pos"][1], player=player, victim=args["victim"])
+            result = self.move_robber(tile=self.board.tiles[args["robber_pos"][0]][args["robber_pos"][1]], player=player, victim=args["victim"])
 
             if result != Statuses.ALL_GOOD:
                 return result

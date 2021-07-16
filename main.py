@@ -72,16 +72,16 @@ class GameWrapper:
                 # Prompt Purchase Resource
                 if(response == 2):
                         print('Request Resource:')
-                        print('1: Wood | 2: Brick | 3: Ore | 4: Sheep | 5: Wheat')
+                        print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
                         requested_resource = int(input())
-                        full_action.append(resource_response)
+                        full_action.append(requested_resource)
                         print('Forfeited Resource:')
-                        print('1: Wood | 2: Brick | 3: Ore | 4: Sheep | 5: Wheat')
+                        print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
                         forfeited_resource = int(input())
                         full_action.append(forfeited_resource)
                 # Prompt Purchase & play building
                 if(response == 3):
-                        print('1: Road | 2: Settlement | 3: City')
+                        print('0: Road | 1: Settlement | 2: City')
                         building_response = int(input())
                         full_action.append(building_response)
 
@@ -106,11 +106,11 @@ class GameWrapper:
                         pass
                 # Prompt Play dev card
                 if(response == 5):
-                        print('1: Knight | 2: YOP | 3: Monopoly | 4: Road Building')
+                        print('0: Knight | 1: YOP | 2: Monopoly | 3: Road Building')
                         dev_card_response = int(input())
                         full_action.append(dev_card_response)
 
-                        if(dev_card_response == 1):
+                        if(dev_card_response == 0):
                                 print('Location X:')
                                 loc_x_response = int(input())
                                 full_action.append(loc_x_response)
@@ -122,23 +122,23 @@ class GameWrapper:
                                 player_response = int(input())
                                 full_action.append(player_response)
 
-                        if(dev_card_response == 2):
+                        if(dev_card_response == 1):
                                 print('First resource:')
-                                print('1: Wood | 2: Brick | 3: Ore | 4: Sheep | 5: Wheat')
+                                print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
                                 first_resource_response = int(input())
                                 full_action.append(first_resource_response)
 
                                 print('Second resource:')
-                                print('1: Wood | 2: Brick | 3: Ore | 4: Sheep | 5: Wheat')
+                                print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
                                 second_resource_response = int(input())
                                 full_action.append(second_resource_response)
 
-                        if(dev_card_response == 3):
-                                print('1: Wood | 2: Brick | 3: Ore | 4: Sheep | 5: Wheat')
+                        if(dev_card_response == 2):
+                                print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
                                 resource_response = int(input())
                                 full_action.append(resource_response)
 
-                        if(dev_card_response == 4):
+                        if(dev_card_response == 3):
                                 print('Location X:')
                                 loc_x_response = int(input())
                                 full_action.append(loc_x_response)
@@ -160,17 +160,17 @@ class GameWrapper:
                         full_action.append(player_response)
                 # Prompt Do trade
                 if(response == 7):
-                        print('1: Player 1 | 2: Player 2 | 3: Player 3 | 4: Player 4')
+                        print('0: Player 0 | 1: Player 1 | 2: Player 2 | 3: Player 3')
                         which_player_response = int(input())
                         full_action.append(which_player_response)
                         
                         print('You offer:') 
-                        print('1: Wood | 2: Brick | 3: Ore | 4: Sheep | 5: Wheat')
+                        print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
                         offered_resource_response = int(input())
                         full_action.append(offered_resource_response)
 
                         print('You receive:')
-                        print('1: Wood | 2: Brick | 3: Ore | 4: Sheep | 5: Wheat')
+                        print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
                         received_resource_response = int(input())
                         full_action.append(received_resource_response)
                 # Accept Trade
@@ -198,10 +198,10 @@ class GameWrapper:
 
                 # No op
                 if(action_type == 0):
-                        pass
+                        return Statuses.ALL_GOOD
                 # Roll
                 if(action_type == 1):
-                        if(player.game.can_roll):
+                        if(self.game.can_roll):
                                 self.game.board.add_yield(self.game.get_roll())
                                 self.game.can_roll = False
                                 return Statuses.ALL_GOOD
@@ -220,13 +220,13 @@ class GameWrapper:
                         building_response = args[1]
                         loc_x_response = args[2]
                         loc_y_response = args[3]
-                        if(building_response == 1):
+                        if(building_response == 0):
                                 loc_x_response_2 = args[4]
                                 loc_y_response_2 = args[5]     
                                 status = player.build_road(self.game.board.points[loc_x_response][loc_y_response], self.game.board.points[loc_x_response_2][loc_y_response_2])
-                        if(building_response == 2):
+                        if(building_response == 1):
                                 status = player.build_settlement(self.game.board.points[loc_x_response][loc_y_response])
-                        if(building_response == 3):
+                        if(building_response == 2):
                                 status = self.game.add_city(self.game.board.points[loc_x_response][loc_y_response], player)
                         return status
 
@@ -248,25 +248,25 @@ class GameWrapper:
 
                         """
                         # Knight
-                        if(dev_card_response == 1):
+                        if(dev_card_response == 0):
                                 loc_x_response = args[2]
                                 loc_y_response = args[3]
                                 victim_player_response = args[4]
 
-                                status = self.game.move_robber(self.game.board.tiles[loc_x_response][loc_y_response], player, victim_player_response)
+                                status = self.game.use_dev_card(player.num, DevCard.Knight, {"robber_pos": [loc_x_response, loc_y_response], "victim": victim_player_response})
                                 return status
                         # YOP
-                        if(dev_card_response == 2):
+                        if(dev_card_response == 1):
                                 first_resource_response = args[2]
                                 second_resource_response = args[3]
                                 
-                                status = self.game.use_dev_card(player, DevCard.YearOfPlenty, [('card_one', first_resource_response), ('card_two', second_resource_response)])
+                                status = self.game.use_dev_card(player.num, DevCard.YearOfPlenty, {'card_one': first_resource_response, 'card_two': second_resource_response})
                                 return status
                         # Monopoly
-                        if(dev_card_response == 3):
+                        if(dev_card_response == 2):
                                 resource_response = args[2]
 
-                                status = self.game.use_dev_card(player, DevCard.Monopoly, [('card_types', resource_response)])
+                                status = self.game.use_dev_card(player.num, DevCard.Monopoly, {'card_type': resource_response})
                                 return status
                 # Play robber
                 if(action_type == 6):
@@ -274,7 +274,7 @@ class GameWrapper:
                         loc_y_response = args[3]
                         victim_player_response = args[4]
 
-                        status = self.game.move_robber(self.game.board.tiles[loc_x_response][loc_y_response], player, victim_player_response)
+                        status = self.game.move_robber(self.game.board.tiles[loc_x_response][loc_y_response], player.num, victim_player_response)
                         return status
         
                 # Do trade
@@ -283,7 +283,7 @@ class GameWrapper:
                         # TODO
                         # this
 
-                        # print('1: Player 1 | 2: Player 2 | 3: Player 3 | 4: Player 4')
+                        # print('0: Player 0 | 1: Player 1 | 2: Player 2 | 3: Player 3')
                         # which_player_response = int(input())
                         # full_action.append(which_player_response)
                         
@@ -306,7 +306,7 @@ class GameWrapper:
                         pass
                 if(action_type == 11):
                         player.turn_over = True
-                        pass
+                        return Statuses.ALL_GOOD
 
         def promptInitialPlacement(self):
                 full_action = []
@@ -559,6 +559,7 @@ def main():
         cycle_complete = False        
         while(not game_over):
                 CatanGame.game.can_roll = True
+                print('da')
                 player_with_turn = curr_player = CatanGame.game.players[player_index]
                 player_with_turn_index = player_index
                 player_with_turn.turn_over = turn_over = False
@@ -570,9 +571,16 @@ def main():
 
                         # allowed_actions = CatanGame.getAllowedActions(player, player_with_turn)
 
-                        full_action = CatanGame.promptActions(curr_player)
-                        CatanGame.doAction(curr_player, full_action)
-                        
+                        action_okay = False
+                        while(not action_okay):
+                                full_action = CatanGame.promptActions(curr_player)
+                                status = CatanGame.doAction(curr_player, full_action)
+                                if status == Statuses.ALL_GOOD:
+                                        action_okay = True
+                                else:
+                                        print('Error: ')
+                                        print(Statuses.status_list[status])
+
                         turn_over = player_with_turn.turn_over 
 
                         if(not turn_over):
