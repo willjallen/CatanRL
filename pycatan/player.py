@@ -129,10 +129,42 @@ class Player:
         return card_types
 
     def get_available_buildings(self):
-        pass
+        available_buildings = []
+
+        road_cards = [
+            ResCard.Wood,
+            ResCard.Brick
+        ]
+
+        settlement_cards = [
+            ResCard.Wood,
+            ResCard.Brick,
+            ResCard.Sheep,
+            ResCard.Wheat
+        ]
+
+        city_cards = [
+            ResCard.Wheat,
+            ResCard.Wheat,
+            ResCard.Ore,
+            ResCard.Ore,
+            ResCard.Ore
+        ]
+
+        if(self.has_cards(road_cards)):
+            available_buildings.append(Building.BUILDING_ROAD)
+
+        if(self.has_cards(settlement_cards)):
+            available_buildings.append(Building.BUILDING_SETTLEMENT)
+
+        if(self.has_cards(city_cards)):
+            available_buildings.append(Building.BUILDING_CITY)
+
+        return available_buildings
 
     def has_at_least_num_cards(self, card_type, num):
         return self.cards.count(card_type) >= num
+
 
 
     # adds some cards to a player's hand

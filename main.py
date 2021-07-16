@@ -235,7 +235,7 @@ class GameWrapper:
                 # - It is the players turn
                 # - Player has relevant cards
                 if(is_players_turn):
-                        pass
+                        available_buildings = player.get_available_buildings
 
                 ## PURCHASE_DEV_CARD
                 # - It is the players turn
