@@ -352,6 +352,9 @@ class GameWrapper:
                 # TODO
                 # Find connected ports
 
+                print('Dev Cards:')
+                player.print_cards(player.dev_cards)
+
                 print('Cards:')
                 player.print_cards(player.cards)
                 
@@ -558,7 +561,7 @@ def main():
                 CatanGame.game.can_roll = True
                 player_with_turn = curr_player = CatanGame.game.players[player_index]
                 player_with_turn_index = player_index
-                player_with_turn.turn_over = False
+                player_with_turn.turn_over = turn_over = False
 
                 # Cycle, starting with the player playing their turn, through all other players
                 while(not turn_over):
