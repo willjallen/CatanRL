@@ -189,6 +189,86 @@ class GameWrapper:
 
         # Get allowed actions
         def getAllowedActions(self, player, player_with_turn):
+                actions = {allowed_actions: [], allowed_forfeit_cards: [], allowed_bank_trade_cards: [], allowed_buildings: [], allowed_robber_tile_x: [], allowed_robber_tile_y: [], allowed_victim_players: [], }
+
+                is_players_turn = (player == player_with_turn)
+
+
+                ## FORFEIT_CARDS (Priority action, others ignored)
+                # - A 7 is active and player has >= 8 cards
+                if(self.game.rolled_seven and len(player.cards) >= 8):
+                        actions['allowed_actions'].append(FORFEIT_CARDS)
+                        allowed_actions.append(FORFEIT_CARDS)
+                        actions['allowed_forfeit_cards'] = player.get_type_of_cards_possessed()
+                        return
+
+
+                ## NO_OP
+                # - It is not the player's turn
+                # - There are no pending trades
+                if(not is_players_turn and player.pending_trade):
+                        actions['allowed_actions'].append(NO_OP)
+
+                ## ROLL
+                # - It is the players turn
+                # - game.can_roll is true
+                if(is_players_turn and self.game.can_roll):
+                        actions['allowed_actions'].append(ROLL)
+
+                # TODO    
+                ## PURCHASE_RESOURCE
+                # - It is the players turn
+                # - Player can exchange resource
+                if(is_players_turn):
+                        # Check every resource and append those which are eligable
+                        cards = self.game.cards_tradable_to_bank(player)
+                        if(len(cards) != 0):
+                                actions['allowed_actions'].append(PURCHASE_RESOURCE)
+                                for card in cards:
+                                        actions['allowed_bank_trade_cards'].append(card)
+
+
+
+                        #self.game.can_trade_to_bank(player, cards, request)
+
+                ## PURCHASE_AND_PLAY_BUILDING
+                # - It is the players turn
+                # - Player has relevant cards
+                if(is_players_turn):
+                        pass
+
+                ## PURCHASE_DEV_CARD
+                # - It is the players turn
+                # - Player has relevant cards
+                if(is_players_turn and player.can_build_dev()==Statuses.ALL_GOOD):
+                        actions['allowed_actions'].append(PURCHASE_DEV_CARD)
+
+
+                ## PLAY_ROBBER
+                # - It is the players turn
+                # - A 7 is active and robber has not been moved
+                if(self.game.rolled_seven and not self.robber_moved):
+                        actions['allowed_actions'].append(PLAY_ROBBER)
+
+                ## START_TRADE
+                # - It is the players turn
+                # - Player actually has the card they are forfeiting
+                # - Receiving player actually has the card they are forfeiting 
+                if(is_players_turn):
+                    pass
+
+                ## ACCEPT_TRADE
+                ## DENY_TRADE
+                # - Player has a pending trade
+                if(player.pending_trade):
+                    actions['allowed_actions'].append(ACCEPT_TRADE)
+                    actions['allowed_actions'].append(DENY_TRADE)
+
+                ## END_TURN
+                # - It is the players turn
+                if(is_players_turn):
+                    actions['allowed_actions'].append(END_TURN)
+
                 pass
 
         def doAction(self, player, args):
@@ -347,7 +427,8 @@ class GameWrapper:
         def displayPlayerGameInfo(self, player):
                 self.displayBoard()
                 printBlankLines(10)
-                print('Player ' + str(player.num) + ':')
+                colors = ['Red', 'Cyan', 'Green', 'Yellow']
+                print('Player ' + str(player.num) + '(' + colors[player.num] + ')'  ':')
                 print('Accessible Ports:')
                 # TODO
                 # Find connected ports

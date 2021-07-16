@@ -42,6 +42,10 @@ class Game:
         self.has_ended = False
         # whether a player can roll
         self.can_roll = False
+        # whether a rolled 7 is in effect
+        self.rolled_seven = False
+        # whether robber has been moved yet after rolling a 7
+        self.robber_moved = True
 
     # creates a new settlement belong to the player at the coodinates
     def add_settlement(self, player, point, is_starting=False):
@@ -67,17 +71,10 @@ class Game:
 
     # builds a new developement cards for the player
     def build_dev(self, player):
-        # makes sure there is still at least one development card left
-        if len(self.dev_deck) < 1:
-            return Statuses.ERR_DECK
-        # makes sure the player has the right cards
-        needed_cards = [
-            ResCard.Wheat,
-            ResCard.Ore,
-            ResCard.Sheep
-        ]
-        if not self.players[player].has_cards(needed_cards):
-            return Statuses.ERR_CARDS
+        
+        status = player.can_build_dev()
+        if(status != Statuses.ALL_GOOD):
+            return status
         # removes the cards
         self.players[player].remove_cards(needed_cards)
         # gives the player a dev card
@@ -91,8 +88,7 @@ class Game:
     def add_yield_for_roll(self, roll):
         self.board.add_yield(roll)
 
-    # trades cards (given in an array) between two players
-    def trade(self, player_one, player_two, cards_one, cards_two):
+    def can_trade(self, player_one, player_two, cards_one, cards_two):
         # check if they players have the cards they are trading
         # Needs to do this before deleting because one might have the cards while the other does not
         if not self.players[player_one].has_cards(cards_one):
@@ -100,7 +96,14 @@ class Game:
 
         elif not self.players[player_two].has_cards(cards_two):
             return Statuses.ERR_CARDS
+        return Statuses.ALL_GOOD
 
+
+    # trades cards (given in an array) between two players
+    def trade(self, player_one, player_two, cards_one, cards_two):
+        status = can_trade(player_one, player_two, cards_one, cards_two)
+        if(status != Statuses.ALL_GOOD):
+            return status
         else:
             # removes the cards
             self.players[player_one].remove_cards(cards_one)
@@ -142,9 +145,36 @@ class Game:
 
         return Statuses.ALL_GOOD
 
-    # trades cards from a player to the bank
-    # either by 4 for 1 or using a harbor
-    def trade_to_bank(self, player, cards, request):
+    def cards_tradable_to_bank(self, player):
+        cards_tradable = []
+
+        harbor_types = self.players[player].get_connected_harbor_types()
+        
+        has_3_1_harbor = False
+        two_one_harbors = []
+
+
+        for card_type in Card.ResCard:
+            for h_type in harbor_types:
+                if Harbor.get_card_from_harbor_type(h_type) == card_type.value:
+                    two_one_harbors.append(card_type)
+                elif Harbor.get_card_from_harbor_type(h_type) == None:
+                    has_3_1_harbor = True
+
+
+        for card_type in Card.ResCard:
+            if(card_type in two_one_harbors):
+                if(player.has_at_least_num_cards(card_type, 2)):
+                    cards_tradable.append(card_type)
+            elif(has_3_1_harbor):
+                if(player.has_at_least_num_cards(card_type, 3)):
+                    cards_tradable.append(card_type)
+            elif(player.has_at_least_num_cards(card_type, 4)):
+                cards_tradable.append(card_type)                    
+
+
+
+    def can_trade_to_bank(self, player, cards, request):
         # makes sure the player has the cards
         if not self.players[player].has_cards(cards):
             return Statuses.ERR_CARDS
@@ -170,6 +200,14 @@ class Game:
             if not has_harbor:
                 return Statuses.ERR_HARBOR
 
+        return Statuses.ALL_GOOD
+
+    # trades cards from a player to the bank
+    # either by 4 for 1 or using a harbor
+    def trade_to_bank(self, player, cards, request):
+        status = can_trade_to_bank(player, cards, request)
+        if(status != Statuses.ALL_GOOD):
+            return status
         # removes cards
         self.players[player].remove_cards(cards)
         # adds the new card

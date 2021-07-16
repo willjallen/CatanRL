@@ -28,6 +28,8 @@ class Player:
         self.longest_road_length = 0
         # whether the player has ended their turn
         self.turn_over = True
+        # whether the player has a pending trade
+        self.pending_trade = False
 
     # builds a settlement belonging to this player
     def build_settlement(self, point, is_starting=False):
@@ -88,7 +90,20 @@ class Player:
 
         return Statuses.ALL_GOOD
 
-    # checks if the player has all of the cards given in an array
+    def can_build_dev(self, player):
+        # makes sure there is still at least one development card left
+        if len(self.dev_deck) < 1:
+            return Statuses.ERR_DECK
+        # makes sure the player has the right cards
+        needed_cards = [
+            ResCard.Wheat,
+            ResCard.Ore,
+            ResCard.Sheep
+        ]
+        if not self.players[player].has_cards(needed_cards):
+            return Statuses.ERR_CARDS
+        return Statuses.ALL_GOOD
+        # checks if the player has all of the cards given in an array
     def has_cards(self, cards):
 
         # needs to duplicate the cards, and then delete them once found
@@ -105,6 +120,20 @@ class Player:
                 del cards_dup[index]
 
         return True
+
+    def get_types_of_cards_possessed(self):
+        card_types = []
+        for c in self.cards:
+            if(c in card_types):
+                card_types.append(c)
+        return card_types
+
+    def get_available_buildings(self):
+        pass
+
+    def has_at_least_num_cards(self, card_type, num):
+        return self.cards.count(card_type) >= num
+
 
     # adds some cards to a player's hand
     def add_cards(self, cards):
@@ -139,6 +168,9 @@ class Player:
 
         # error if the player does not have the cards
         return Statuses.ERR_CARDS
+
+
+
 
     # checks a road location is valid
     def road_location_is_valid(self, start, end):
