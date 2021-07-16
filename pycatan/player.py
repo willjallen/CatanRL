@@ -26,6 +26,8 @@ class Player:
         self.knight_cards = 0
         # the longest road segment this player has
         self.longest_road_length = 0
+        # whether the player has ended their turn
+        self.turn_over = True
 
     # builds a settlement belonging to this player
     def build_settlement(self, point, is_starting=False):

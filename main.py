@@ -1,9 +1,26 @@
 from pycatan import Game
 from pycatan import Statuses
+from pycatan import DevCard
 from board_renderer import BoardRenderer
 import random
 
-action_types = ["no_op", "purchase_resource", "purchase_and_play_building", "purchase_dev_card", "play_dev_card", "play_robber", "start_trade", "accept_trade", "deny_trade", "forfeit_cards", "end_turn"]
+action_types = ["no_op", "roll", "purchase_resource", "purchase_and_play_building", "purchase_dev_card", "play_dev_card", "play_robber", "start_trade", "accept_trade", "deny_trade", "forfeit_cards", "end_turn"]
+NO_OP = 0
+ROLL = 1
+PURCHASE_RESOURCE = 2
+PURCHASE_AND_PLAY_BUILDING = 3
+PURCHASE_DEV_CARD = 4
+PLAY_DEV_CARD = 5
+PLAY_ROBBER = 6
+START_TRADE = 7
+ACCEPTED_TRADE = 8
+DENY_TRADE = 9
+FORFEIT_CARDS = 10
+END_TURN = 11
+
+def printBlankLines(num):
+        for i in range(0, num):
+                print()
 
 
 class GameWrapper:
@@ -11,28 +28,44 @@ class GameWrapper:
                 num_of_players = 4
 
                 game = Game(num_of_players)
-                # game.add_settlement(player=0, point=game.board.points[0][0], is_starting=True)
-                # game.add_settlement(player=1, point=game.board.points[2][3], is_starting=True)
-                # game.add_settlement(player=1, point=game.board.points[6][0], is_starting=True)
-                # game.add_settlement(player=1, point=game.board.points[2][3], is_starting=True)
+
+                game.add_settlement(player=0, point=game.board.points[0][0], is_starting=True)                
+                game.add_settlement(player=0, point=game.board.points[1][2], is_starting=True)
+                game.add_settlement(player=1, point=game.board.points[3][3], is_starting=True)
+                game.add_settlement(player=1, point=game.board.points[2][6], is_starting=True)
+                game.add_settlement(player=2, point=game.board.points[4][3], is_starting=True)
+                game.add_settlement(player=2, point=game.board.points[3][8], is_starting=True)
+                game.add_settlement(player=3, point=game.board.points[5][2], is_starting=True)
+                game.add_settlement(player=3, point=game.board.points[1][6], is_starting=True)
                 
-                # game.add_settlement(player=2, point=game.board.points[4][1], is_starting=True)
                 # Add some roads
-                # game.add_road(player=0, start=game.board.points[0][0], end=game.board.points[0][1], is_starting=True)
-                # game.add_road(player=1, start=game.board.points[2][3], end=game.board.points[2][2], is_starting=True)
-                # game.add_road(player=2, start=game.board.points[4][1], end=game.board.points[4][0], is_starting=True)
+                game.add_road(player=0, start=game.board.points[0][0], end=game.board.points[0][1], is_starting=True)
+                game.add_road(player=0, start=game.board.points[1][2], end=game.board.points[1][3], is_starting=True)
+                game.add_road(player=1, start=game.board.points[3][3], end=game.board.points[3][2], is_starting=True)
+                game.add_road(player=1, start=game.board.points[2][6], end=game.board.points[2][5], is_starting=True)
+                game.add_road(player=2, start=game.board.points[4][3], end=game.board.points[4][4], is_starting=True)
+                game.add_road(player=2, start=game.board.points[3][8], end=game.board.points[3][7], is_starting=True)
+                game.add_road(player=3, start=game.board.points[5][2], end=game.board.points[5][3], is_starting=True)
+                game.add_road(player=3, start=game.board.points[1][6], end=game.board.points[1][7], is_starting=True)
+                
                 self.game = game
                 self.boardRenderer = BoardRenderer(game.board, [50, 10])
 
+
+        # An interface for human players to interact with the game
         def promptActions(self, player):
-                print('1: No Op | 2: Purchase Resource (From Bank/Port) | 3: Purchase Building | 4: Purchase Dev Card | 5: Play Dev Card |\n6: Play Robber | 7: Do Trade | 8: Accept Trade | 9: Reject Trade | 10: Forfeit Cards | 11: End Turn')
+                print('Possible Actions')
+                print('0: No Op | 1: Roll | 2: Purchase Resource (From Bank/Port) | 3: Purchase Building | 4: Purchase Dev Card | 5: Play Dev Card |\n6: Play Robber | 7: Do Trade | 8: Accept Trade | 9: Reject Trade | 10: Forfeit Cards | 11: End Turn')
                 full_action = [] 
 
                 response = int(input())
 
                 full_action.append(response)
                 
-                print(action_types[response-1])
+                print(action_types[response])
+                # Roll
+                if(response == 0):
+                        pass
                 # Prompt No op
                 if(response == 1):
                         print(1)
@@ -84,6 +117,10 @@ class GameWrapper:
                                 print('Location Y:')
                                 loc_y_response = int(input())
                                 full_action.append(loc_y_response)
+                                print('Player:')
+                                print('0: Red | 1: Cyan | 2: Green | 3: Yellow')
+                                player_response = int(input())
+                                full_action.append(player_response)
 
                         if(dev_card_response == 2):
                                 print('First resource:')
@@ -117,6 +154,10 @@ class GameWrapper:
                         print('Location Y:')
                         loc_y_response = int(input())
                         full_action.append(loc_y_response)
+                        print('Player:')
+                        print('0: Red | 1: Cyan | 2: Green | 3: Yellow')
+                        player_response = int(input())
+                        full_action.append(player_response)
                 # Prompt Do trade
                 if(response == 7):
                         print('1: Player 1 | 2: Player 2 | 3: Player 3 | 4: Player 4')
@@ -143,14 +184,31 @@ class GameWrapper:
                 if(response == 11):
                         pass
 
+                return full_action
+
+
+        # Get allowed actions
+        def getAllowedActions(self, player, player_with_turn):
+                pass
+
         def doAction(self, player, args):
                 action_type = args[0]
 
-                  # No op
-                if(response == 1):
+
+
+                # No op
+                if(action_type == 0):
                         pass
+                # Roll
+                if(action_type == 1):
+                        if(player.game.can_roll):
+                                self.game.board.add_yield(self.game.get_roll())
+                                self.game.can_roll = False
+                                return Statuses.ALL_GOOD
+                        else:
+                                return Statuses.ERR_ROLL
                 # Purchase Resource
-                if(response == 2):
+                if(action_type == 2):
                         requested_resource = args[1]
                         forfeited_resource = args[2]
                         # TODO
@@ -158,7 +216,7 @@ class GameWrapper:
                         # And check to occur if player has a port to send instead as [card, card, card] or otherwise
                         # self.game.trade_to_bank(player, forfeited_resource, requested_resource)
                 # Purchase & play building
-                if(response == 3):
+                if(action_type == 3):
                         building_response = args[1]
                         loc_x_response = args[2]
                         loc_y_response = args[3]
@@ -170,13 +228,15 @@ class GameWrapper:
                                 status = player.build_settlement(self.game.board.points[loc_x_response][loc_y_response])
                         if(building_response == 3):
                                 status = self.game.add_city(self.game.board.points[loc_x_response][loc_y_response], player)
+                        return status
 
                 # Purchase dev card
-                if(response == 4):
-                        status = self.game.build_dev(player)
+                if(action_type == 4):
+                        status = self.game.build_dev(player.num)
+                        return status
 
                 # Play Item
-                if(response == 5):
+                if(action_type == 5):
                         dev_card_response = args[1]
                         """
                             # the developement cards
@@ -191,29 +251,34 @@ class GameWrapper:
                         if(dev_card_response == 1):
                                 loc_x_response = args[2]
                                 loc_y_response = args[3]
-                                # TODO
-                                # Tile at r,c index within the array
-                                # status = self.game.move_robber()
+                                victim_player_response = args[4]
+
+                                status = self.game.move_robber(self.game.board.tiles[loc_x_response][loc_y_response], player, victim_player_response)
+                                return status
                         # YOP
                         if(dev_card_response == 2):
                                 first_resource_response = args[2]
                                 second_resource_response = args[3]
+                                
                                 status = self.game.use_dev_card(player, DevCard.YearOfPlenty, [('card_one', first_resource_response), ('card_two', second_resource_response)])
+                                return status
                         # Monopoly
                         if(dev_card_response == 3):
                                 resource_response = args[2]
-                                status = self.game.use_dev_card(player, DevCard.Monopoly, [('card_types', resource_response)])
 
+                                status = self.game.use_dev_card(player, DevCard.Monopoly, [('card_types', resource_response)])
+                                return status
                 # Play robber
-                if(response == 6):
+                if(action_type == 6):
                         loc_x_response = args[2]
                         loc_y_response = args[3]
-                        # TODO
-                        # Tile at r,c index within the array
-                        # status = self.game.move_robber()
+                        victim_player_response = args[4]
 
+                        status = self.game.move_robber(self.game.board.tiles[loc_x_response][loc_y_response], player, victim_player_response)
+                        return status
+        
                 # Do trade
-                if(response == 7):
+                if(action_type == 7):
                         pass
                         # TODO
                         # this
@@ -232,14 +297,15 @@ class GameWrapper:
                         # received_resource_response = int(input())
                         # full_action.append(received_resource_response)
                 # Accept Trade
-                if(response == 8):
+                if(action_type == 8):
                         pass
                 # Deny trade
-                if(response == 9):
+                if(action_type == 9):
                         pass
-                if(response == 10):
+                if(action_type == 10):
                         pass
-                if(response == 11):
+                if(action_type == 11):
+                        player.turn_over = True
                         pass
 
         def promptInitialPlacement(self):
@@ -275,13 +341,22 @@ class GameWrapper:
                 status = player.build_road(self.game.board.points[loc_x][loc_y], self.game.board.points[loc_x_2][loc_y_2], True)
                 return status
 
-        def displayPlayerGameInfo(self, player):
-                self.displayBoard()
-                # Pending trades
-
-
         def displayBoard(self):
                 self.boardRenderer.render()
+
+        def displayPlayerGameInfo(self, player):
+                self.displayBoard()
+                printBlankLines(10)
+                print('Player ' + str(player.num) + ':')
+                print('Accessible Ports:')
+                # TODO
+                # Find connected ports
+
+                print('Cards:')
+                player.print_cards(player.cards)
+                
+                # Pending trades
+
 
         def displayFullGameInfo(self):
                 self.displayBoard()
@@ -384,12 +459,6 @@ class Agent:
         #       return policy_logits, baselines
 
 
-
-def printBlankLines(num):
-        for i in range(0, num):
-                print()
-
-
 def main():
 
         # Game Set-up questions
@@ -449,34 +518,76 @@ def main():
 
         print(starting_play_order)
         placement_okay = False
-        for player_index in starting_play_order:
-                
-                curr_agent = agents[player_index]
-                if(curr_agent.is_human):
-                        while(not placement_okay):
-                                CatanGame.displayBoard()
-                                print('Player ' + str(curr_agent.player.num))
-                                printBlankLines(10)
-                                full_action = CatanGame.promptInitialPlacement()
-                                status = CatanGame.doInitialPlacement(curr_agent.player, full_action)
-                                if(status == Statuses.ALL_GOOD):
-                                        placement_okay = True
+        debug = True
+        if not debug:
+                for player_index in starting_play_order:
+                        
+                        curr_agent = agents[player_index]
+                        if(curr_agent.is_human):
+                                while(not placement_okay):
+                                        CatanGame.displayBoard()
+                                        print('Player ' + str(curr_agent.player.num))
+                                        printBlankLines(10)
+                                        full_action = CatanGame.promptInitialPlacement()
+                                        status = CatanGame.doInitialPlacement(curr_agent.player, full_action)
+                                        if(status == Statuses.ALL_GOOD):
+                                                placement_okay = True
+                                        else:
+                                                print(Statuses.status_list[status])
+                                        print()
+
+                                placement_okay = False
+                        else:
+                                # AI stuff
+                                pass
+
+        # Add initial placement yield
+        # (This might be the wrong way to do it)
+        for i in range(2, 13):
+                if i != 7:
+                        CatanGame.game.board.add_yield(i)
+
+        player_index = chosen_player
+
+        # Game Loop
+        # Cycle over all players per turn steps to allow for responses to trades
+        game_over = False
+        turn_over = False
+        cycle_complete = False        
+        while(not game_over):
+                CatanGame.game.can_roll = True
+                player_with_turn = curr_player = CatanGame.game.players[player_index]
+                player_with_turn_index = player_index
+                player_with_turn.turn_over = False
+
+                # Cycle, starting with the player playing their turn, through all other players
+                while(not turn_over):
+                        curr_player = CatanGame.game.players[player_index] 
+                        CatanGame.displayPlayerGameInfo(curr_player)
+
+                        # allowed_actions = CatanGame.getAllowedActions(player, player_with_turn)
+
+                        full_action = CatanGame.promptActions(curr_player)
+                        CatanGame.doAction(curr_player, full_action)
+                        
+                        turn_over = player_with_turn.turn_over 
+
+                        if(not turn_over):
+                                # 2 -> 3 -> 0 -> 1 -> 2
+                                if(player_index == 3):
+                                        player_index = 0
                                 else:
-                                        print(Statuses.status_list[status])
-                                print()
+                                        player_index += 1
 
-                        placement_okay = False
+                # Turn has ended
+                player_index = player_with_turn_index
+                
+                # 2 -> 3 -> 0 -> 1 -> 2
+                if(player_index == 3):
+                        player_index = 0
                 else:
-                        # AI stuff
-                        pass
+                        player_index += 1
 
-
-        # Game Loop        
-        # while(!gameOver):
-                # 
-
-        CatanGame.displayFullGameInfo()
-        CatanGame.promptActions(CatanGame.game.players[0])
 
 if __name__ == "__main__":
         main()

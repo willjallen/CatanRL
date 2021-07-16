@@ -40,6 +40,8 @@ class Game:
         self.largest_army = None
         # whether the game has finished or not
         self.has_ended = False
+        # whether a player can roll
+        self.can_roll = False
 
     # creates a new settlement belong to the player at the coodinates
     def add_settlement(self, player, point, is_starting=False):
