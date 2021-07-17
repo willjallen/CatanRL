@@ -1,6 +1,6 @@
 from pycatan import Game
 from pycatan import Statuses
-from pycatan import DevCard
+from pycatan.card import ResCard, DevCard
 from board_renderer import BoardRenderer
 import random
 
@@ -206,7 +206,7 @@ class GameWrapper:
                         full_action.append(loc_y_response)
 
                         # Need second point for road
-                        if(building_response == 1):
+                        if(building_response == 0):
                                 print('Location X 2:')
                                 loc_x_response_2 = int(input())
                                 full_action.append(loc_x_response_2)
@@ -360,21 +360,21 @@ class GameWrapper:
                                 loc_y_response = args[3]
                                 victim_player_response = args[4]
 
-                                status = self.game.use_dev_card(player.num, DevCard.Knight, {'robber_pos': [loc_x_response, loc_y_response], 'victim': [victim_player_response]})
+                                status = self.game.use_dev_card(player.num, DevCard.Knight, {'robber_pos': [loc_x_response, loc_y_response], 'victim': victim_player_response})
                                 return status
                         # YOP
                         if(dev_card_response == 1):
                                 first_resource_response = args[2]
                                 second_resource_response = args[3]
-                                print(first_resource_response + '    ' + second_resource_response)
                                 
-                                status = self.game.use_dev_card(player.num, DevCard.YearOfPlenty, {'card_one': first_resource_response, 'card_two': second_resource_response})
+                                
+                                status = self.game.use_dev_card(player.num, DevCard.YearOfPlenty, {'card_one': ResCard(first_resource_response), 'card_two': ResCard(second_resource_response)})
                                 return status
                         # Monopoly
                         if(dev_card_response == 2):
                                 resource_response = args[2]
 
-                                status = self.game.use_dev_card(player.num, DevCard.Monopoly, {'card_type': resource_response})
+                                status = self.game.use_dev_card(player.num, DevCard.Monopoly, {'card_type': ResCard(resource_response)})
                                 return status
                 # Play robber
                 if(action_type == 6):
@@ -458,6 +458,10 @@ class GameWrapper:
                 colors = ['Red', 'Cyan', 'Green', 'Yellow']
                 print('Player ' + str(player.num) + '(' + colors[player.num] + ')'  ':')
                 print('Accessible Ports:')
+                harbors = player.get_connected_harbor_types()
+                print(harbors)
+                print('Robber Location:')
+                print(self.game.board.robber)
                 # TODO
                 # Find connected ports
 
@@ -702,7 +706,7 @@ def main():
                                                 action_okay = True
                                         else:
                                                 print('Error: ')
-                                                print(status)
+                                                print(Statuses.status_list[int(status)])
 
                         turn_over = player_with_turn.turn_over 
 
