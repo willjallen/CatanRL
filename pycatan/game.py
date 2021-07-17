@@ -152,7 +152,7 @@ class Game:
         return Statuses.ALL_GOOD
 
     def cards_tradable_to_bank(self, player):
-        cards_tradable = []
+        tradable_cards = []
 
         harbor_types = self.players[player.num].get_connected_harbor_types()
         
@@ -171,54 +171,42 @@ class Game:
         for card_type in ResCard:
             if(card_type in two_one_harbors):
                 if(player.has_at_least_num_cards(card_type, 2)):
-                    cards_tradable.append(card_type)
+                    tradable_cards.append([card_type, 2])
             elif(has_3_1_harbor):
                 if(player.has_at_least_num_cards(card_type, 3)):
-                    cards_tradable.append(card_type)
+                    tradable_cards.append([card_type, 3])
             elif(player.has_at_least_num_cards(card_type, 4)):
-                cards_tradable.append(card_type)
-        return cards_tradable                    
+                tradable_cards.append([card_type, 4])
 
+        return tradable_cards                    
 
-
-    def can_trade_to_bank(self, player, cards, request):
-        # makes sure the player has the cards
-        if not self.players[player].has_cards(cards):
-            return Statuses.ERR_CARDS
-        # checks all the cards are the same type
-        card_type = cards[0]
-        for c in cards[1:]:
-            if c != card_type:
-                return Statuses.ERR_CARDS
-        # if there are not four cards
-        if len(cards) != 4:
-            # checks if the player has a settlement on the right type of harbor
-            has_harbor = False
-            harbor_types = self.players[player].get_connected_harbor_types()
-            print(harbor_types)
-            for h_type in harbor_types:
-                if Harbor.get_card_from_harbor_type(h_type) == card_type and len(cards) == 2:
-                    has_harbor = True
-                    break
-                elif Harbor.get_card_from_harbor_type(h_type) == None and len(cards) == 3:
-                    has_harbor = True
-                    break
-
-            if not has_harbor:
-                return Statuses.ERR_HARBOR
-
-        return Statuses.ALL_GOOD
 
     # trades cards from a player to the bank
     # either by 4 for 1 or using a harbor
-    def trade_to_bank(self, player, cards, request):
-        status = can_trade_to_bank(player, cards, request)
-        if(status != Statuses.ALL_GOOD):
-            return status
+    def trade_to_bank(self, player, card, request):
+        tradable_cards_with_values = self.cards_tradable_to_bank(player)
+        
+        found = False
+        num = 0
+
+        if tradable_cards_with_values:
+            for i in range(0, len(tradable_cards_with_values)):
+                print(tradable_cards_with_values[i][0])
+                print(card)
+                if(tradable_cards_with_values[i][0] == ResCard(card)):
+                    found = True
+                    num = tradable_cards_with_values[i][1]
+
+        if(not found):
+            return Statuses.ERR_CARDS
+                
+
+        cards = [ResCard(card)] * num 
+        print(cards) 
         # removes cards
-        self.players[player].remove_cards(cards)
+        self.players[player.num].remove_cards(cards)
         # adds the new card
-        self.players[player].add_cards([request])
+        self.players[player.num].add_cards([ResCard(request)])
 
         return Statuses.ALL_GOOD
 

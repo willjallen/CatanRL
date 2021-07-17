@@ -101,7 +101,9 @@ class GameWrapper:
                 if(is_players_turn and not self.game.can_roll):
                         # Check every resource and append those which are eligable
                         cards = self.game.cards_tradable_to_bank(player)
-                        if(len(cards) != 0):
+                        if cards:
+                                cards = [card[0] for card in cards] 
+                                print(cards)
                                 actions['allowed_actions'].append(PURCHASE_RESOURCE)
                                 for card in cards:
                                         actions['allowed_bank_trade_cards'].append(card)
@@ -317,10 +319,9 @@ class GameWrapper:
                 if(action_type == 2):
                         requested_resource = args[1]
                         forfeited_resource = args[2]
-                        # TODO
-                        # Forfeited resource needs to be sent as [card, card, card, card]
-                        # And check to occur if player has a port to send instead as [card, card, card] or otherwise
-                        # self.game.trade_to_bank(player, forfeited_resource, requested_resource)
+                        status = self.game.trade_to_bank(player, forfeited_resource, requested_resource)
+                        return status
+
                 # Purchase & play building
                 if(action_type == 3):
                         building_response = args[1]
@@ -589,6 +590,12 @@ def main():
         CatanGame = GameWrapper()
 
         debug = True
+
+        if debug:
+                CatanGame.game.players[0].add_dev_card(DevCard.Knight)
+                CatanGame.game.players[0].add_dev_card(DevCard.YearOfPlenty)
+                CatanGame.game.players[0].add_dev_card(DevCard.Monopoly)
+                CatanGame.game.players[0].add_dev_card(DevCard.Road)
 
         # Make players into agents
         agents = []
