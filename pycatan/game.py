@@ -72,9 +72,15 @@ class Game:
     # builds a new developement cards for the player
     def build_dev(self, player):
         
-        status = player.can_build_dev()
+        status = self.players[player].can_build_dev()
         if(status != Statuses.ALL_GOOD):
             return status
+
+        needed_cards = [
+        ResCard.Wheat,
+        ResCard.Sheep,
+        ResCard.Ore
+        ]
         # removes the cards
         self.players[player].remove_cards(needed_cards)
         # gives the player a dev card
@@ -148,13 +154,13 @@ class Game:
     def cards_tradable_to_bank(self, player):
         cards_tradable = []
 
-        harbor_types = self.players[player].get_connected_harbor_types()
+        harbor_types = self.players[player.num].get_connected_harbor_types()
         
         has_3_1_harbor = False
         two_one_harbors = []
 
 
-        for card_type in Card.ResCard:
+        for card_type in ResCard:
             for h_type in harbor_types:
                 if Harbor.get_card_from_harbor_type(h_type) == card_type.value:
                     two_one_harbors.append(card_type)
@@ -162,7 +168,7 @@ class Game:
                     has_3_1_harbor = True
 
 
-        for card_type in Card.ResCard:
+        for card_type in ResCard:
             if(card_type in two_one_harbors):
                 if(player.has_at_least_num_cards(card_type, 2)):
                     cards_tradable.append(card_type)
@@ -170,7 +176,8 @@ class Game:
                 if(player.has_at_least_num_cards(card_type, 3)):
                     cards_tradable.append(card_type)
             elif(player.has_at_least_num_cards(card_type, 4)):
-                cards_tradable.append(card_type)                    
+                cards_tradable.append(card_type)
+        return cards_tradable                    
 
 
 

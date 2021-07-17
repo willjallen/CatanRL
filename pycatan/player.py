@@ -90,9 +90,9 @@ class Player:
 
         return Statuses.ALL_GOOD
 
-    def can_build_dev(self, player):
+    def can_build_dev(self):
         # makes sure there is still at least one development card left
-        if len(self.dev_deck) < 1:
+        if len(self.game.dev_deck) < 1:
             return Statuses.ERR_DECK
         # makes sure the player has the right cards
         needed_cards = [
@@ -100,7 +100,7 @@ class Player:
             ResCard.Ore,
             ResCard.Sheep
         ]
-        if not self.players[player].has_cards(needed_cards):
+        if not self.has_cards(needed_cards):
             return Statuses.ERR_CARDS
         return Statuses.ALL_GOOD
         # checks if the player has all of the cards given in an array
@@ -305,10 +305,10 @@ class Player:
             if b.owner == self.num:
                 # checks if the building is connected to any harbors
                 for h in all_harbors:
-                    print(h)
-                    print(b.point)
+                    # print(h)
+                    # print(b.point)
                     if h.point_one is b.point or h.point_two is b.point:
-                        print("A")
+                        # print("A")
                         # adds the type
                         if harbors.count(h.type) == 0:
                             harbors.append(h.type)

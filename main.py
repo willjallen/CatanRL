@@ -53,9 +53,120 @@ class GameWrapper:
 
 
         # An interface for human players to interact with the game
-        def promptActions(self, player):
+        
+
+
+        # Get allowed actions
+        def getAllowedActions(self, player, player_with_turn):
+                actions = {'allowed_actions': [], 'allowed_forfeit_cards': [], 'allowed_bank_trade_cards': [], 'allowed_dev_cards': [], 'allowed_buildings': [], 'allowed_robber_tile_x': [], 'allowed_robber_tile_y': [], 'allowed_victim_players': []}
+
+                is_players_turn = (player == player_with_turn)
+
+
+                ## FORFEIT_CARDS (Priority action, others ignored)
+                # - A 7 is active and player has >= 8 cards
+                if(self.game.rolled_seven and len(player.cards) >= 8):
+                        actions['allowed_actions'].append(FORFEIT_CARDS)
+                        allowed_actions.append(FORFEIT_CARDS)
+                        actions['allowed_forfeit_cards'] = player.get_type_of_cards_possessed()
+                        return actions
+
+                ## ACCEPT_TRADE (Priority action, others ignored)
+                ## DENY_TRADE
+                # - Player has a pending trade
+                if(player.pending_trade):
+                        actions['allowed_actions'].append(ACCEPT_TRADE)
+                        actions['allowed_actions'].append(DENY_TRADE)
+                        return actions
+
+
+                ## NO_OP
+                # - It is not the player's turn
+                # - There are no pending trades
+                if(not is_players_turn and not player.pending_trade):
+                        actions['allowed_actions'].append(NO_OP)
+                        return actions
+
+                ## ROLL
+                # - It is the players turn
+                # - The dice has not been rolled
+                if(is_players_turn and self.game.can_roll):
+                        actions['allowed_actions'].append(ROLL)
+
+                # TODO    
+                ## PURCHASE_RESOURCE
+                # - It is the players turn
+                # - The dice has been rolled
+                # - Player can exchange resource
+                if(is_players_turn and not self.game.can_roll):
+                        # Check every resource and append those which are eligable
+                        cards = self.game.cards_tradable_to_bank(player)
+                        if(len(cards) != 0):
+                                actions['allowed_actions'].append(PURCHASE_RESOURCE)
+                                for card in cards:
+                                        actions['allowed_bank_trade_cards'].append(card)
+
+
+
+                        #self.game.can_trade_to_bank(player, cards, request)
+
+                ## PURCHASE_AND_PLAY_BUILDING
+                # - It is the players turn
+                # - The dice has been rolled                
+                # - Player has relevant cards
+                if(is_players_turn and not self.game.can_roll):
+                        available_buildings = player.get_available_buildings()
+                        if(len(available_buildings) != 0):
+                                actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
+                                actions['allowed_buildings'].append(available_buildings)
+                                #TODO
+
+                ## PURCHASE_DEV_CARD
+                # - It is the players turn
+                # - The dice has been rolled                
+                # - Player has relevant cards
+                if(is_players_turn and player.can_build_dev()==Statuses.ALL_GOOD and not self.game.can_roll):
+                        actions['allowed_actions'].append(PURCHASE_DEV_CARD)
+
+                ## PLAY_DEV_CARD
+                # - It is the players turn
+                # - Player has at least one development card
+                if(is_players_turn and len(player.dev_cards) >= 1):
+                        actions['allowed_actions'].append(PLAY_DEV_CARD)
+                        for card in player.dev_cards:
+                                if(card == DevCard.Road and not(card in actions['allowed_dev_cards'])):
+                                        actions['allowed_dev_cards'].append(card)
+
+
+                ## PLAY_ROBBER
+                # - It is the players turn
+                # - A 7 is active and robber has not been moved
+                if(self.game.rolled_seven and not self.robber_moved):
+                        actions['allowed_actions'].append(PLAY_ROBBER)
+
+                ## START_TRADE
+                # - It is the players turn
+                # - Player actually has the card they are forfeiting
+                # - Receiving player actually has the card they are forfeiting 
+                if(is_players_turn):
+                    pass
+
+                ## END_TURN
+                # - It is the players turn
+                # - The dice has been rolled                
+                if(is_players_turn and not self.game.can_roll):
+                    actions['allowed_actions'].append(END_TURN)
+
+                return actions
+
+        def promptActions(self, player, possible_actions):
                 print('Possible Actions')
-                print('0: No Op | 1: Roll | 2: Purchase Resource (From Bank/Port) | 3: Purchase Building | 4: Purchase Dev Card | 5: Play Dev Card |\n6: Play Robber | 7: Do Trade | 8: Accept Trade | 9: Reject Trade | 10: Forfeit Cards | 11: End Turn')
+                
+                # print('0: No Op | 1: Roll | 2: Purchase Resource (From Bank/Port) | 3: Purchase Building | 4: Purchase Dev Card | 5: Play Dev Card |\n6: Play Robber | 7: Do Trade | 8: Accept Trade | 9: Reject Trade | 10: Forfeit Cards | 11: End Turn')
+                for action in possible_actions['allowed_actions']:
+                        print(str(action) + ': ' + action_types[action] + '| ', end='')
+                print()
+
                 full_action = [] 
 
                 response = int(input())
@@ -184,92 +295,7 @@ class GameWrapper:
                 if(response == 11):
                         pass
 
-                return full_action
-
-
-        # Get allowed actions
-        def getAllowedActions(self, player, player_with_turn):
-                actions = {allowed_actions: [], allowed_forfeit_cards: [], allowed_bank_trade_cards: [], allowed_buildings: [], allowed_robber_tile_x: [], allowed_robber_tile_y: [], allowed_victim_players: [], }
-
-                is_players_turn = (player == player_with_turn)
-
-
-                ## FORFEIT_CARDS (Priority action, others ignored)
-                # - A 7 is active and player has >= 8 cards
-                if(self.game.rolled_seven and len(player.cards) >= 8):
-                        actions['allowed_actions'].append(FORFEIT_CARDS)
-                        allowed_actions.append(FORFEIT_CARDS)
-                        actions['allowed_forfeit_cards'] = player.get_type_of_cards_possessed()
-                        return
-
-
-                ## NO_OP
-                # - It is not the player's turn
-                # - There are no pending trades
-                if(not is_players_turn and player.pending_trade):
-                        actions['allowed_actions'].append(NO_OP)
-
-                ## ROLL
-                # - It is the players turn
-                # - game.can_roll is true
-                if(is_players_turn and self.game.can_roll):
-                        actions['allowed_actions'].append(ROLL)
-
-                # TODO    
-                ## PURCHASE_RESOURCE
-                # - It is the players turn
-                # - Player can exchange resource
-                if(is_players_turn):
-                        # Check every resource and append those which are eligable
-                        cards = self.game.cards_tradable_to_bank(player)
-                        if(len(cards) != 0):
-                                actions['allowed_actions'].append(PURCHASE_RESOURCE)
-                                for card in cards:
-                                        actions['allowed_bank_trade_cards'].append(card)
-
-
-
-                        #self.game.can_trade_to_bank(player, cards, request)
-
-                ## PURCHASE_AND_PLAY_BUILDING
-                # - It is the players turn
-                # - Player has relevant cards
-                if(is_players_turn):
-                        available_buildings = player.get_available_buildings
-
-                ## PURCHASE_DEV_CARD
-                # - It is the players turn
-                # - Player has relevant cards
-                if(is_players_turn and player.can_build_dev()==Statuses.ALL_GOOD):
-                        actions['allowed_actions'].append(PURCHASE_DEV_CARD)
-
-
-                ## PLAY_ROBBER
-                # - It is the players turn
-                # - A 7 is active and robber has not been moved
-                if(self.game.rolled_seven and not self.robber_moved):
-                        actions['allowed_actions'].append(PLAY_ROBBER)
-
-                ## START_TRADE
-                # - It is the players turn
-                # - Player actually has the card they are forfeiting
-                # - Receiving player actually has the card they are forfeiting 
-                if(is_players_turn):
-                    pass
-
-                ## ACCEPT_TRADE
-                ## DENY_TRADE
-                # - Player has a pending trade
-                if(player.pending_trade):
-                    actions['allowed_actions'].append(ACCEPT_TRADE)
-                    actions['allowed_actions'].append(DENY_TRADE)
-
-                ## END_TURN
-                # - It is the players turn
-                if(is_players_turn):
-                    actions['allowed_actions'].append(END_TURN)
-
-                pass
+                return full_action        
 
         def doAction(self, player, args):
                 action_type = args[0]
@@ -333,12 +359,13 @@ class GameWrapper:
                                 loc_y_response = args[3]
                                 victim_player_response = args[4]
 
-                                status = self.game.use_dev_card(player.num, DevCard.Knight, {"robber_pos": [loc_x_response, loc_y_response], "victim": victim_player_response})
+                                status = self.game.use_dev_card(player.num, DevCard.Knight, {'robber_pos': [loc_x_response, loc_y_response], 'victim': [victim_player_response]})
                                 return status
                         # YOP
                         if(dev_card_response == 1):
                                 first_resource_response = args[2]
                                 second_resource_response = args[3]
+                                print(first_resource_response + '    ' + second_resource_response)
                                 
                                 status = self.game.use_dev_card(player.num, DevCard.YearOfPlenty, {'card_one': first_resource_response, 'card_two': second_resource_response})
                                 return status
@@ -561,17 +588,20 @@ def main():
         # Init
         CatanGame = GameWrapper()
 
+        debug = True
 
         # Make players into agents
         agents = []
         for player in CatanGame.game.players:
-                print('Player ' + str(player.num) + ' human? (y/n)')
-                is_human = input()
-                if(is_human == 'y'):
-                        agents.append(Agent(player, True, []))
+                if not debug:
+                        print('Player ' + str(player.num) + ' human? (y/n)')
+                        is_human = input()
+                        if(is_human == 'y'):
+                                agents.append(Agent(player, True, []))
+                        else:
+                                agents.append(Agent(player, False, []))
                 else:
-                        agents.append(Agent(player, False, []))
-
+                        agents.append(Agent(player, True, []))
 
         # Determine starting order for initial placements
         # Pick a random player then go in snake order
@@ -602,7 +632,7 @@ def main():
 
         print(starting_play_order)
         placement_okay = False
-        debug = True
+
         if not debug:
                 for player_index in starting_play_order:
                         
@@ -651,16 +681,21 @@ def main():
                         CatanGame.displayPlayerGameInfo(curr_player)
 
                         # allowed_actions = CatanGame.getAllowedActions(player, player_with_turn)
-
+                        possible_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
+                        
                         action_okay = False
                         while(not action_okay):
-                                full_action = CatanGame.promptActions(curr_player)
-                                status = CatanGame.doAction(curr_player, full_action)
-                                if status == Statuses.ALL_GOOD:
+                                # Debug
+                                if(len(possible_actions['allowed_actions']) == 1 and (NO_OP in possible_actions['allowed_actions'])):
                                         action_okay = True
                                 else:
-                                        print('Error: ')
-                                        print(Statuses.status_list[status])
+                                        full_action = CatanGame.promptActions(curr_player, possible_actions)
+                                        status = CatanGame.doAction(curr_player, full_action)
+                                        if status == Statuses.ALL_GOOD:
+                                                action_okay = True
+                                        else:
+                                                print('Error: ')
+                                                print(status)
 
                         turn_over = player_with_turn.turn_over 
 

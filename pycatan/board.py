@@ -84,6 +84,18 @@ class Board(object):
     def add_road(self, road):
         self.roads.append(road)
 
+    def get_available_robber_tiles():
+        pass
+
+    def get_available_road_points():
+        pass
+
+    def get_available_settlement_points():
+        pass
+
+    def get_available_city_points():
+        pass
+
     # upgrades an existing settlement to a city
     def upgrade_settlement(self, player, point):
         # Get building at point
