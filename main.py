@@ -35,7 +35,7 @@ class GameWrapper:
                 game.add_settlement(player=1, point=game.board.points[2][6], is_starting=True)
                 game.add_settlement(player=2, point=game.board.points[4][3], is_starting=True)
                 game.add_settlement(player=2, point=game.board.points[3][8], is_starting=True)
-                game.add_settlement(player=3, point=game.board.points[5][2], is_starting=True)
+                game.add_settlement(player=3, point=game.board.points[4][6], is_starting=True)
                 game.add_settlement(player=3, point=game.board.points[1][6], is_starting=True)
                 
                 # Add some roads
@@ -45,7 +45,7 @@ class GameWrapper:
                 game.add_road(player=1, start=game.board.points[2][6], end=game.board.points[2][5], is_starting=True)
                 game.add_road(player=2, start=game.board.points[4][3], end=game.board.points[4][4], is_starting=True)
                 game.add_road(player=2, start=game.board.points[3][8], end=game.board.points[3][7], is_starting=True)
-                game.add_road(player=3, start=game.board.points[5][2], end=game.board.points[5][3], is_starting=True)
+                game.add_road(player=3, start=game.board.points[4][6], end=game.board.points[4][5], is_starting=True)
                 game.add_road(player=3, start=game.board.points[1][6], end=game.board.points[1][7], is_starting=True)
                 
                 self.game = game
