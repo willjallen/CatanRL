@@ -1,5 +1,6 @@
 from pycatan import Game
 from pycatan import Statuses
+from pycatan import Building
 from pycatan.card import ResCard, DevCard
 from board_renderer import BoardRenderer
 import random
@@ -102,8 +103,9 @@ class GameWrapper:
                         # Check every resource and append those which are eligable
                         cards = self.game.cards_tradable_to_bank(player)
                         if cards:
-                                cards = [card[0] for card in cards] 
-                                print(cards)
+                                # card_types = [card[0] for card in cards] 
+                                # card_nums = [card[1] for card in cards] 
+                                card_tuples = [(card[0], card[1]) for card in cards]
                                 actions['allowed_actions'].append(PURCHASE_RESOURCE)
                                 for card in cards:
                                         actions['allowed_bank_trade_cards'].append(card)
@@ -120,7 +122,7 @@ class GameWrapper:
                         available_buildings = player.get_available_buildings()
                         if(len(available_buildings) != 0):
                                 actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
-                                actions['allowed_buildings'].append(available_buildings)
+                                actions['allowed_buildings'] = available_buildings
                                 #TODO
 
                 ## PURCHASE_DEV_CARD
@@ -135,8 +137,8 @@ class GameWrapper:
                 # - Player has at least one development card
                 if(is_players_turn and len(player.dev_cards) >= 1):
                         actions['allowed_actions'].append(PLAY_DEV_CARD)
-                        for card in player.dev_cards:
-                                if(card == DevCard.Road and not(card in actions['allowed_dev_cards'])):
+                        for card in DevCard:
+                                if(card in player.dev_cards):
                                         actions['allowed_dev_cards'].append(card)
 
 
@@ -166,7 +168,7 @@ class GameWrapper:
                 
                 # print('0: No Op | 1: Roll | 2: Purchase Resource (From Bank/Port) | 3: Purchase Building | 4: Purchase Dev Card | 5: Play Dev Card |\n6: Play Robber | 7: Do Trade | 8: Accept Trade | 9: Reject Trade | 10: Forfeit Cards | 11: End Turn')
                 for action in possible_actions['allowed_actions']:
-                        print(str(action) + ': ' + action_types[action] + '| ', end='')
+                        print(str(action) + ': ' + action_types[action] + ' | ', end='')
                 print()
 
                 full_action = [] 
@@ -189,12 +191,16 @@ class GameWrapper:
                         requested_resource = int(input())
                         full_action.append(requested_resource)
                         print('Forfeited Resource:')
-                        print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
+                        for allowed_card in possible_actions['allowed_bank_trade_cards']:
+                                print(str(allowed_card[0].value) + ': ' + allowed_card[0].name + '(' + str(allowed_card[1])  + ')' + ' | ', end='')
+                        print()
                         forfeited_resource = int(input())
                         full_action.append(forfeited_resource)
                 # Prompt Purchase & play building
                 if(response == 3):
-                        print('0: Road | 1: Settlement | 2: City')
+                        for allowed_building in possible_actions['allowed_buildings']:
+                                print(str(allowed_building) + ': ' + Building.BUILDINGS[allowed_building] + ' | ', end='')
+                        print()
                         building_response = int(input())
                         full_action.append(building_response)
 
@@ -206,7 +212,7 @@ class GameWrapper:
                         full_action.append(loc_y_response)
 
                         # Need second point for road
-                        if(building_response == 0):
+                        if(building_response == 1):
                                 print('Location X 2:')
                                 loc_x_response_2 = int(input())
                                 full_action.append(loc_x_response_2)
@@ -219,11 +225,23 @@ class GameWrapper:
                         pass
                 # Prompt Play dev card
                 if(response == 5):
-                        print('0: Knight | 1: YOP | 2: Monopoly | 3: Road Building')
+                        for allowed_card in possible_actions['allowed_dev_cards']:
+                                print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
+                        print()
+
                         dev_card_response = int(input())
                         full_action.append(dev_card_response)
 
+
                         if(dev_card_response == 0):
+                                print('Location X:')
+                                loc_x_response = int(input())
+                                full_action.append(loc_x_response)
+                                print('Location Y:')
+                                loc_y_response = int(input())
+                                full_action.append(loc_y_response)
+
+                        if(dev_card_response == 2):
                                 print('Location X:')
                                 loc_x_response = int(input())
                                 full_action.append(loc_x_response)
@@ -235,7 +253,12 @@ class GameWrapper:
                                 player_response = int(input())
                                 full_action.append(player_response)
 
-                        if(dev_card_response == 1):
+                        if(dev_card_response == 3):
+                                print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
+                                resource_response = int(input())
+                                full_action.append(resource_response)
+
+                        if(dev_card_response == 4):
                                 print('First resource:')
                                 print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
                                 first_resource_response = int(input())
@@ -246,18 +269,7 @@ class GameWrapper:
                                 second_resource_response = int(input())
                                 full_action.append(second_resource_response)
 
-                        if(dev_card_response == 2):
-                                print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
-                                resource_response = int(input())
-                                full_action.append(resource_response)
 
-                        if(dev_card_response == 3):
-                                print('Location X:')
-                                loc_x_response = int(input())
-                                full_action.append(loc_x_response)
-                                print('Location Y:')
-                                loc_y_response = int(input())
-                                full_action.append(loc_y_response)
 
                 # Prompt Play robber
                 if(response == 6):
@@ -328,11 +340,11 @@ class GameWrapper:
                         loc_x_response = args[2]
                         loc_y_response = args[3]
                         if(building_response == 0):
+                                status = player.build_settlement(self.game.board.points[loc_x_response][loc_y_response])
+                        if(building_response == 1):
                                 loc_x_response_2 = args[4]
                                 loc_y_response_2 = args[5]     
                                 status = player.build_road(self.game.board.points[loc_x_response][loc_y_response], self.game.board.points[loc_x_response_2][loc_y_response_2])
-                        if(building_response == 1):
-                                status = player.build_settlement(self.game.board.points[loc_x_response][loc_y_response])
                         if(building_response == 2):
                                 status = self.game.add_city(self.game.board.points[loc_x_response][loc_y_response], player)
                         return status
@@ -345,36 +357,27 @@ class GameWrapper:
                 # Play Item
                 if(action_type == 5):
                         dev_card_response = args[1]
-                        """
-                            # the developement cards
-                            Road = 0
-                            VictoryPoint = 1
-                            Knight = 2
-                            Monopoly = 3
-                            YearOfPlenty = 4
-
-                        """
                         # Knight
-                        if(dev_card_response == 0):
+                        if(dev_card_response == 2):
                                 loc_x_response = args[2]
                                 loc_y_response = args[3]
                                 victim_player_response = args[4]
 
                                 status = self.game.use_dev_card(player.num, DevCard.Knight, {'robber_pos': [loc_x_response, loc_y_response], 'victim': victim_player_response})
                                 return status
+                        # Monopoly
+                        if(dev_card_response == 3):
+                                resource_response = args[2]
+
+                                status = self.game.use_dev_card(player.num, DevCard.Monopoly, {'card_type': ResCard(resource_response)})
+                                return status
                         # YOP
-                        if(dev_card_response == 1):
+                        if(dev_card_response == 4):
                                 first_resource_response = args[2]
                                 second_resource_response = args[3]
                                 
                                 
                                 status = self.game.use_dev_card(player.num, DevCard.YearOfPlenty, {'card_one': ResCard(first_resource_response), 'card_two': ResCard(second_resource_response)})
-                                return status
-                        # Monopoly
-                        if(dev_card_response == 2):
-                                resource_response = args[2]
-
-                                status = self.game.use_dev_card(player.num, DevCard.Monopoly, {'card_type': ResCard(resource_response)})
                                 return status
                 # Play robber
                 if(action_type == 6):

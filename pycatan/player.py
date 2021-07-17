@@ -151,11 +151,11 @@ class Player:
             ResCard.Ore
         ]
 
-        if(self.has_cards(road_cards)):
-            available_buildings.append(Building.BUILDING_ROAD)
-
         if(self.has_cards(settlement_cards)):
             available_buildings.append(Building.BUILDING_SETTLEMENT)
+
+        if(self.has_cards(road_cards)):
+            available_buildings.append(Building.BUILDING_ROAD)
 
         if(self.has_cards(city_cards)):
             available_buildings.append(Building.BUILDING_CITY)

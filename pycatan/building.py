@@ -2,6 +2,8 @@
 
 class Building:
 
+    BUILDINGS = ['Settlement', 'Road', 'City']
+
     BUILDING_SETTLEMENT = 0
     BUILDING_ROAD = 1
     BUILDING_CITY = 2
