@@ -49,16 +49,9 @@ class RandomAgent():
 
 				# City
 				if(building_response == 2):
-					pass
-						# print('Allowed Locations: (r, i)')
-						# print(possible_actions['allowed_city_points'])
-
-						# print('r:')
-						# loc_r_response = int(input())
-						# full_action.append(loc_r_response)
-						# print('i:')
-						# loc_i_response = int(input())
-						# full_action.append(loc_i_response)
+					loc = random.choice(allowed_actions['allowed_city_points'])
+					full_action.append(loc.position[0])
+					full_action.append(loc.position[1])
 
 		# Prompt Purchase dev card
 		if(action == 4):
