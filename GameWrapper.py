@@ -560,7 +560,8 @@ def main():
                 CatanGame.game.players[0].add_dev_card(DevCard.Knight)
                 CatanGame.game.players[0].add_dev_card(DevCard.YearOfPlenty)
                 CatanGame.game.players[0].add_dev_card(DevCard.Monopoly)
-                CatanGame.game.players[0].add_dev_card(DevCard.Road)                
+                CatanGame.game.players[0].add_dev_card(DevCard.Road)   
+
                 CatanGame.game.add_settlement(player=0, point=CatanGame.game.board.points[0][0], is_starting=True)                
                 CatanGame.game.add_settlement(player=0, point=CatanGame.game.board.points[1][2], is_starting=True)
                 CatanGame.game.add_settlement(player=1, point=CatanGame.game.board.points[3][3], is_starting=True)
@@ -570,6 +571,7 @@ def main():
                 CatanGame.game.add_settlement(player=3, point=CatanGame.game.board.points[4][6], is_starting=True)
                 CatanGame.game.add_settlement(player=3, point=CatanGame.game.board.points[1][6], is_starting=True)
                 
+
                 # Add some roads
                 CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[0][0], end=CatanGame.game.board.points[0][1], is_starting=True)
                 CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[1][2], end=CatanGame.game.board.points[1][3], is_starting=True)
@@ -582,6 +584,9 @@ def main():
                 CatanGame.game.add_road(player=3, start=CatanGame.game.board.points[1][6], end=CatanGame.game.board.points[1][7], is_starting=True)
                 
                 CatanGame.game.players[0].add_cards([ResCard.Wheat, ResCard.Ore, ResCard.Wood, ResCard.Brick, ResCard.Sheep])
+
+                CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+                CatanGame.game.board.upgrade_settlement(0, CatanGame.game.board.points[1][2])
 
         # Make players into agents
         agents = []
@@ -710,7 +715,7 @@ def main():
                                         player_index += 1
 
                 turn_counter += 1
-                
+
                 # Turn has ended
                 player_index = player_with_turn_index
                 
