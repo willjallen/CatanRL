@@ -162,20 +162,22 @@ class Player:
 
         return available_buildings
 
-    def get_available_robber_placement_tiles(self):
+    def get_available_robber_placement_tiles_and_victims(self):
 
-        #TODO
-        # for all tiles
+        robber_actions = []
+
         # checks the victim has a settlement on the tile
-        has_settlement = False
-        # Iterate over points and check if there is a settlement/city on any of them
-        points = tile.points
-        for p in points:
-            if p != None and p.building != None:
-                # Check the victim owns the settlement/city
-                if p.building.owner == victim:
-                    has_settlement = True
-
+        for r in self.game.board.tiles:
+            for tile in r:
+                # Iterate over points and check if there is a settlement/city on any of them
+                points = tile.points
+                for p in points:
+                    if p != None and p.building != None:
+                        # Check the victim owns the settlement/city
+                        for player in self.game.players:
+                            if p.building.owner == player.num:
+                                robber_actions.append((tile, player))
+        return robber_actions
 
     def get_available_road_point_pairs(self):
 
