@@ -162,6 +162,75 @@ class Player:
 
         return available_buildings
 
+    def get_available_robber_placement_tiles(self):
+
+        #TODO
+        # for all tiles
+        # checks the victim has a settlement on the tile
+        has_settlement = False
+        # Iterate over points and check if there is a settlement/city on any of them
+        points = tile.points
+        for p in points:
+            if p != None and p.building != None:
+                print(p.building.owner)
+                # Check the victim owns the settlement/city
+                if p.building.owner == victim:
+                    has_settlement = True
+
+
+    def get_available_road_points(self):
+        pass
+
+    def get_available_settlement_points(self):
+
+        available_points = []
+
+        for r in self.game.board.points:
+            for point in r:
+                # checks it is connected to a road owned by the player
+                connected_by_road = False
+                # gets the roads
+                roads = self.game.board.roads
+
+                # checks that a settlement or city does not already exist there
+                if(point.building != None):
+                    if(point.building.type == Building.BUILDING_SETTLEMENT or point.building.type == Building.BUILDING_CITY):
+                        continue
+
+                for r in roads:
+                    # checks if the road is connected
+                    if r.point_one is point or r.point_two is point:
+                        # checks this player owns the road
+                        if r.owner == self.num:
+                            connected_by_road = True
+
+                if not connected_by_road:
+                    continue
+
+
+                # checks all other settlements are at least 2 away
+                # gets the connecting point's coords
+                distance_violation = False
+
+                points = point.connected_points
+
+                for p in points:
+                    # checks if the point is occupied
+                    if(p.building != None):
+                        if(p.building.type == Building.BUILDING_SETTLEMENT or p.building.type == Building.BUILDING_CITY):
+                            distance_violation = True
+                            break
+
+                if(distance_violation):
+                    continue
+                    
+                available_points.append(point)
+
+        return available_points
+
+    def get_available_city_points(self):
+        pass
+
     def has_at_least_num_cards(self, card_type, num):
         return self.cards.count(card_type) >= num
 

@@ -30,25 +30,6 @@ class GameWrapper:
 
                 game = Game(num_of_players)
 
-                game.add_settlement(player=0, point=game.board.points[0][0], is_starting=True)                
-                game.add_settlement(player=0, point=game.board.points[1][2], is_starting=True)
-                game.add_settlement(player=1, point=game.board.points[3][3], is_starting=True)
-                game.add_settlement(player=1, point=game.board.points[2][6], is_starting=True)
-                game.add_settlement(player=2, point=game.board.points[4][3], is_starting=True)
-                game.add_settlement(player=2, point=game.board.points[3][8], is_starting=True)
-                game.add_settlement(player=3, point=game.board.points[4][6], is_starting=True)
-                game.add_settlement(player=3, point=game.board.points[1][6], is_starting=True)
-                
-                # Add some roads
-                game.add_road(player=0, start=game.board.points[0][0], end=game.board.points[0][1], is_starting=True)
-                game.add_road(player=0, start=game.board.points[1][2], end=game.board.points[1][3], is_starting=True)
-                game.add_road(player=1, start=game.board.points[3][3], end=game.board.points[3][2], is_starting=True)
-                game.add_road(player=1, start=game.board.points[2][6], end=game.board.points[2][5], is_starting=True)
-                game.add_road(player=2, start=game.board.points[4][3], end=game.board.points[4][4], is_starting=True)
-                game.add_road(player=2, start=game.board.points[3][8], end=game.board.points[3][7], is_starting=True)
-                game.add_road(player=3, start=game.board.points[4][6], end=game.board.points[4][5], is_starting=True)
-                game.add_road(player=3, start=game.board.points[1][6], end=game.board.points[1][7], is_starting=True)
-                
                 self.game = game
                 self.boardRenderer = BoardRenderer(game.board, [50, 10])
 
@@ -59,7 +40,19 @@ class GameWrapper:
 
         # Get allowed actions
         def getAllowedActions(self, player, player_with_turn):
-                actions = {'allowed_actions': [], 'allowed_forfeit_cards': [], 'allowed_bank_trade_cards': [], 'allowed_dev_cards': [], 'allowed_buildings': [], 'allowed_robber_tile_x': [], 'allowed_robber_tile_y': [], 'allowed_victim_players': []}
+                actions = {
+                'allowed_actions': [],
+                'allowed_forfeit_cards': [],
+                'allowed_bank_trade_cards': [],
+                'allowed_dev_cards': [],
+                'allowed_buildings': [],
+                'allowed_robber_tiles': [],
+                'allowed_road_point_one_x': [],
+                'allowed_road_point_combinations': [],
+                'allowed_settlement_points': [], 
+                'allowed_city_points': [],
+                'allowed_victim_players': []
+                }
 
                 is_players_turn = (player == player_with_turn)
 
@@ -121,9 +114,16 @@ class GameWrapper:
                 if(is_players_turn and not self.game.can_roll):
                         available_buildings = player.get_available_buildings()
                         if(len(available_buildings) != 0):
-                                actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
-                                actions['allowed_buildings'] = available_buildings
-                                #TODO
+                                actions['allowed_buildings'] = available_buildings        
+                                actions['allowed_settlement_points'] = player.get_available_settlement_points()
+                                if(actions['allowed_settlement_points']):
+                                        actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
+
+                                # if(Building.BUILDING_CITY in available_buildings):
+                                #         actions['allowed_city_points']
+                                # if(Building.BUILDING_ROAD in available_buildings):
+                                #         actions[allowed_road_point_combinations]                                
+
 
                 ## PURCHASE_DEV_CARD
                 # - It is the players turn
@@ -201,24 +201,53 @@ class GameWrapper:
                         for allowed_building in possible_actions['allowed_buildings']:
                                 print(str(allowed_building) + ': ' + Building.BUILDINGS[allowed_building] + ' | ', end='')
                         print()
+   
                         building_response = int(input())
                         full_action.append(building_response)
 
-                        print('Location X:')
-                        loc_x_response = int(input())
-                        full_action.append(loc_x_response)
-                        print('Location Y:')
-                        loc_y_response = int(input())
-                        full_action.append(loc_y_response)
+                        
+                        # Settlement
+                        if(building_response == 0):
+                                print('Allowed Locations: (r, i)')
+                                print(possible_actions['allowed_settlement_points'])
 
-                        # Need second point for road
+                                print('r:')
+                                loc_r_response = int(input())
+                                full_action.append(loc_r_response)
+                                print('i:')
+                                loc_i_response = int(input())
+                                full_action.append(loc_i_response)
+
+                        # Road
                         if(building_response == 1):
-                                print('Location X 2:')
-                                loc_x_response_2 = int(input())
-                                full_action.append(loc_x_response_2)
-                                print('Location Y 2:')
-                                loc_y_response_2 = int(input())
-                                full_action.append(loc_y_response_2)
+                                print('Allowed Locations: (r, i)->(r2, i2)')
+                                print(possible_actions['allowed_road_point_combinations'])
+                                
+                                print('r:')
+                                loc_r_response = int(input())
+                                full_action.append(loc_r_response)
+                                print('i:')
+                                loc_i_response = int(input())
+                                full_action.append(loc_i_response)
+
+                                print('r 2:')
+                                loc_r_response = int(input())
+                                full_action.append(loc_r_response)
+                                print('i 2:')
+                                loc_i_response = int(input())
+                                full_action.append(loc_i_response)
+
+                        # City
+                        if(building_response == 2):
+                                print('Allowed Locations: (r, i)')
+                                print(possible_actions['allowed_city_points'])
+
+                                print('r:')
+                                loc_r_response = int(input())
+                                full_action.append(loc_r_response)
+                                print('i:')
+                                loc_i_response = int(input())
+                                full_action.append(loc_i_response)
 
                 # Prompt Purchase dev card
                 if(response == 4):
@@ -311,7 +340,7 @@ class GameWrapper:
 
                 return full_action        
 
-        def doAction(self, player, args):
+        def doAction(self, player, args, possible_actions):
                 action_type = args[0]
 
 
@@ -337,16 +366,16 @@ class GameWrapper:
                 # Purchase & play building
                 if(action_type == 3):
                         building_response = args[1]
-                        loc_x_response = args[2]
-                        loc_y_response = args[3]
+                        loc_r_response = args[2]
+                        loc_i_response = args[3]
                         if(building_response == 0):
-                                status = player.build_settlement(self.game.board.points[loc_x_response][loc_y_response])
+                                status = player.build_settlement(self.game.board.points[loc_r_response][loc_i_response])
                         if(building_response == 1):
-                                loc_x_response_2 = args[4]
-                                loc_y_response_2 = args[5]     
-                                status = player.build_road(self.game.board.points[loc_x_response][loc_y_response], self.game.board.points[loc_x_response_2][loc_y_response_2])
+                                loc_r_response_2 = args[4]
+                                loc_i_response_2 = args[5]     
+                                status = player.build_road(self.game.board.points[loc_r_response][loc_i_response], self.game.board.points[loc_r_response_2][loc_i_response_2])
                         if(building_response == 2):
-                                status = self.game.add_city(self.game.board.points[loc_x_response][loc_y_response], player)
+                                status = self.game.add_city(self.game.board.points[loc_r_response][loc_i_response], player)
                         return status
 
                 # Purchase dev card
@@ -602,7 +631,28 @@ def main():
                 CatanGame.game.players[0].add_dev_card(DevCard.Knight)
                 CatanGame.game.players[0].add_dev_card(DevCard.YearOfPlenty)
                 CatanGame.game.players[0].add_dev_card(DevCard.Monopoly)
-                CatanGame.game.players[0].add_dev_card(DevCard.Road)
+                CatanGame.game.players[0].add_dev_card(DevCard.Road)                
+                CatanGame.game.add_settlement(player=0, point=CatanGame.game.board.points[0][0], is_starting=True)                
+                CatanGame.game.add_settlement(player=0, point=CatanGame.game.board.points[1][2], is_starting=True)
+                CatanGame.game.add_settlement(player=1, point=CatanGame.game.board.points[3][3], is_starting=True)
+                CatanGame.game.add_settlement(player=1, point=CatanGame.game.board.points[2][6], is_starting=True)
+                CatanGame.game.add_settlement(player=2, point=CatanGame.game.board.points[4][3], is_starting=True)
+                CatanGame.game.add_settlement(player=2, point=CatanGame.game.board.points[3][8], is_starting=True)
+                CatanGame.game.add_settlement(player=3, point=CatanGame.game.board.points[4][6], is_starting=True)
+                CatanGame.game.add_settlement(player=3, point=CatanGame.game.board.points[1][6], is_starting=True)
+                
+                # Add some roads
+                CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[0][0], end=CatanGame.game.board.points[0][1], is_starting=True)
+                CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[1][2], end=CatanGame.game.board.points[1][3], is_starting=True)
+                CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[1][3], end=CatanGame.game.board.points[1][4], is_starting=True)
+                CatanGame.game.add_road(player=1, start=CatanGame.game.board.points[3][3], end=CatanGame.game.board.points[3][2], is_starting=True)
+                CatanGame.game.add_road(player=1, start=CatanGame.game.board.points[2][6], end=CatanGame.game.board.points[2][5], is_starting=True)
+                CatanGame.game.add_road(player=2, start=CatanGame.game.board.points[4][3], end=CatanGame.game.board.points[4][4], is_starting=True)
+                CatanGame.game.add_road(player=2, start=CatanGame.game.board.points[3][8], end=CatanGame.game.board.points[3][7], is_starting=True)
+                CatanGame.game.add_road(player=3, start=CatanGame.game.board.points[4][6], end=CatanGame.game.board.points[4][5], is_starting=True)
+                CatanGame.game.add_road(player=3, start=CatanGame.game.board.points[1][6], end=CatanGame.game.board.points[1][7], is_starting=True)
+                
+                CatanGame.game.players[0].add_cards([ResCard.Wheat, ResCard.Ore, ResCard.Wood, ResCard.Brick, ResCard.Sheep])
 
         # Make players into agents
         agents = []
@@ -704,7 +754,7 @@ def main():
                                         action_okay = True
                                 else:
                                         full_action = CatanGame.promptActions(curr_player, possible_actions)
-                                        status = CatanGame.doAction(curr_player, full_action)
+                                        status = CatanGame.doAction(curr_player, full_action, possible_actions)
                                         if status == Statuses.ALL_GOOD:
                                                 action_okay = True
                                         else:
