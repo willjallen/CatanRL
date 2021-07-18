@@ -96,6 +96,9 @@ class Board(object):
         # checks the settlement is controlled by the correct player
         # if no player is specified, uses the current controlling player
         if building.owner != player:
+            print(';;;ll')
+            print(building.owner)
+            print(player.num)
             return Statuses.ERR_BAD_OWNER
 
         # checks it is a settlement and not a city

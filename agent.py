@@ -7,7 +7,7 @@ class Agent:
         """
         def __init__(self, player, is_human, initial_weights):
                 self.player = player
-                self.is_human = is_human
+                self.human = True
                 self.steps = 0
                 self.weights = initial_weights
                 self.turnStep = 0;

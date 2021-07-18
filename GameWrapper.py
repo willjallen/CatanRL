@@ -115,26 +115,34 @@ class GameWrapper:
                 # - Player has relevant cards
                 if(is_players_turn and not self.game.can_roll):
                         available_buildings = player.get_available_buildings()
-                        available_cities = []
-                        available_road_pairs = player.get_available_road_point_pairs()
-                        if(len(available_buildings) != 0):
-                                actions['allowed_settlement_points'] = player.get_available_settlement_points()
-                                if(actions['allowed_settlement_points']):
-                                        actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
-                                        actions['allowed_buildings'].append(Building.BUILDING_SETTLEMENT)
 
-                                # if(Building.BUILDING_CITY in available_buildings):
-                                #         actions['allowed_city_points']
-                        if(Building.BUILDING_ROAD in available_buildings):
-                                if(len(available_road_pairs) != 0):
+                        if(available_buildings):
+                                if(Building.BUILDING_SETTLEMENT in available_buildings):
+                                        settlement_points = player.get_available_settlement_points()
+                                        actions['allowed_settlement_points'] = settlement_points
+                                        
+                                        if(settlement_points):
+                                                if not(Building.BUILDING_SETTLEMENT in actions['allowed_buildings']):
+                                                        actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
+                                                        actions['allowed_buildings'].append(Building.BUILDING_SETTLEMENT)
+
+                                if(Building.BUILDING_ROAD in available_buildings):
+                                        available_road_pairs = player.get_available_road_point_pairs()
                                         actions['allowed_road_point_pairs'] = available_road_pairs
-                                        if not(PURCHASE_AND_PLAY_BUILDING in actions['allowed_actions']):
-                                                actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
-                                                actions['allowed_buildings'].append(Building.BUILDING_ROAD)
+                                        
+                                        if(available_road_pairs):
+                                                if not(Building.BUILDING_ROAD in actions['allowed_buildings']):
+                                                        actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
+                                                        actions['allowed_buildings'].append(Building.BUILDING_ROAD)
 
 
-                        if(Building.BUILDING_CITY in available_buildings):
-                                pass                                
+                                if(Building.BUILDING_CITY in available_buildings):
+                                        available_cities = player.get_available_upgrade_points()
+                                        actions['allowed_city_points'] = available_cities
+                                        if(available_cities):
+                                                if not(Building.BUILDING_CITY in actions['allowed_buildings']):
+                                                        actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
+                                                        actions['allowed_buildings'].append(Building.BUILDING_CITY)                                
 
 
                 ## PURCHASE_DEV_CARD
@@ -585,7 +593,9 @@ def main():
                 
                 CatanGame.game.players[0].add_cards([ResCard.Wheat, ResCard.Ore, ResCard.Wood, ResCard.Brick, ResCard.Sheep])
 
-                CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+                CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+                CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+
                 CatanGame.game.board.upgrade_settlement(0, CatanGame.game.board.points[1][2])
 
         # Make players into agents

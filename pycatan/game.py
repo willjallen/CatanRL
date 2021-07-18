@@ -129,8 +129,6 @@ class Game:
             has_settlement = False
             # Iterate over points and check if there is a settlement/city on any of them
             points = tile.points
-            print(tile)
-            print(points)
             for p in points:
                 if p != None and p.building != None:
                     print(p.building.owner)
@@ -139,7 +137,6 @@ class Game:
                         has_settlement = True
 
             if not has_settlement:
-                print('here?????')
                 return Statuses.ERR_INPUT
 
         # moves the robber
@@ -236,11 +233,11 @@ class Game:
 
     # changes a settlement on the board for a city
     def add_city(self, point, player):
-        status = self.board.upgrade_settlement(player, r, i)
+        status = self.board.upgrade_settlement(player.num, point)
 
         if status == Statuses.ALL_GOOD:
             # checks if the player won
-            if self.players[player].get_VP() >= 10:
+            if self.players[player.num].get_VP() >= 10:
                 self.winner = player
 
         return status

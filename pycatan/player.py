@@ -355,6 +355,30 @@ class Player:
         else:
             return Statuses.ERR_BLOCKED
 
+    def get_available_upgrade_points(self):
+        points = []
+
+        for r in self.game.board.points:
+            for point in r:
+                # Get building at point
+                building = point.building
+
+                # checks there is a settlement at r, i
+                if building == None:
+                    continue
+
+                # checks the settlement is controlled by the correct player
+                # if no player is specified, uses the current controlling player
+                if building.owner != self.num:
+                    continue
+
+                # checks it is a settlement and not a city
+                if building.type != Building.BUILDING_SETTLEMENT:
+                    continue
+                points.append(point)
+
+        return points
+
     # builds a road
     def build_road(self, start, end, is_starting=False):
 
