@@ -109,7 +109,8 @@ class Game:
 
     # trades cards (given in an array) between two players
     def trade(self, player_one, player_two, cards_one, cards_two):
-        status = can_trade(player_one, player_two, cards_one, cards_two)
+        # status = self.can_trade(player_one, player_two, cards_one, cards_two)
+        status = Statuses.ALL_GOOD
         if(status != Statuses.ALL_GOOD):
             return status
         else:

@@ -99,27 +99,29 @@ class RandomAgent():
 			full_action.append(victim)
 		# Prompt Do trade
 		if(action == 7):
-			pass
-				# print('0: Player 0 | 1: Player 1 | 2: Player 2 | 3: Player 3')
-				# which_player_response = int(input())
-				# full_action.append(which_player_response)
-				
-				# print('You offer:') 
-				# print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
-				# offered_resource_response = int(input())
-				# full_action.append(offered_resource_response)
+			other_player = random.choice(allowed_actions['allowed_trade_partners'])
+			full_action.append(other_player)
+			
+			forfeit_card = random.choice(allowed_actions['allowed_forfeit_cards'])
 
-				# print('You receive:')
-				# print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
-				# received_resource_response = int(input())
-				# full_action.append(received_resource_response)
-		# # Accept Trade
-		# if(action == 8):
-		# 		pass
-		# # Deny trade
-		# if(action == 9):
-		# 		pass
-		# Forfeit
+			other_player_allowed_cards = allowed_actions['allowed_trade_partner_forfeit_cards'][other_player.num][1]
+			print(other_player_allowed_cards)
+			if(ResCard(forfeit_card) in other_player_allowed_cards):
+				other_player_allowed_cards.remove(ResCard(forfeit_card))
+
+			receive_card = random.choice(other_player_allowed_cards)
+			print(forfeit_card)
+			print(receive_card)
+			full_action.append(forfeit_card)
+			full_action.append(receive_card)
+		# Accept Trade
+		if(action == 8):
+				pass
+		# Deny trade
+		if(action == 9):
+				pass
+		
+		# Forfeit cards
 		if(action == 10):
 				choice = random.choice(allowed_actions['allowed_forfeit_cards'])
 				full_action.append(choice)

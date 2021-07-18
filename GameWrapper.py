@@ -7,6 +7,8 @@ from agent import Agent
 from random_agent import RandomAgent
 import random
 
+colors = ['Red', 'Cyan', 'Green', 'Yellow']
+
 action_types = ["no_op", "roll", "purchase_resource", "purchase_and_play_building", "purchase_dev_card", "play_dev_card", "play_robber", "start_trade", "accept_trade", "deny_trade", "forfeit_cards", "end_turn"]
 NO_OP = 0
 ROLL = 1
@@ -16,7 +18,7 @@ PURCHASE_DEV_CARD = 4
 PLAY_DEV_CARD = 5
 PLAY_ROBBER = 6
 START_TRADE = 7
-ACCEPTED_TRADE = 8
+ACCEPT_TRADE = 8
 DENY_TRADE = 9
 FORFEIT_CARDS = 10
 END_TURN = 11
@@ -49,11 +51,12 @@ class GameWrapper:
                 'allowed_dev_cards': [],
                 'allowed_buildings': [],
                 'allowed_robber_tiles': [],
-                'allowed_road_point_one_x': [],
                 'allowed_road_point_pairs': [],
                 'allowed_settlement_points': [], 
                 'allowed_city_points': [],
-                'allowed_victim_players': []
+                'allowed_victim_players': [],
+                'allowed_trade_partners': [],
+                'allowed_trade_partner_forfeit_cards': []
                 }
 
                 is_players_turn = (player.num == player_with_turn.num)
@@ -177,7 +180,19 @@ class GameWrapper:
                 # - Player actually has the card they are forfeiting
                 # - Receiving player actually has the card they are forfeiting 
                 if(is_players_turn):
-                    pass
+                     forfeit_cards = player.get_types_of_cards_possessed()
+                     if(forfeit_cards):
+                        actions['allowed_forfeit_cards'] = forfeit_cards
+                        for other_player in self.game.players:
+                                if(len(player.cards) != 0):
+                                        actions['allowed_trade_partners'].append(other_player)
+                                        actions['allowed_trade_partner_forfeit_cards'].append((other_player.num, other_player.get_types_of_cards_possessed()))
+                        if(len(actions['allowed_trade_partners']) > 0):
+                                actions['allowed_actions'].append(START_TRADE)
+
+
+
+
 
                 ## END_TURN
                 # - It is the players turn
@@ -338,19 +353,32 @@ class GameWrapper:
                         full_action.append(player_response)
                 # Prompt Do trade
                 if(response == 7):
-                        print('0: Player 0 | 1: Player 1 | 2: Player 2 | 3: Player 3')
+
+                        for allowed_player in possible_actions['allowed_trade_partners']:
+                                print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
+                        print()
                         which_player_response = int(input())
-                        full_action.append(which_player_response)
+                        full_action.append(self.game.players[which_player_response])
                         
                         print('You offer:') 
-                        print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
+                        for allowed_card in possible_actions['allowed_forfeit_cards']:
+                                print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
+                        print()
+
                         offered_resource_response = int(input())
-                        full_action.append(offered_resource_response)
+                        full_action.append(ResCard(offered_resource_response))
 
                         print('You receive:')
-                        print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
+                        allowed_cards = possible_actions['allowed_trade_partner_forfeit_cards'][which_player_response][1]
+                        if(ResCard(offered_resource_response) in allowed_cards):
+                                allowed_cards.remove(ResCard(offered_resource_response))
+
+                        for allowed_card in allowed_cards:
+                                # print(allowed_card)
+                                print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
+                        print()
                         received_resource_response = int(input())
-                        full_action.append(received_resource_response)
+                        full_action.append(ResCard(received_resource_response))
                 # Accept Trade
                 if(response == 8):
                         pass
@@ -455,29 +483,26 @@ class GameWrapper:
         
                 # Do trade
                 if(action_type == 7):
-                        pass
-                        # TODO
-                        # this
+                        # Which player
+                        other_player = args[1]
+                        player_forfieted_resource = args[2]
+                        player_received_resource = args[3]
 
-                        # print('0: Player 0 | 1: Player 1 | 2: Player 2 | 3: Player 3')
-                        # which_player_response = int(input())
-                        # full_action.append(which_player_response)
-                        
-                        # print('You offer:') 
-                        # print('1: Wood | 2: Wheat | 3: Ore | 4: Sheep | 5: Brick')
-                        # offered_resource_response = int(input())
-                        # full_action.append(offered_resource_response)
+                        other_player.trading_player = player
+                        other_player.pending_trade = True
+                        other_player.trade_forfeit_card = player_received_resource
+                        other_player.trade_receive_card = player_forfieted_resource
 
-                        # print('You receive:')
-                        # print('1: Wood | 2: Wheat | 3: Ore | 4: Sheep | 5: Brick')
-                        # received_resource_response = int(input())
-                        # full_action.append(received_resource_response)
+
                 # Accept Trade
                 if(action_type == 8):
-                        pass
+                        print((player.num, player.trading_player.num, [player.trade_forfeit_card], [player.trade_receive_card]))
+                        status = self.game.trade(player.num, player.trading_player.num, [player.trade_forfeit_card], [player.trade_receive_card])
+                        player.pending_trade = False
+                        return status
                 # Deny trade
                 if(action_type == 9):
-                        pass
+                        player.pending_trade = False
                 if(action_type == 10):
                         player.remove_cards([args[1]])
                         player.forfeited_cards_left -= 1
@@ -524,9 +549,6 @@ class GameWrapper:
                 self.boardRenderer.render()
 
         def displayPlayerGameInfo(self, player):
-                self.displayBoard()
-                printBlankLines(10)
-                colors = ['Red', 'Cyan', 'Green', 'Yellow']
                 print('Player ' + str(player.num) + '(' + colors[player.num] + ')'  ':')
                 print('Accessible Ports:')
                 harbors = player.get_connected_harbor_types()
@@ -543,7 +565,10 @@ class GameWrapper:
                 player.print_cards(player.cards)
                 
                 # Pending trades
-
+                if(player.pending_trade):
+                        print('Pending Trade from player ' + str(player.trading_player.num) + '(' + colors[player.trading_player.num] + ')')
+                        print('Forfeit: ' + ResCard(player.trade_forfeit_card).name)
+                        print('Receive: ' + ResCard(player.trade_receive_card).name)
 
         def displayFullGameInfo(self):
                 self.displayBoard()
@@ -577,10 +602,7 @@ def main():
         debug = True
 
         if debug:
-                CatanGame.game.players[0].add_dev_card(DevCard.Knight)
-                CatanGame.game.players[0].add_dev_card(DevCard.YearOfPlenty)
-                CatanGame.game.players[0].add_dev_card(DevCard.Monopoly)
-                CatanGame.game.players[0].add_dev_card(DevCard.Road)   
+
 
                 CatanGame.game.add_settlement(player=0, point=CatanGame.game.board.points[0][0], is_starting=True)                
                 CatanGame.game.add_settlement(player=0, point=CatanGame.game.board.points[1][2], is_starting=True)
@@ -603,12 +625,16 @@ def main():
                 CatanGame.game.add_road(player=3, start=CatanGame.game.board.points[4][6], end=CatanGame.game.board.points[4][5], is_starting=True)
                 CatanGame.game.add_road(player=3, start=CatanGame.game.board.points[1][6], end=CatanGame.game.board.points[1][7], is_starting=True)
                 
-                CatanGame.game.players[0].add_cards([ResCard.Wheat, ResCard.Ore, ResCard.Wood, ResCard.Brick, ResCard.Sheep])
+                # CatanGame.game.players[0].add_dev_card(DevCard.Knight)
+                # CatanGame.game.players[0].add_dev_card(DevCard.YearOfPlenty)
+                # CatanGame.game.players[0].add_dev_card(DevCard.Monopoly)
+                # CatanGame.game.players[0].add_dev_card(DevCard.Road)                   
+                # CatanGame.game.players[0].add_cards([ResCard.Wheat, ResCard.Ore, ResCard.Wood, ResCard.Brick, ResCard.Sheep])
 
-                CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
-                CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+                # CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+                # CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
 
-                CatanGame.game.board.upgrade_settlement(0, CatanGame.game.board.points[1][2])
+                # CatanGame.game.board.upgrade_settlement(0, CatanGame.game.board.points[1][2])
 
         # Make players into agents
         agents = []
@@ -661,7 +687,7 @@ def main():
                                 while(not placement_okay):
                                         CatanGame.displayBoard()
                                         print('Player ' + str(curr_agent.player.num))
-                                        printBlankLines(10)
+                                        # printBlankLines(10)
                                         
                                         full_action = CatanGame.promptInitialPlacement()
                                         status = CatanGame.doInitialPlacement(curr_agent.player, full_action)
@@ -700,11 +726,8 @@ def main():
 
                 # Cycle, starting with the player playing their turn, through all other players
                 while(not turn_over):
-                        curr_player = CatanGame.game.players[player_index] 
-                        CatanGame.displayPlayerGameInfo(curr_player)
-                        print('Turn: ' + str(turn_counter))
-                        print('Roll: ' + str(CatanGame.game.last_roll))
-                        print('Rolled Seven: ' + str(CatanGame.game.rolled_seven))
+                        curr_agent = agents[player_index]
+                        curr_player = curr_agent.player 
                         # allowed_actions = CatanGame.getAllowedActions(player, player_with_turn)
                         possible_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
                         
@@ -715,11 +738,20 @@ def main():
                                 if(len(possible_actions['allowed_actions']) == 1 and (NO_OP in possible_actions['allowed_actions'])):
                                         action_okay = True
                                 else:
+                                        CatanGame.displayBoard()
+                                        print('Turn: ' + str(turn_counter))
+                                        print('Roll: ' + str(CatanGame.game.last_roll))
+                                        print('Rolled Seven: ' + str(CatanGame.game.rolled_seven))
+                                        print()
+                                        print()
+                                        CatanGame.displayPlayerGameInfo(curr_player)
+
                                         if(curr_agent.human):
                                                 full_action = CatanGame.promptActions(curr_player, possible_actions)
                                         else:
                                                 full_action = curr_agent.doTurn(possible_actions)
-                                        
+                                        print(full_action)
+                                        print(action_types[full_action[0]])
                                         status = CatanGame.doAction(curr_player, full_action)
                                         
                                         if status == Statuses.ALL_GOOD:
@@ -734,6 +766,7 @@ def main():
                                                 print(Statuses.status_list[int(status)])
 
                         turn_over = player_with_turn.turn_over 
+                        CatanGame.game.rolled_seven = False
 
                         if(not turn_over):
                                 # 2 -> 3 -> 0 -> 1 -> 2

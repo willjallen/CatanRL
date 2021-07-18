@@ -30,6 +30,12 @@ class Player:
         self.turn_over = True
         # whether the player has a pending trade
         self.pending_trade = False
+        # trading player
+        self.trading_player = None
+        # which card the trading player wants in trade
+        self.trade_forfeit_card = None
+        # which card the player will receive in trade
+        self.trade_receive_card = None
         # number of cards the player must discard (from a 7 roll)
         self.forfeited_cards_left = 0
 
