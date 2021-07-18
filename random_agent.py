@@ -114,13 +114,15 @@ class RandomAgent():
 				# received_resource_response = int(input())
 				# full_action.append(received_resource_response)
 		# # Accept Trade
-		# if(response == 8):
+		# if(action == 8):
 		# 		pass
 		# # Deny trade
-		# if(response == 9):
+		# if(action == 9):
 		# 		pass
-		# if(response == 10):
-		# 		pass
+		# Forfeit
+		if(action == 10):
+				choice = random.choice(allowed_actions['allowed_forfeit_cards'])
+				full_action.append(choice)
 		# if(response == 11):
 		# 		pass
 

@@ -61,10 +61,9 @@ class GameWrapper:
 
                 ## FORFEIT_CARDS (Priority action, others ignored)
                 # - A 7 is active and player has >= 8 cards
-                if(self.game.rolled_seven and len(player.cards) >= 8):
+                if(player.forfeited_cards_left > 0):
                         actions['allowed_actions'].append(FORFEIT_CARDS)
-                        allowed_actions.append(FORFEIT_CARDS)
-                        actions['allowed_forfeit_cards'] = player.get_type_of_cards_possessed()
+                        actions['allowed_forfeit_cards'] = player.get_types_of_cards_possessed()
                         return actions
 
                 ## ACCEPT_TRADE (Priority action, others ignored)
@@ -170,7 +169,7 @@ class GameWrapper:
                 ## PLAY_ROBBER
                 # - It is the players turn
                 # - A 7 is active and robber has not been moved
-                if(self.game.rolled_seven and not self.robber_moved):
+                if(self.game.rolled_seven and not self.game.robber_moved):
                         actions['allowed_actions'].append(PLAY_ROBBER)
 
                 ## START_TRADE
@@ -358,11 +357,19 @@ class GameWrapper:
                 # Deny trade
                 if(response == 9):
                         pass
+                # Forfeit card
                 if(response == 10):
-                        pass
+                        print('Forfeit(' + str(player.forfeited_cards_left) + ' left): ') 
+                        
+                        for allowed_card in possible_actions['allowed_forfeit_cards']:
+                                print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
+                        print()
+
+                        player_response = int(input())
+                        full_action.append(player_response)
+
                 if(response == 11):
                         pass
-
                 return full_action        
 
         def doAction(self, player, args):
@@ -376,7 +383,11 @@ class GameWrapper:
                 # Roll
                 if(action_type == 1):
                         if(self.game.can_roll):
-                                self.game.board.add_yield(self.game.get_roll())
+                                self.game.last_roll = roll = self.game.get_roll()
+                                if(roll != 7):
+                                        self.game.board.add_yield(roll)
+                                else:
+                                        return Statuses.ROLLED_SEVEN
                                 self.game.can_roll = False
                                 return Statuses.ALL_GOOD
                         else:
@@ -435,9 +446,9 @@ class GameWrapper:
                                 return status
                 # Play robber
                 if(action_type == 6):
-                        loc_x_response = args[2]
-                        loc_y_response = args[3]
-                        victim_player_response = args[4]
+                        loc_x_response = args[1]
+                        loc_y_response = args[2]
+                        victim_player_response = args[3]
 
                         status = self.game.move_robber(self.game.board.tiles[loc_x_response][loc_y_response], player.num, victim_player_response)
                         return status
@@ -468,7 +479,8 @@ class GameWrapper:
                 if(action_type == 9):
                         pass
                 if(action_type == 10):
-                        pass
+                        player.remove_cards([args[1]])
+                        player.forfeited_cards_left -= 1
                 if(action_type == 11):
                         player.turn_over = True
                         return Statuses.ALL_GOOD
@@ -689,9 +701,10 @@ def main():
                 # Cycle, starting with the player playing their turn, through all other players
                 while(not turn_over):
                         curr_player = CatanGame.game.players[player_index] 
-                        print('Turn: ' + str(turn_counter))
                         CatanGame.displayPlayerGameInfo(curr_player)
-
+                        print('Turn: ' + str(turn_counter))
+                        print('Roll: ' + str(CatanGame.game.last_roll))
+                        print('Rolled Seven: ' + str(CatanGame.game.rolled_seven))
                         # allowed_actions = CatanGame.getAllowedActions(player, player_with_turn)
                         possible_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
                         
@@ -711,6 +724,11 @@ def main():
                                         
                                         if status == Statuses.ALL_GOOD:
                                                 action_okay = True
+                                        elif status == Statuses.ROLLED_SEVEN:
+                                                CatanGame.game.rolled_seven = True
+                                                for p in CatanGame.game.players:
+                                                        if(len(p.cards) >= 8):
+                                                                p.forfeited_cards_left = int(len(p.cards)/2)
                                         else:
                                                 print('Error: ')
                                                 print(Statuses.status_list[int(status)])

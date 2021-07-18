@@ -42,6 +42,8 @@ class Game:
         self.has_ended = False
         # whether a player can roll
         self.can_roll = False
+        # last roll
+        self.last_roll = 0
         # whether a rolled 7 is in effect
         self.rolled_seven = False
         # whether robber has been moved yet after rolling a 7

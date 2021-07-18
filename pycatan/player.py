@@ -30,6 +30,8 @@ class Player:
         self.turn_over = True
         # whether the player has a pending trade
         self.pending_trade = False
+        # number of cards the player must discard (from a 7 roll)
+        self.forfeited_cards_left = 0
 
     # builds a settlement belonging to this player
     def build_settlement(self, point, is_starting=False):
@@ -124,7 +126,7 @@ class Player:
     def get_types_of_cards_possessed(self):
         card_types = []
         for c in self.cards:
-            if(c in card_types):
+            if not(c in card_types):
                 card_types.append(c)
         return card_types
 

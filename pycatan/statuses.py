@@ -4,6 +4,7 @@ class Statuses:
 
     status_list = ['NONE', 'NONE', 'ALL_GOOD', 'ERR_CARDS', 'ERR_BLOCKED', 'ERR_BAD_POINT', 'ERR_NOT_CON', 'ERR_ISOLATED', 'ERR_HARBOR', 'ERR_NOT_EXIST', 'ERR_BAD_OWNER', 'ERR_UPGRADE_CITY', 'ERR_DECK', 'ERR_INPUT', 'ERR_TEST', 'ERR_ROLL']
 
+    ROLLED_SEVEN = 1
     # the action was successfully completed
     ALL_GOOD = 2
 
