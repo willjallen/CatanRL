@@ -172,14 +172,41 @@ class Player:
         points = tile.points
         for p in points:
             if p != None and p.building != None:
-                print(p.building.owner)
                 # Check the victim owns the settlement/city
                 if p.building.owner == victim:
                     has_settlement = True
 
 
-    def get_available_road_points(self):
-        pass
+    def get_available_road_point_pairs(self):
+
+        road_point_pairs = []
+
+
+
+        for r in self.game.board.points:
+            for point in r:
+                if(point.building):
+                    if(point.building.owner == self.num):
+                        for local_point in point.connected_points:
+                            location_status = self.road_location_is_valid(start=point, end=local_point)
+                            if(location_status == Statuses.ALL_GOOD):
+                                road_point_pairs.append((point, local_point))
+                        
+
+        for road in self.game.board.roads:
+            if(road.owner == self.num):
+               positions = [road.point_one, road.point_two]
+               for point in positions:
+                    for local_point in point.connected_points:
+                        location_status = self.road_location_is_valid(start=point, end=local_point)
+                        if(location_status == Statuses.ALL_GOOD):
+                            road_point_pairs.append((point, local_point)) 
+
+
+        unique_road_point_pairs = []
+        [unique_road_point_pairs.append(pair) for pair in road_point_pairs if pair not in unique_road_point_pairs]
+        return unique_road_point_pairs
+
 
     def get_available_settlement_points(self):
 
@@ -223,7 +250,7 @@ class Player:
 
                 if(distance_violation):
                     continue
-                    
+
                 available_points.append(point)
 
         return available_points
@@ -275,59 +302,56 @@ class Player:
 
     # checks a road location is valid
     def road_location_is_valid(self, start, end):
-        # checks the two points are connected
-        connected = False
-        # gets the points connected to start
-        points = start.connected_points
+        has_city_owned_point = False
+        # checks if this player owns the settlement/city
+        # At most one point can be owned by a different player
+        if start.building != None:
+            if start.building.owner == self.num:
+                has_city_owned_point = True
 
-        for p in points:
-            if end == p:
-                connected = True
-                break
+        # does the same for the other point
+        if end.building != None:
+            if end.building.owner == self.num:
+                has_city_owned_point = True
 
-        if not connected:
-            return Statuses.ERR_NOT_CON
+        # # checks the two points are connected
+        # connected = False
+        # # gets the points connected to start
+        # points = start.connected_points
 
-        connected_by_road = False
+        # for p in points:
+        #     if end == p:
+        #         connected = True
+        #         break
+
+        # if not connected:
+        #     return Statuses.ERR_NOT_CON
+
+        # checks the road does not already exists with these points
         for road in self.game.board.roads:
-            # checks the road does not already exists with these points
-            if road.point_one == start or road.point_two == start:
+            if (road.point_one == start or road.point_two == start):
                 if road.point_one == end or road.point_two == end:
                     return Statuses.ERR_BLOCKED
 
-        # check this player has a settlement on one of these points or a connecting road
-        is_connected = False
-
-        if start.building != None:
-            # checks if this player owns the settlement/city
-            if start.building.owner == self.num:
-                is_connected = True
-
-        # does the same for the other point
-        elif end.building != None:
-            if end.building.owner == self.num:
-                is_connected = True
 
         # then checks if there is a road connecting them
+        has_road_owned_point = False
+
         roads = self.game.board.roads
-        points = [start, end]
+        # points = [start, end]
 
         for r in roads:
-            for p in points:
-                if r.point_one == p or r.point_two == p:
+            if(r.owner == self.num):
+                if (r.point_one == start or r.point_one == end) or (r.point_two == start or r.point_two == end):
+                    has_road_owned_point = True
+                # checks that there is not another player's settlement here, so that it's not going through it
+                # if(p.building == None):
+                #     is_connected = True
 
-                    # checks that there is not another player's settlement here, so that it's not going through it
-                    if p.building == None:
-                        is_connected = True
-
-                    # if theere is a settlement/city there, the road can be built if this player owns it
-                    elif p.building.owner == self.num:
-                        is_connected = True
-
-        if not is_connected:
-            return Statuses.ERR_ISOLATED
-
-        return Statuses.ALL_GOOD
+        if(has_road_owned_point or has_city_owned_point):
+            return Statuses.ALL_GOOD
+        else:
+            return Statuses.ERR_BLOCKED
 
     # builds a road
     def build_road(self, start, end, is_starting=False):

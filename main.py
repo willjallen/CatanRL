@@ -48,13 +48,13 @@ class GameWrapper:
                 'allowed_buildings': [],
                 'allowed_robber_tiles': [],
                 'allowed_road_point_one_x': [],
-                'allowed_road_point_combinations': [],
+                'allowed_road_point_pairs': [],
                 'allowed_settlement_points': [], 
                 'allowed_city_points': [],
                 'allowed_victim_players': []
                 }
 
-                is_players_turn = (player == player_with_turn)
+                is_players_turn = (player.num == player_with_turn.num)
 
 
                 ## FORFEIT_CARDS (Priority action, others ignored)
@@ -113,6 +113,8 @@ class GameWrapper:
                 # - Player has relevant cards
                 if(is_players_turn and not self.game.can_roll):
                         available_buildings = player.get_available_buildings()
+                        available_cities = []
+                        available_road_pairs = player.get_available_road_point_pairs()
                         if(len(available_buildings) != 0):
                                 actions['allowed_buildings'] = available_buildings        
                                 actions['allowed_settlement_points'] = player.get_available_settlement_points()
@@ -121,8 +123,15 @@ class GameWrapper:
 
                                 # if(Building.BUILDING_CITY in available_buildings):
                                 #         actions['allowed_city_points']
-                                # if(Building.BUILDING_ROAD in available_buildings):
-                                #         actions[allowed_road_point_combinations]                                
+                        if(Building.BUILDING_ROAD in available_buildings):
+                                if(len(available_road_pairs) != 0):
+                                        actions['allowed_road_point_pairs'] = available_road_pairs
+                                        if not(PURCHASE_AND_PLAY_BUILDING in actions['allowed_actions']):
+                                                actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
+
+
+                        if(Building.BUILDING_CITY in available_buildings):
+                                pass                                
 
 
                 ## PURCHASE_DEV_CARD
@@ -221,7 +230,7 @@ class GameWrapper:
                         # Road
                         if(building_response == 1):
                                 print('Allowed Locations: (r, i)->(r2, i2)')
-                                print(possible_actions['allowed_road_point_combinations'])
+                                print(possible_actions['allowed_road_point_pairs'])
                                 
                                 print('r:')
                                 loc_r_response = int(input())
