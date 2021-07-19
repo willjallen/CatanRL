@@ -183,7 +183,7 @@ class Player:
                     if p != None and p.building != None:
                         # Check the victim owns the settlement/city
                         for player in self.game.players:
-                            if p.building.owner == player.num:
+                            if(p.building.owner == player.num) and (player.num != self.num):
                                 robber_actions.append((tile, player))
         return robber_actions
 

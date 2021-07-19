@@ -320,7 +320,7 @@ class Game:
 
             # moves the robber
             result = self.move_robber(tile=self.board.tiles[args["robber_pos"][0]][args["robber_pos"][1]], player=player, victim=args["victim"])
-
+            print(result)
             if result != Statuses.ALL_GOOD:
                 return result
 

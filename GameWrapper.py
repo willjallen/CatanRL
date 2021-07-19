@@ -653,14 +653,14 @@ def main():
                 CatanGame.game.add_road(player=3, start=CatanGame.game.board.points[4][6], end=CatanGame.game.board.points[4][5], is_starting=True)
                 CatanGame.game.add_road(player=3, start=CatanGame.game.board.points[1][6], end=CatanGame.game.board.points[1][7], is_starting=True)
                 
-                # CatanGame.game.players[0].add_dev_card(DevCard.Knight)
-                # CatanGame.game.players[0].add_dev_card(DevCard.YearOfPlenty)
-                # CatanGame.game.players[0].add_dev_card(DevCard.Monopoly)
-                # CatanGame.game.players[0].add_dev_card(DevCard.Road)                   
+                CatanGame.game.players[0].add_dev_card(DevCard.Knight)
+                CatanGame.game.players[0].add_dev_card(DevCard.YearOfPlenty)
+                CatanGame.game.players[0].add_dev_card(DevCard.Monopoly)
+                CatanGame.game.players[0].add_dev_card(DevCard.Road)                   
                 # CatanGame.game.players[0].add_cards([ResCard.Wheat, ResCard.Ore, ResCard.Wood, ResCard.Brick, ResCard.Sheep])
 
-                CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
-                CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+                # CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+                # CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
 
                 # CatanGame.game.board.upgrade_settlement(0, CatanGame.game.board.points[1][2])
 

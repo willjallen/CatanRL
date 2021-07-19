@@ -60,7 +60,7 @@ class RandomAgent():
 		# Prompt Play dev card
 		if(action == 5):
 			dev_card = random.choice(allowed_actions['allowed_dev_cards'])
-			full_action.append(dev_card)
+			full_action.append(dev_card.value)
 
 			# Knight
 			if(dev_card.value == 2):
@@ -70,7 +70,7 @@ class RandomAgent():
 				full_action.append(tile_choice.position[0])
 				full_action.append(tile_choice.position[1])
 			
-				full_action.append(victim_choice)
+				full_action.append(victim_choice.num)
 			# Monopoly
 			if(dev_card.value == 3):
 				resource = random.choice(list(ResCard)).value
