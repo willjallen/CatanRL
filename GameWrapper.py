@@ -159,16 +159,20 @@ class GameWrapper:
                 ## PLAY_DEV_CARD
                 # - It is the players turn
                 # - Player has at least one development card
-                if(is_players_turn and len(player.dev_cards) >= 1):
-                        actions['allowed_actions'].append(PLAY_DEV_CARD)
+                if(is_players_turn):
+                        playable_dev_card = False
                         for card in DevCard:
                                 if(card in player.dev_cards):
-                                        actions['allowed_dev_cards'].append(card)
-                                        
+                                        if(card == DevCard.Knight or card == DevCard.YearOfPlenty or card == DevCard.Monopoly):
+                                                actions['allowed_dev_cards'].append(card)
+                                                playable_dev_card = True
+
                                         if(card == DevCard.Knight):
                                                 possible_robber_tiles_and_victims = player.get_available_robber_placement_tiles_and_victims()
-                                                actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims[0]
-                                                actions['allowed_victim_players'] = possible_robber_tiles_and_victims[1]
+                                                actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims
+                                                actions['allowed_victim_players'] = possible_robber_tiles_and_victims
+                        if(playable_dev_card):
+                                actions['allowed_actions'].append(PLAY_DEV_CARD)
 
 
                 ## PLAY_ROBBER

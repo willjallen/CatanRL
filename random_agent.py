@@ -27,76 +27,72 @@ class RandomAgent():
 			full_action.append(forfeited_resource)
 		# Prompt Purchase & play building
 		if(action == 3):
-				building_response = random.choice(allowed_actions['allowed_buildings'])
-				full_action.append(building_response)
+			building_response = random.choice(allowed_actions['allowed_buildings'])
+			full_action.append(building_response)
 
-				
-				# Settlement
-				if(building_response == 0):
-						loc = random.choice(allowed_actions['allowed_settlement_points'])
-						full_action.append(loc.position[0])
-						full_action.append(loc.position[1])
+			
+			# Settlement
+			if(building_response == 0):
+				loc = random.choice(allowed_actions['allowed_settlement_points'])
+				full_action.append(loc.position[0])
+				full_action.append(loc.position[1])
 
 
-				# Road
-				if(building_response == 1):
-						loc = random.choice(allowed_actions['allowed_road_point_pairs'])
-						print(loc)
-						full_action.append(loc[0].position[0])
-						full_action.append(loc[0].position[1])
-						full_action.append(loc[1].position[0])
-						full_action.append(loc[1].position[1])
+			# Road
+			if(building_response == 1):
+				loc = random.choice(allowed_actions['allowed_road_point_pairs'])
+				print(loc)
+				full_action.append(loc[0].position[0])
+				full_action.append(loc[0].position[1])
+				full_action.append(loc[1].position[0])
+				full_action.append(loc[1].position[1])
 
-				# City
-				if(building_response == 2):
-					loc = random.choice(allowed_actions['allowed_city_points'])
-					full_action.append(loc.position[0])
-					full_action.append(loc.position[1])
+			# City
+			if(building_response == 2):
+				loc = random.choice(allowed_actions['allowed_city_points'])
+				full_action.append(loc.position[0])
+				full_action.append(loc.position[1])
 
 		# Prompt Purchase dev card
 		if(action == 4):
 				pass
 		# Prompt Play dev card
 		if(action == 5):
-				dev_card = random.choice(allowed_actions['allowed_dev_cards'])
-				full_action.append(dev_card)
+			dev_card = random.choice(allowed_actions['allowed_dev_cards'])
+			full_action.append(dev_card)
 
-				# Knight
-				if(dev_card == 2):
-						choice = random.choice(allowed_actions['allowed_robber_tiles'])
-						loc = choice[0]
-
-						full_action.append(loc[0][0])
-						full_action.append(loc[0][1])
-					
-						victim = choice[1]
-						full_action.append(victim)
-				# Monopoly
-				if(dev_card == 3):
-						resource = random.choice(list(ResCard)).value
-						full_action.append(resource)
-				# YOP
-				if(dev_card == 4):
-						resource = random.choice(list(ResCard)).value
-						full_action.append(resource)
-						resource = random.choice(list(ResCard)).value
-						full_action.append(resource)
+			# Knight
+			if(dev_card.value == 2):
+				choice = random.choice(allowed_actions['allowed_robber_tiles'])
+				tile_choice = choice[0]
+				victim_choice = choice[1]
+				full_action.append(tile_choice.position[0])
+				full_action.append(tile_choice.position[1])
+			
+				full_action.append(victim_choice)
+			# Monopoly
+			if(dev_card.value == 3):
+				resource = random.choice(list(ResCard)).value
+				full_action.append(resource)
+			# YOP
+			if(dev_card.value == 4):
+				resource = random.choice(list(ResCard)).value
+				full_action.append(resource)
+				resource = random.choice(list(ResCard)).value
+				full_action.append(resource)
 
 
 
 		# Prompt Play robber
 		if(action == 6):
 			choice = random.choice(allowed_actions['allowed_robber_tiles'])
-			loc = choice[0]
+			tile_choice = choice[0]
+			victim_choice = choice[1]
+			full_action.append(tile_choice.position[0])
+			full_action.append(tile_choice.position[1])
+		
+			full_action.append(victim_choice)
 
-			full_action.append(loc[0][0])
-			full_action.append(loc[0][1])
-		
-			victim = choice[1]
-			full_action.append(victim)
-		
-			victim = random.choice(allowed_actions['allowed_victim_players'])
-			full_action.append(victim)
 		# Prompt Do trade
 		if(action == 7):
 			other_player = random.choice(allowed_actions['allowed_trade_partners'])
