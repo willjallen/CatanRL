@@ -79,6 +79,12 @@ class GameWrapper:
                         actions['allowed_actions'].append(DENY_TRADE)
                         return actions
 
+                ## ROLL (Priority action, others ignored)
+                # - It is the players turn
+                # - The dice has not been rolled
+                if(is_players_turn and self.game.can_roll):
+                        actions['allowed_actions'].append(ROLL)
+                        return actions
 
                 ## NO_OP
                 # - It is not the player's turn
@@ -87,13 +93,6 @@ class GameWrapper:
                         actions['allowed_actions'].append(NO_OP)
                         return actions
 
-                ## ROLL
-                # - It is the players turn
-                # - The dice has not been rolled
-                if(is_players_turn and self.game.can_roll):
-                        actions['allowed_actions'].append(ROLL)
-
-                # TODO    
                 ## PURCHASE_RESOURCE
                 # - It is the players turn
                 # - The dice has been rolled
@@ -522,7 +521,6 @@ class GameWrapper:
 
                 # Accept Trade
                 if(action_type == 8):
-                        print((player.num, player.trading_player.num, [player.trade_forfeit_card], [player.trade_receive_card]))
                         status = self.game.trade(player.num, player.trading_player.num, [player.trade_forfeit_card], [player.trade_receive_card])
                         player.pending_trade = False
                         return status
@@ -576,6 +574,10 @@ class GameWrapper:
 
         def displayPlayerGameInfo(self, player):
                 print('Player ' + str(player.num) + '(' + colors[player.num] + ')'  ':')
+                print('VP: ' + str(player.get_VP(True)))
+                print('Knight Cards Played: ' + str(player.knight_cards))
+                print('Longest Road Length: ' + str(player.longest_road_length))
+                print('Forfeited cards left: ' + str(player.forfeited_cards_left))
                 print('Accessible Ports:')
                 harbors = player.get_connected_harbor_types()
                 print(harbors)
@@ -657,8 +659,8 @@ def main():
                 # CatanGame.game.players[0].add_dev_card(DevCard.Road)                   
                 # CatanGame.game.players[0].add_cards([ResCard.Wheat, ResCard.Ore, ResCard.Wood, ResCard.Brick, ResCard.Sheep])
 
-                # CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
-                # CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+                CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+                CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
 
                 # CatanGame.game.board.upgrade_settlement(0, CatanGame.game.board.points[1][2])
 
@@ -755,11 +757,12 @@ def main():
                         curr_agent = agents[player_index]
                         curr_player = curr_agent.player 
                         # allowed_actions = CatanGame.getAllowedActions(player, player_with_turn)
-                        possible_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
                         
                         action_okay = False
                         while(not action_okay):
                                
+                                possible_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
+                                
                                 # Debug
                                 if(len(possible_actions['allowed_actions']) == 1 and (NO_OP in possible_actions['allowed_actions'])):
                                         action_okay = True
@@ -769,6 +772,16 @@ def main():
                                         print('Roll: ' + str(CatanGame.game.last_roll))
                                         print('Rolled Seven: ' + str(CatanGame.game.rolled_seven))
                                         print()
+                                        if(CatanGame.game.largest_army):
+                                                print('Largest Army: ' + colors[CatanGame.game.largest_army.num])
+                                        else:
+                                                print('Largest Army: None')
+
+                                        if(CatanGame.game.longest_road_owner):
+                                                print('Longest Road: ' + colors[CatanGame.game.longest_road_owner.num])
+                                        else:
+                                                print('Longest Road: None')
+
                                         print()
                                         CatanGame.displayPlayerGameInfo(curr_player)
 
@@ -779,7 +792,7 @@ def main():
                                         print(full_action)
                                         print(action_types[full_action[0]])
                                         status = CatanGame.doAction(curr_player, full_action)
-                                        
+
                                         if status == Statuses.ALL_GOOD:
                                                 action_okay = True
                                         elif status == Statuses.ROLLED_SEVEN:
@@ -791,6 +804,14 @@ def main():
                                                 print('Error: ')
                                                 print(Statuses.status_list[int(status)])
 
+                                        if(curr_player.forfeited_cards_left > 0):
+                                                action_okay = False
+
+                        if(player_with_turn.get_VP(True) >= 10):
+                                CatanGame.game.has_ended = True
+                                CatanGame.game.winner = player_with_turn
+                                player_with_turn.turn_over = True
+
                         turn_over = player_with_turn.turn_over 
                         CatanGame.game.rolled_seven = False
 
@@ -801,11 +822,13 @@ def main():
                                 else:
                                         player_index += 1
 
-                turn_counter += 1
+
 
                 # Turn has ended
                 player_index = player_with_turn_index
-                
+                turn_counter += 1
+
+
                 # 2 -> 3 -> 0 -> 1 -> 2
                 if(player_index == 3):
                         player_index = 0

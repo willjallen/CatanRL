@@ -134,7 +134,7 @@ class Game:
             points = tile.points
             for p in points:
                 if p != None and p.building != None:
-                    print(p.building.owner)
+                    # print(p.building.owner)
                     # Check the victim owns the settlement/city
                     if p.building.owner == victim:
                         has_settlement = True
@@ -195,8 +195,6 @@ class Game:
 
         if tradable_cards_with_values:
             for i in range(0, len(tradable_cards_with_values)):
-                print(tradable_cards_with_values[i][0])
-                print(card)
                 if(tradable_cards_with_values[i][0] == ResCard(card)):
                     found = True
                     num = tradable_cards_with_values[i][1]
@@ -206,7 +204,6 @@ class Game:
                 
 
         cards = [ResCard(card)] * num 
-        print(cards) 
         # removes cards
         self.players[player.num].remove_cards(cards)
         # adds the new card

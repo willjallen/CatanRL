@@ -9,6 +9,8 @@ class RandomAgent():
 		self.human = False
 
 	def doTurn(self, allowed_actions):
+		print('allowed_actions: ')
+		print(allowed_actions['allowed_actions'])
 		action = random.choice(allowed_actions['allowed_actions'])
 		full_action = []
 
@@ -41,7 +43,6 @@ class RandomAgent():
 			# Road
 			if(building_response == 1):
 				loc = random.choice(allowed_actions['allowed_road_point_pairs'])
-				print(loc)
 				full_action.append(loc[0].position[0])
 				full_action.append(loc[0].position[1])
 				full_action.append(loc[1].position[0])
@@ -97,34 +98,24 @@ class RandomAgent():
 		if(action == 7):
 			other_player = random.choice(allowed_actions['allowed_trade_partners'])
 			full_action.append(other_player)
-			print('Target player: ' + str(other_player.num))
 			
 			allowed_cards = allowed_actions['allowed_trade_pairs']
-			print(allowed_cards)
-			print()
+
 			allowed_cards = [(x,y) for x, y in allowed_cards if x == other_player.num][0][1]
-			print(allowed_cards)
-			print()
+
 			allowed_cards = [x[0] for x in allowed_cards]
-			print(allowed_cards)
-			print()
 			forfeit_card = random.choice(allowed_cards)
 
-			print('Forfeit Card ' + forfeit_card.name)
+
 			other_player_allowed_cards = allowed_actions['allowed_trade_pairs']
-			print(other_player_allowed_cards)
-			print()
+
 			other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x == other_player.num][0][1]
-			print(other_player_allowed_cards)
-			print()
+
 			other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x.value == forfeit_card.value][0]
-			print(other_player_allowed_cards[1])
-			print()
-			print('----------')
+
 
 			receive_card = random.choice(other_player_allowed_cards[1])
-			print(forfeit_card)
-			print(receive_card)
+
 			full_action.append(forfeit_card)
 			full_action.append(receive_card)
 		# Accept Trade
