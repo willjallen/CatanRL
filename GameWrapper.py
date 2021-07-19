@@ -646,6 +646,8 @@ def main():
                 CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[0][0], end=CatanGame.game.board.points[0][1], is_starting=True)
                 CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[1][2], end=CatanGame.game.board.points[1][3], is_starting=True)
                 CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[1][3], end=CatanGame.game.board.points[1][4], is_starting=True)
+                CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[1][2], end=CatanGame.game.board.points[1][1], is_starting=True)
+                CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[1][1], end=CatanGame.game.board.points[0][0], is_starting=True)
                 CatanGame.game.add_road(player=1, start=CatanGame.game.board.points[3][3], end=CatanGame.game.board.points[3][2], is_starting=True)
                 CatanGame.game.add_road(player=1, start=CatanGame.game.board.points[2][6], end=CatanGame.game.board.points[2][5], is_starting=True)
                 CatanGame.game.add_road(player=2, start=CatanGame.game.board.points[4][3], end=CatanGame.game.board.points[4][4], is_starting=True)
@@ -772,13 +774,13 @@ def main():
                                         print('Roll: ' + str(CatanGame.game.last_roll))
                                         print('Rolled Seven: ' + str(CatanGame.game.rolled_seven))
                                         print()
-                                        if(CatanGame.game.largest_army):
-                                                print('Largest Army: ' + colors[CatanGame.game.largest_army.num])
+                                        if(CatanGame.game.largest_army != None):
+                                                print('Largest Army: ' + colors[CatanGame.game.largest_army])
                                         else:
                                                 print('Largest Army: None')
 
-                                        if(CatanGame.game.longest_road_owner):
-                                                print('Longest Road: ' + colors[CatanGame.game.longest_road_owner.num])
+                                        if(CatanGame.game.longest_road_owner != None):
+                                                print('Longest Road: ' + colors[CatanGame.game.longest_road_owner])
                                         else:
                                                 print('Longest Road: None')
 
@@ -792,6 +794,8 @@ def main():
                                         print(full_action)
                                         print(action_types[full_action[0]])
                                         status = CatanGame.doAction(curr_player, full_action)
+
+                                        CatanGame.game.set_longest_road()
 
                                         if status == Statuses.ALL_GOOD:
                                                 action_okay = True
@@ -835,7 +839,7 @@ def main():
                 else:
                         player_index += 1
 
-        print('Winner: ' + str(CatanGame.game.winner))
+        print('Winner: ' + str(colors[CatanGame.game.winner.num]))
 
 
 if __name__ == "__main__":

@@ -224,12 +224,11 @@ class Game:
                 longest = p.longest_road_length
                 owner = self.players.index(p)
 
-        if self.longest_road_owner != owner:
-            self.longest_road_owner = owner
-            # checks if the player has won now that they has longest road
-            if self.players[owner].get_VP() >= 10:
-                self.has_ended = True
-                self.winner = owner
+        self.longest_road_owner = owner
+        # # checks if the player has won now that they has longest road
+        # if self.players[owner].get_VP() >= 10:
+        #     self.has_ended = True
+        #     self.winner = owner
 
     # changes a settlement on the board for a city
     def add_city(self, point, player):

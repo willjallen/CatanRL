@@ -452,10 +452,17 @@ class Player:
         del roads[roads.index(new_road)]
 
         # checks for longest road
+        print('===Debug===')
         self.check_connected_roads(road=new_road, all_roads=roads, length=1)
 
     # checks the roads for connected roads, and then checks those roads until there are no more
     def check_connected_roads(self, road, all_roads, length):
+        print('---------------')
+        print(road)
+        print(all_roads)
+        print(length)
+        print()
+        print()
 
         # do both point one and two
         points = [
@@ -466,12 +473,14 @@ class Player:
         for p in points:
             # gets the connected roads
             connected = self.get_connected_roads(point=p, roads=all_roads)
+            print(connected)
+            print('---------------')
             # if there are no new connected roads
             if len(connected) == 0:
                 # if this is the longest road so far
-                if length > self.longest_road_length:
+                if (length-1) > self.longest_road_length:
                     # records the length
-                    self.longest_road_length = length
+                    self.longest_road_length = (length-1)
                     # self.begin_celebration()
 
             # if there are connected roads
