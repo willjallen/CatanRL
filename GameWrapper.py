@@ -55,7 +55,9 @@ class GameWrapper:
                 'allowed_settlement_points': [], 
                 'allowed_city_points': [],
                 'allowed_victim_players': [],
+                'allowed_trade_pairs': [],
                 'allowed_trade_partners': [],
+                'allowed_trade_forfeit_cards': [],
                 'allowed_trade_partner_forfeit_cards': []
                 }
 
@@ -180,18 +182,38 @@ class GameWrapper:
                 # - Player actually has the card they are forfeiting
                 # - Receiving player actually has the card they are forfeiting 
                 if(is_players_turn):
-                     forfeit_cards = player.get_types_of_cards_possessed()
-                     if(forfeit_cards):
-                        actions['allowed_forfeit_cards'] = forfeit_cards
-                        for other_player in self.game.players:
-                                if(len(player.cards) != 0):
-                                        actions['allowed_trade_partners'].append(other_player)
-                                        actions['allowed_trade_partner_forfeit_cards'].append((other_player.num, other_player.get_types_of_cards_possessed()))
+                
+                        player_card_types = player.get_types_of_cards_possessed()
+
+                        if(player_card_types):
+                                for other_player in self.game.players:
+                                        if(other_player == player):
+                                                continue
+
+                                        card_pairs = []
+
+                                        # If other player has any cards
+                                        if(other_player.cards):
+                                                # Iterate through all card types available to player
+                                                for card in player_card_types:
+                                                        # Get all card types available to other player
+                                                        other_player_forfeit_cards = other_player.get_types_of_cards_possessed()
+                                                        
+                                                        # Remove duplicate card (prevent trading sheep for sheep)
+                                                        if card in other_player_forfeit_cards:
+                                                                other_player_forfeit_cards.remove(card)
+                                                                # If the other player still has cards to forfeit after this
+                                                        if(other_player_forfeit_cards):
+                                                                card_pairs.append((card, other_player_forfeit_cards))
+                                        if(card_pairs):                   
+                                                actions['allowed_trade_partners'].append(other_player)
+                                                actions['allowed_trade_pairs'].append((other_player.num, card_pairs))
+
                         if(len(actions['allowed_trade_partners']) > 0):
                                 actions['allowed_actions'].append(START_TRADE)
 
 
-
+                
 
 
                 ## END_TURN
@@ -366,7 +388,7 @@ class GameWrapper:
                         print()
 
                         offered_resource_response = int(input())
-                        full_action.append(ResCard(offered_resource_response))
+                        full_action.append(ResCard(offered_resource_response))  
 
                         print('You receive:')
                         allowed_cards = possible_actions['allowed_trade_partner_forfeit_cards'][which_player_response][1]
@@ -717,7 +739,7 @@ def main():
         game_over = False
         turn_over = False
         cycle_complete = False        
-        while(not game_over):
+        while(not CatanGame.game.has_ended):
                 CatanGame.game.can_roll = True
                 curr_agent = agents[player_index]
                 player_with_turn = curr_player = curr_agent.player
@@ -785,6 +807,8 @@ def main():
                         player_index = 0
                 else:
                         player_index += 1
+
+        print('Winner: ' + str(CatanGame.game.winner))
 
 
 if __name__ == "__main__":

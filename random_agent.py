@@ -101,15 +101,32 @@ class RandomAgent():
 		if(action == 7):
 			other_player = random.choice(allowed_actions['allowed_trade_partners'])
 			full_action.append(other_player)
+			print('Target player: ' + str(other_player.num))
 			
-			forfeit_card = random.choice(allowed_actions['allowed_forfeit_cards'])
+			allowed_cards = allowed_actions['allowed_trade_pairs']
+			print(allowed_cards)
+			print()
+			allowed_cards = [(x,y) for x, y in allowed_cards if x == other_player.num][0][1]
+			print(allowed_cards)
+			print()
+			allowed_cards = [x[0] for x in allowed_cards]
+			print(allowed_cards)
+			print()
+			forfeit_card = random.choice(allowed_cards)
 
-			other_player_allowed_cards = allowed_actions['allowed_trade_partner_forfeit_cards'][other_player.num][1]
+			print('Forfeit Card ' + forfeit_card.name)
+			other_player_allowed_cards = allowed_actions['allowed_trade_pairs']
 			print(other_player_allowed_cards)
-			if(ResCard(forfeit_card) in other_player_allowed_cards):
-				other_player_allowed_cards.remove(ResCard(forfeit_card))
+			print()
+			other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x == other_player.num][0][1]
+			print(other_player_allowed_cards)
+			print()
+			other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x.value == forfeit_card.value][0]
+			print(other_player_allowed_cards[1])
+			print()
+			print('----------')
 
-			receive_card = random.choice(other_player_allowed_cards)
+			receive_card = random.choice(other_player_allowed_cards[1])
 			print(forfeit_card)
 			print(receive_card)
 			full_action.append(forfeit_card)
