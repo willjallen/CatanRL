@@ -30,6 +30,8 @@ class Player:
         self.turn_over = True
         # whether the player has a pending trade
         self.pending_trade = False
+        # how many trades this player has requested in a turn
+        self.num_trades_in_turn = 0
         # trading player
         self.trading_player = None
         # which card the trading player wants in trade

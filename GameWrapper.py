@@ -181,9 +181,10 @@ class GameWrapper:
 
                 ## START_TRADE
                 # - It is the players turn
+                # - Player has attempted 4 or less trades this turn
                 # - Player actually has the card they are forfeiting
                 # - Receiving player actually has the card they are forfeiting 
-                if(is_players_turn):
+                if(is_players_turn and player.num_trades_in_turn < 4):
                 
                         player_card_types = player.get_types_of_cards_possessed()
 
@@ -226,11 +227,11 @@ class GameWrapper:
 
                 return actions
 
-        def promptActions(self, player, possible_actions):
+        def promptActions(self, player, allowed_actions):
                 print('Possible Actions')
                 
                 # print('0: No Op | 1: Roll | 2: Purchase Resource (From Bank/Port) | 3: Purchase Building | 4: Purchase Dev Card | 5: Play Dev Card |\n6: Play Robber | 7: Do Trade | 8: Accept Trade | 9: Reject Trade | 10: Forfeit Cards | 11: End Turn')
-                for action in possible_actions['allowed_actions']:
+                for action in allowed_actions['allowed_actions']:
                         print(str(action) + ': ' + action_types[action] + ' | ', end='')
                 print()
 
@@ -254,14 +255,14 @@ class GameWrapper:
                         requested_resource = int(input())
                         full_action.append(requested_resource)
                         print('Forfeited Resource:')
-                        for allowed_card in possible_actions['allowed_bank_trade_cards']:
+                        for allowed_card in allowed_actions['allowed_bank_trade_cards']:
                                 print(str(allowed_card[0].value) + ': ' + allowed_card[0].name + '(' + str(allowed_card[1])  + ')' + ' | ', end='')
                         print()
                         forfeited_resource = int(input())
                         full_action.append(forfeited_resource)
                 # Prompt Purchase & play building
                 if(response == 3):
-                        for allowed_building in possible_actions['allowed_buildings']:
+                        for allowed_building in allowed_actions['allowed_buildings']:
                                 print(str(allowed_building) + ': ' + Building.BUILDINGS[allowed_building] + ' | ', end='')
                         print()
    
@@ -272,7 +273,7 @@ class GameWrapper:
                         # Settlement
                         if(building_response == 0):
                                 print('Allowed Locations: (r, i)')
-                                print(possible_actions['allowed_settlement_points'])
+                                print(allowed_actions['allowed_settlement_points'])
 
                                 print('r:')
                                 loc_r_response = int(input())
@@ -284,7 +285,7 @@ class GameWrapper:
                         # Road
                         if(building_response == 1):
                                 print('Allowed Locations: (r, i)->(r2, i2)')
-                                print(possible_actions['allowed_road_point_pairs'])
+                                print(allowed_actions['allowed_road_point_pairs'])
                                 
                                 print('r:')
                                 loc_r_response = int(input())
@@ -303,7 +304,7 @@ class GameWrapper:
                         # City
                         if(building_response == 2):
                                 print('Allowed Locations: (r, i)')
-                                print(possible_actions['allowed_city_points'])
+                                print(allowed_actions['allowed_city_points'])
 
                                 print('r:')
                                 loc_r_response = int(input())
@@ -317,7 +318,7 @@ class GameWrapper:
                         pass
                 # Prompt Play dev card
                 if(response == 5):
-                        for allowed_card in possible_actions['allowed_dev_cards']:
+                        for allowed_card in allowed_actions['allowed_dev_cards']:
                                 print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
                         print()
 
@@ -378,27 +379,33 @@ class GameWrapper:
                 # Prompt Do trade
                 if(response == 7):
 
-                        for allowed_player in possible_actions['allowed_trade_partners']:
+                        for allowed_player in allowed_actions['allowed_trade_partners']:
                                 print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
                         print()
                         which_player_response = int(input())
                         full_action.append(self.game.players[which_player_response])
                         
+
+                        allowed_cards = allowed_actions['allowed_trade_pairs']
+                        allowed_cards = [(x,y) for x, y in allowed_cards if x == which_player_response][0][1]
+                        allowed_cards = [x[0] for x in allowed_cards]
+
+
                         print('You offer:') 
-                        for allowed_card in possible_actions['allowed_forfeit_cards']:
+                        for allowed_card in allowed_cards:
                                 print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
                         print()
 
                         offered_resource_response = int(input())
                         full_action.append(ResCard(offered_resource_response))  
 
-                        print('You receive:')
-                        allowed_cards = possible_actions['allowed_trade_partner_forfeit_cards'][which_player_response][1]
-                        if(ResCard(offered_resource_response) in allowed_cards):
-                                allowed_cards.remove(ResCard(offered_resource_response))
 
-                        for allowed_card in allowed_cards:
-                                # print(allowed_card)
+                        other_player_allowed_cards = allowed_actions['allowed_trade_pairs']
+                        other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x == which_player_response][0][1]
+                        other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x.value == offered_resource_response][0]
+
+                        print('You receive:')
+                        for allowed_card in other_player_allowed_cards[1]:
                                 print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
                         print()
                         received_resource_response = int(input())
@@ -413,7 +420,7 @@ class GameWrapper:
                 if(response == 10):
                         print('Forfeit(' + str(player.forfeited_cards_left) + ' left): ') 
                         
-                        for allowed_card in possible_actions['allowed_forfeit_cards']:
+                        for allowed_card in allowed_actions['allowed_forfeit_cards']:
                                 print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
                         print()
 
@@ -507,6 +514,7 @@ class GameWrapper:
         
                 # Do trade
                 if(action_type == 7):
+                        player.num_trades_in_turn += 1
                         # Which player
                         other_player = args[1]
                         player_forfieted_resource = args[2]
@@ -577,6 +585,7 @@ class GameWrapper:
                 print('Knight Cards Played: ' + str(player.knight_cards))
                 print('Longest Road Length: ' + str(player.longest_road_length))
                 print('Forfeited cards left: ' + str(player.forfeited_cards_left))
+                print('Number of attempted trades this turn: ' + str(player.num_trades_in_turn))
                 print('Accessible Ports:')
                 harbors = player.get_connected_harbor_types()
                 print(harbors)
@@ -747,11 +756,17 @@ def main():
         turn_over = False
         cycle_complete = False        
         while(not CatanGame.game.has_ended):
+                # Reset roll
                 CatanGame.game.can_roll = True
+
+                # Iterate to next player with turn
                 curr_agent = agents[player_index]
                 player_with_turn = curr_player = curr_agent.player
                 player_with_turn_index = player_index
                 player_with_turn.turn_over = turn_over = False
+
+                # Reset number of trades the player has conducted
+                player_with_turn.num_trades_in_turn = 0
 
                 # Cycle, starting with the player playing their turn, through all other players
                 while(not turn_over):
@@ -759,15 +774,18 @@ def main():
                         curr_player = curr_agent.player 
                         # allowed_actions = CatanGame.getAllowedActions(player, player_with_turn)
                         
+                        # Check if the action taken is valid 
                         action_okay = False
                         while(not action_okay):
                                
-                                possible_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
+                                allowed_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
                                 
-                                # Debug
-                                if(len(possible_actions['allowed_actions']) == 1 and (NO_OP in possible_actions['allowed_actions'])):
+                                # If the player only has one available action, and that action is NO_OP
+                                # Skip their step
+                                if(len(allowed_actions['allowed_actions']) == 1 and (NO_OP in allowed_actions['allowed_actions'])):
                                         action_okay = True
                                 else:
+                                        # Display turn relevant info
                                         CatanGame.displayBoard()
                                         print('Turn: ' + str(turn_counter))
                                         print('Roll: ' + str(CatanGame.game.last_roll))
@@ -784,12 +802,13 @@ def main():
                                                 print('Longest Road: None')
 
                                         print()
+                                        # Display player relevant info
                                         CatanGame.displayPlayerGameInfo(curr_player)
 
                                         if(curr_agent.human):
-                                                full_action = CatanGame.promptActions(curr_player, possible_actions)
+                                                full_action = CatanGame.promptActions(curr_player, allowed_actions)
                                         else:
-                                                full_action = curr_agent.doTurn(possible_actions)
+                                                full_action = curr_agent.doTurn(allowed_actions)
                                         print(full_action)
                                         print(action_types[full_action[0]])
                                         status = CatanGame.doAction(curr_player, full_action)
@@ -807,6 +826,7 @@ def main():
                                                 print('Error: ')
                                                 print(Statuses.status_list[int(status)])
 
+                                        # If the player still has cards to forfeit, stay on this player
                                         if(curr_player.forfeited_cards_left > 0):
                                                 action_okay = False
 
