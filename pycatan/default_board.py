@@ -88,12 +88,10 @@ class DefaultBoard(Board):
             index += 1
 
         # puts the robber on the desert tile to start
-        for r in range(len(temp_tiles)):
-            # checks if this row has the desert
-            if temp_tiles[r].count(TileType.Desert) > 0:
-                # places the robber
-                self.robber = [r, temp_tiles[r].index(TileType.Desert)]
-
+        for r  in self.tiles:
+            for tile in r:
+                if(tile.type == TileType.Desert):
+                    self.robber = tile
     # Returns the indexes of the tiles connected to a certain points
     # on the default, tileagonal Catan board
     @staticmethod

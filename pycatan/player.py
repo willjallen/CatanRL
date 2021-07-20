@@ -176,9 +176,16 @@ class Player:
 
         robber_actions = []
 
+        curr_robber = self.game.board.robber
         # checks the victim has a settlement on the tile
         for r in self.game.board.tiles:
             for tile in r:
+                # Check this is a different tile than the current robber tile
+                if(curr_robber):
+                    if(curr_robber.position[0] == tile.position[0] and curr_robber.position[1] == tile.position[1]):
+                        # If not, skip this tile
+                        continue
+
                 # Iterate over points and check if there is a settlement/city on any of them
                 points = tile.points
                 for p in points:

@@ -245,6 +245,7 @@ class GameWrapper:
                                                     action_okay = True
                                             elif status == Statuses.ROLLED_SEVEN:
                                                     self.game.rolled_seven = True
+                                                    self.game.robber_moved = False
                                                     for p in self.game.players:
                                                             if(len(p.cards) >= 8):
                                                                     p.forfeited_cards_left = int(len(p.cards)/2)
@@ -307,6 +308,13 @@ class GameWrapper:
 
                 is_players_turn = (player.num == player_with_turn.num)
 
+                ## NO_OP
+                # - It is not the player's turn
+                # - There are no pending trades
+                if(not is_players_turn and not player.pending_trade):
+                        actions['allowed_actions'].append(NO_OP)
+                        return actions
+
                 ## INITIAL_PLACEMENT (Priority action, other ignors)
                 # - It is players turn
                 # - initial_placement_mode is true
@@ -318,6 +326,16 @@ class GameWrapper:
                 if(player.forfeited_cards_left > 0):
                         actions['allowed_actions'].append(FORFEIT_CARDS)
                         actions['allowed_forfeit_cards'] = player.get_types_of_cards_possessed()
+                        return actions
+
+                ## PLAY_ROBBER (Priority action, others ignored)
+                # - It is the players turn
+                # - A 7 is active and robber has not been moved
+                if(is_players_turn and not self.game.robber_moved):
+                        actions['allowed_actions'].append(PLAY_ROBBER)
+                        possible_robber_tiles_and_victims = player.get_available_robber_placement_tiles_and_victims()
+                        actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims
+                        actions['allowed_victim_players'] = possible_robber_tiles_and_victims
                         return actions
 
                 ## ACCEPT_TRADE (Priority action, others ignored)
@@ -351,13 +369,6 @@ class GameWrapper:
                 # - The dice has not been rolled
                 if(is_players_turn and self.game.can_roll):
                         actions['allowed_actions'].append(ROLL)
-                        return actions
-
-                ## NO_OP
-                # - It is not the player's turn
-                # - There are no pending trades
-                if(not is_players_turn and not player.pending_trade):
-                        actions['allowed_actions'].append(NO_OP)
                         return actions
 
                 ## PURCHASE_RESOURCE
@@ -421,12 +432,6 @@ class GameWrapper:
                 # - Player has relevant cards
                 if(is_players_turn and player.can_build_dev()==Statuses.ALL_GOOD and not self.game.can_roll):
                         actions['allowed_actions'].append(PURCHASE_DEV_CARD)
-
-                ## PLAY_ROBBER
-                # - It is the players turn
-                # - A 7 is active and robber has not been moved
-                if(self.game.rolled_seven and not self.game.robber_moved):
-                        actions['allowed_actions'].append(PLAY_ROBBER)
 
                 ## START_TRADE
                 # - It is the players turn
@@ -585,14 +590,30 @@ class GameWrapper:
                                 full_action.append(loc_y_response)
 
                         if(dev_card_response == 2):
-                                print('Location X:')
-                                loc_x_response = int(input())
-                                full_action.append(loc_x_response)
-                                print('Location Y:')
-                                loc_y_response = int(input())
-                                full_action.append(loc_y_response)
+                                print('Allowed Locations: (r, i)')
+                                for action in allowed_actions['allowed_robber_tiles']:
+                                    print('(', end='')
+                                    print(action[0], end='')
+                                    print(', ', end='')
+                                    print(colors[action[1].num], end='')
+                                    print('(' + str(action[1].num) + ')', end='')
+                                    print(') ', end='') 
+                                
+                                print()
+
+                                print('r:')
+                                loc_r_response = int(input())
+                                full_action.append(loc_r_response)
+                                print('i:')
+                                loc_i_response = int(input())
+                                full_action.append(loc_i_response)
+                                
+                                allowed_players = [y for x, y in allowed_actions['allowed_robber_tiles'] if (x.position[0] == loc_r_response and x.position[1] == loc_i_response)]
+
                                 print('Player:')
-                                print('0: Red | 1: Cyan | 2: Green | 3: Yellow')
+                                for allowed_player in allowed_players:
+                                    print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
+                                print()
                                 player_response = int(input())
                                 full_action.append(player_response)
 
@@ -616,16 +637,32 @@ class GameWrapper:
 
                 # Prompt Play robber
                 if(response == 6):
-                        print('Location X:')
-                        loc_x_response = int(input())
-                        full_action.append(loc_x_response)
-                        print('Location Y:')
-                        loc_y_response = int(input())
-                        full_action.append(loc_y_response)
-                        print('Player:')
-                        print('0: Red | 1: Cyan | 2: Green | 3: Yellow')
-                        player_response = int(input())
-                        full_action.append(player_response)
+                    print('Allowed Locations: (r, i)')
+                    for action in allowed_actions['allowed_robber_tiles']:
+                        print('(', end='')
+                        print(action[0], end='')
+                        print(', ', end='')
+                        print(colors[action[1].num], end='')
+                        print('(' + str(action[1].num) + ')', end='')
+                        print(') ', end='') 
+                    
+                    print()
+
+                    print('r:')
+                    loc_r_response = int(input())
+                    full_action.append(loc_r_response)
+                    print('i:')
+                    loc_i_response = int(input())
+                    full_action.append(loc_i_response)
+                    
+                    allowed_players = [y for x, y in allowed_actions['allowed_robber_tiles'] if (x.position[0] == loc_r_response and x.position[1] == loc_i_response)]
+
+                    print('Player:')
+                    for allowed_player in allowed_players:
+                        print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
+                    print()
+                    player_response = int(input())
+                    full_action.append(player_response)
                 # Prompt Do trade
                 if(response == 7):
 
@@ -761,6 +798,7 @@ class GameWrapper:
                         victim_player_response = args[3]
 
                         status = self.game.move_robber(self.game.board.tiles[loc_x_response][loc_y_response], player.num, victim_player_response)
+                        self.game.robber_moved = True
                         return status
         
                 # Do trade
