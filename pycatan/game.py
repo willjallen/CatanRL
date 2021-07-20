@@ -379,5 +379,5 @@ class Game:
 
     # simulates 2 dice rolling
     def get_roll(self):
-        return round(random.random() * 6) + round(random.random() * 6)
+        return (random.randint(1, 6) + random.randint(1, 6))
 

@@ -1,5 +1,3 @@
 - Fix longest road length
 - Add road building dev card functionality
 - Add non human agent debug view
-- Number of trade requests in a turn should stay below 6
-- Fix inconsistent naming of common variables (like actions dictionary)

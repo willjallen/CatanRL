@@ -443,11 +443,11 @@ class GameWrapper:
                 if(action_type == 1):
                         if(self.game.can_roll):
                                 self.game.last_roll = roll = self.game.get_roll()
+                                self.game.can_roll = False
                                 if(roll != 7):
                                         self.game.board.add_yield(roll)
                                 else:
                                         return Statuses.ROLLED_SEVEN
-                                self.game.can_roll = False
                                 return Statuses.ALL_GOOD
                         else:
                                 return Statuses.ERR_ROLL
@@ -788,8 +788,8 @@ def main():
                                         # Display turn relevant info
                                         CatanGame.displayBoard()
                                         print('Turn: ' + str(turn_counter))
+                                        print('Player with turn: ' + colors[player_with_turn_index])
                                         print('Roll: ' + str(CatanGame.game.last_roll))
-                                        print('Rolled Seven: ' + str(CatanGame.game.rolled_seven))
                                         print()
                                         if(CatanGame.game.largest_army != None):
                                                 print('Largest Army: ' + colors[CatanGame.game.largest_army])
