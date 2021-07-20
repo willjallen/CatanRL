@@ -1,5 +1,4 @@
 - Fix longest road length
 - Add road building dev card
 - Add non human agent debug view
-- Play dev card can happen before roll
 - Number of trade requests in a turn should stay below 6

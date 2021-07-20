@@ -79,7 +79,25 @@ class GameWrapper:
                         actions['allowed_actions'].append(DENY_TRADE)
                         return actions
 
-                ## ROLL (Priority action, others ignored)
+                ## PLAY_DEV_CARD
+                # - It is the players turn
+                # - Player has at least one development card
+                if(is_players_turn):
+                        playable_dev_card = False
+                        for card in DevCard:
+                                if(card in player.dev_cards):
+                                        if(card == DevCard.Knight or card == DevCard.YearOfPlenty or card == DevCard.Monopoly):
+                                                actions['allowed_dev_cards'].append(card)
+                                                playable_dev_card = True
+
+                                        if(card == DevCard.Knight):
+                                                possible_robber_tiles_and_victims = player.get_available_robber_placement_tiles_and_victims()
+                                                actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims
+                                                actions['allowed_victim_players'] = possible_robber_tiles_and_victims
+                        if(playable_dev_card):
+                                actions['allowed_actions'].append(PLAY_DEV_CARD)
+
+                ## ROLL (Priority action, others (except play dev card) ignored)
                 # - It is the players turn
                 # - The dice has not been rolled
                 if(is_players_turn and self.game.can_roll):
@@ -154,25 +172,6 @@ class GameWrapper:
                 # - Player has relevant cards
                 if(is_players_turn and player.can_build_dev()==Statuses.ALL_GOOD and not self.game.can_roll):
                         actions['allowed_actions'].append(PURCHASE_DEV_CARD)
-
-                ## PLAY_DEV_CARD
-                # - It is the players turn
-                # - Player has at least one development card
-                if(is_players_turn):
-                        playable_dev_card = False
-                        for card in DevCard:
-                                if(card in player.dev_cards):
-                                        if(card == DevCard.Knight or card == DevCard.YearOfPlenty or card == DevCard.Monopoly):
-                                                actions['allowed_dev_cards'].append(card)
-                                                playable_dev_card = True
-
-                                        if(card == DevCard.Knight):
-                                                possible_robber_tiles_and_victims = player.get_available_robber_placement_tiles_and_victims()
-                                                actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims
-                                                actions['allowed_victim_players'] = possible_robber_tiles_and_victims
-                        if(playable_dev_card):
-                                actions['allowed_actions'].append(PLAY_DEV_CARD)
-
 
                 ## PLAY_ROBBER
                 # - It is the players turn
