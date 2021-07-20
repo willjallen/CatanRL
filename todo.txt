@@ -1,3 +1,4 @@
 - Fix longest road length
 - Add road building dev card functionality
 - Add non human agent debug view
+- Implement initial placement actions

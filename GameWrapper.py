@@ -9,7 +9,7 @@ import random
 
 colors = ['Red', 'Cyan', 'Green', 'Yellow']
 
-action_types = ["no_op", "roll", "purchase_resource", "purchase_and_play_building", "purchase_dev_card", "play_dev_card", "play_robber", "start_trade", "accept_trade", "deny_trade", "forfeit_cards", "end_turn"]
+action_types = ["no_op", "roll", "purchase_resource", "purchase_and_play_building", "purchase_dev_card", "play_dev_card", "play_robber", "start_trade", "accept_trade", "deny_trade", "forfeit_cards", "end_turn", "initial_placement_road", "initial_placement_building"]
 NO_OP = 0
 ROLL = 1
 PURCHASE_RESOURCE = 2
@@ -22,6 +22,8 @@ ACCEPT_TRADE = 8
 DENY_TRADE = 9
 FORFEIT_CARDS = 10
 END_TURN = 11
+INITIAL_PLACE_ROAD = 12
+INITIAL_PLACE_BUILDING = 13
 
 def printBlankLines(num):
         for i in range(0, num):
@@ -30,17 +32,259 @@ def printBlankLines(num):
 
 class GameWrapper:
         def __init__(self):
-                num_of_players = 4
-
-                game = Game(num_of_players)
-
-                self.game = game
-                self.boardRenderer = BoardRenderer(game.board, [50, 10])
+                self.num_of_players = 0
+                self.game = None
+                self.boardRenderer = None
+                self.agents = []
 
 
-        # An interface for human players to interact with the game
+
+       
+
         
 
+    
+        def setup(self):
+            # Game Set-up questions
+            print('Manual Mode (y/n)')
+            #manual_mode = input()
+            
+            #print('Number of players (2-4)')
+            # Might just cap this at 4 for training
+            # num_players = int(input())
+            
+            num_players = 4
+            game = Game(num_players)
+            self.game = game
+            self.boardRenderer = BoardRenderer(game.board, [50, 10])
+            
+            # Other stuff here
+            # Maybe a manual board input, but thats sounds lame rn
+
+            # Init
+            debug = True
+            if debug:
+                    self.game.add_settlement(player=0, point=self.game.board.points[0][0], is_starting=True)                
+                    self.game.add_settlement(player=0, point=self.game.board.points[1][2], is_starting=True)
+                    self.game.add_settlement(player=1, point=self.game.board.points[3][3], is_starting=True)
+                    self.game.add_settlement(player=1, point=self.game.board.points[2][6], is_starting=True)
+                    self.game.add_settlement(player=2, point=self.game.board.points[4][3], is_starting=True)
+                    self.game.add_settlement(player=2, point=self.game.board.points[3][8], is_starting=True)
+                    self.game.add_settlement(player=3, point=self.game.board.points[4][6], is_starting=True)
+                    self.game.add_settlement(player=3, point=self.game.board.points[1][6], is_starting=True)
+                    # Add some roads
+                    self.game.add_road(player=0, start=self.game.board.points[0][0], end=self.game.board.points[0][1], is_starting=True)
+                    self.game.add_road(player=0, start=self.game.board.points[1][2], end=self.game.board.points[1][3], is_starting=True)
+                    self.game.add_road(player=0, start=self.game.board.points[1][3], end=self.game.board.points[1][4], is_starting=True)
+                    self.game.add_road(player=0, start=self.game.board.points[1][2], end=self.game.board.points[1][1], is_starting=True)
+                    self.game.add_road(player=0, start=self.game.board.points[1][1], end=self.game.board.points[0][0], is_starting=True)
+                    self.game.add_road(player=1, start=self.game.board.points[3][3], end=self.game.board.points[3][2], is_starting=True)
+                    self.game.add_road(player=1, start=self.game.board.points[2][6], end=self.game.board.points[2][5], is_starting=True)
+                    self.game.add_road(player=2, start=self.game.board.points[4][3], end=self.game.board.points[4][4], is_starting=True)
+                    self.game.add_road(player=2, start=self.game.board.points[3][8], end=self.game.board.points[3][7], is_starting=True)
+                    self.game.add_road(player=3, start=self.game.board.points[4][6], end=self.game.board.points[4][5], is_starting=True)
+                    self.game.add_road(player=3, start=self.game.board.points[1][6], end=self.game.board.points[1][7], is_starting=True)
+                    
+                    self.game.players[0].add_dev_card(DevCard.Knight)
+                    self.game.players[0].add_dev_card(DevCard.YearOfPlenty)
+                    self.game.players[0].add_dev_card(DevCard.Monopoly)
+                    self.game.players[0].add_dev_card(DevCard.Road)                   
+                    # self.game.players[0].add_cards([ResCard.Wheat, ResCard.Ore, ResCard.Wood, ResCard.Brick, ResCard.Sheep])
+
+                    # self.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+                    # self.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
+
+                    # self.game.board.upgrade_settlement(0, self.game.board.points[1][2])
+
+            # Make players into agents
+            
+            for player in self.game.players:
+                    if debug:
+                            print('Player ' + str(player.num) + ' human? (y/n)')
+                            is_human = input()
+                            if(is_human == 'y'):
+                                    self.agents.append(Agent(player, True, []))
+                            else:
+                                    self.agents.append(RandomAgent(player))
+                    else:
+                            self.agents.append(Agent(player, True, []))
+
+            # Determine starting order for initial placements
+            # Pick a random player then go in snake order
+            chosen_player = player_index = random.randint(0, 3)
+
+            # Starting placements
+            # 8 total turns, 2 placements per player
+            # Snake means: 0, 1, 2, 3, 3, 2, 1, 0
+
+            starting_play_order = []
+            switch = False
+            for i in range(0, 8):
+                    starting_play_order.append(player_index)
+
+                    if(not i == 3):
+                            if(not switch):
+                                    if(player_index == 3):
+                                            player_index = 0
+                                    else:
+                                            player_index += 1
+                            else:
+                                    if(player_index == 0):
+                                            player_index = 3
+                                    else:
+                                            player_index -= 1
+                    else:
+                            switch = True
+
+            print('Starting play order: ')
+            print(starting_play_order)
+            placement_okay = False
+
+            if not debug:
+                    for player_index in starting_play_order:
+                            
+                            curr_agent = self.agents[player_index]
+                            if(curr_agent.is_human):
+                                    while(not placement_okay):
+                                            CatanGame.displayBoard()
+                                            print('Player ' + str(curr_agent.player.num))
+                                            # printBlankLines(10)
+                                            
+                                            full_action = CatanGame.promptInitialPlacement()
+                                            status = CatanGame.doInitialPlacement(curr_agent.player, full_action)
+                                            
+                                            if(status == Statuses.ALL_GOOD):
+                                                    placement_okay = True
+                                            else:
+                                                    print(Statuses.status_list[status])
+                                            print()
+
+                                    placement_okay = False
+                            else:
+                                    # AI stuff
+                                    pass
+
+            # Add initial placement yield
+            # (This might be the wrong way to do it)
+            for i in range(2, 13):
+                    if i != 7:
+                            self.game.board.add_yield(i)
+
+            player_index = chosen_player
+
+            self.run(player_index)
+
+        def run(self, player_index):
+            # Game Loop
+            # Cycle over all players per turn steps to allow for responses to trades
+            turn_counter = 0
+            game_over = False
+            turn_over = False
+            cycle_complete = False        
+            while(not self.game.has_ended):
+                    # Reset roll
+                    self.game.can_roll = True
+
+                    # Iterate to next player with turn
+                    curr_agent = self.agents[player_index]
+                    player_with_turn = curr_player = curr_agent.player
+                    player_with_turn_index = player_index
+                    player_with_turn.turn_over = turn_over = False
+
+                    # Reset number of trades the player has conducted
+                    player_with_turn.num_trades_in_turn = 0
+
+                    # Cycle, starting with the player playing their turn, through all other players
+                    while(not turn_over):
+                            curr_agent = self.agents[player_index]
+                            curr_player = curr_agent.player 
+                            # allowed_actions = CatanGame.getAllowedActions(player, player_with_turn)
+                            
+                            # Check if the action taken is valid 
+                            action_okay = False
+                            while(not action_okay):
+                                   
+                                    allowed_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
+                                    
+                                    # If the player only has one available action, and that action is NO_OP
+                                    # Skip their step
+                                    if(len(allowed_actions['allowed_actions']) == 1 and (NO_OP in allowed_actions['allowed_actions'])):
+                                            action_okay = True
+                                    else:
+                                            # Display turn relevant info
+                                            CatanGame.displayBoard()
+                                            print('Turn: ' + str(turn_counter))
+                                            print('Player with turn: ' + colors[player_with_turn_index])
+                                            print('Roll: ' + str(self.game.last_roll))
+                                            print()
+                                            if(self.game.largest_army != None):
+                                                    print('Largest Army: ' + colors[self.game.largest_army])
+                                            else:
+                                                    print('Largest Army: None')
+
+                                            if(self.game.longest_road_owner != None):
+                                                    print('Longest Road: ' + colors[self.game.longest_road_owner])
+                                            else:
+                                                    print('Longest Road: None')
+
+                                            print()
+                                            # Display player relevant info
+                                            CatanGame.displayPlayerGameInfo(curr_player)
+
+                                            if(curr_agent.human):
+                                                    full_action = CatanGame.promptActions(curr_player, allowed_actions)
+                                            else:
+                                                    full_action = curr_agent.doTurn(allowed_actions)
+                                            print(full_action)
+                                            print(action_types[full_action[0]])
+                                            status = CatanGame.doAction(curr_player, full_action)
+
+                                            self.game.set_longest_road()
+
+                                            if status == Statuses.ALL_GOOD:
+                                                    action_okay = True
+                                            elif status == Statuses.ROLLED_SEVEN:
+                                                    self.game.rolled_seven = True
+                                                    for p in self.game.players:
+                                                            if(len(p.cards) >= 8):
+                                                                    p.forfeited_cards_left = int(len(p.cards)/2)
+                                            else:
+                                                    print('Error: ')
+                                                    print(Statuses.status_list[int(status)])
+
+                                            # If the player still has cards to forfeit, stay on this player
+                                            if(curr_player.forfeited_cards_left > 0):
+                                                    action_okay = False
+
+                            if(player_with_turn.get_VP(True) >= 10):
+                                    self.game.has_ended = True
+                                    self.game.winner = player_with_turn
+                                    player_with_turn.turn_over = True
+
+                            turn_over = player_with_turn.turn_over 
+                            self.game.rolled_seven = False
+
+                            if(not turn_over):
+                                    # 2 -> 3 -> 0 -> 1 -> 2
+                                    if(player_index == 3):
+                                            player_index = 0
+                                    else:
+                                            player_index += 1
+
+
+
+                    # Turn has ended
+                    player_index = player_with_turn_index
+                    turn_counter += 1
+
+
+                    # 2 -> 3 -> 0 -> 1 -> 2
+                    if(player_index == 3):
+                            player_index = 0
+                    else:
+                            player_index += 1
+
+            print('Winner: ' + str(colors[self.game.winner.num]))
 
         # Get allowed actions
         def getAllowedActions(self, player, player_with_turn):
@@ -63,6 +307,11 @@ class GameWrapper:
 
                 is_players_turn = (player.num == player_with_turn.num)
 
+                ## INITIAL_PLACEMENT (Priority action, other ignors)
+                # - It is players turn
+                # - initial_placement_mode is true
+                if(is_players_turn and self.game.initial_placement_mode):
+                    pass
 
                 ## FORFEIT_CARDS (Priority action, others ignored)
                 # - A 7 is active and player has >= 8 cards
@@ -227,6 +476,7 @@ class GameWrapper:
 
                 return actions
 
+        # An interface for human players to interact with the game
         def promptActions(self, player, allowed_actions):
                 print('Possible Actions')
                 
@@ -431,6 +681,7 @@ class GameWrapper:
                         pass
                 return full_action        
 
+        
         def doAction(self, player, args):
                 action_type = args[0]
 
@@ -576,6 +827,7 @@ class GameWrapper:
                 status = player.build_road(self.game.board.points[loc_x][loc_y], self.game.board.points[loc_x_2][loc_y_2], True)
                 return status
 
+        
         def displayBoard(self):
                 self.boardRenderer.render()
 
@@ -606,6 +858,7 @@ class GameWrapper:
                         print('Forfeit: ' + ResCard(player.trade_forfeit_card).name)
                         print('Receive: ' + ResCard(player.trade_receive_card).name)
 
+        
         def displayFullGameInfo(self):
                 self.displayBoard()
                 for player in self.game.players:
@@ -615,251 +868,5 @@ class GameWrapper:
                         print()
 
 
-
-
-def main():
-
-        # Game Set-up questions
-        print('Manual Mode (y/n)')
-        #manual_mode = input()
-        
-        #print('Number of players (2-4)')
-        # Might just cap this at 4 for training
-        # num_players = int(input())
-        
-        num_players = 4
-        
-        # Other stuff here
-        # Maybe a manual board input, but thats sounds lame rn
-
-        # Init
-        CatanGame = GameWrapper()
-
-        debug = True
-
-        if debug:
-
-
-                CatanGame.game.add_settlement(player=0, point=CatanGame.game.board.points[0][0], is_starting=True)                
-                CatanGame.game.add_settlement(player=0, point=CatanGame.game.board.points[1][2], is_starting=True)
-                CatanGame.game.add_settlement(player=1, point=CatanGame.game.board.points[3][3], is_starting=True)
-                CatanGame.game.add_settlement(player=1, point=CatanGame.game.board.points[2][6], is_starting=True)
-                CatanGame.game.add_settlement(player=2, point=CatanGame.game.board.points[4][3], is_starting=True)
-                CatanGame.game.add_settlement(player=2, point=CatanGame.game.board.points[3][8], is_starting=True)
-                CatanGame.game.add_settlement(player=3, point=CatanGame.game.board.points[4][6], is_starting=True)
-                CatanGame.game.add_settlement(player=3, point=CatanGame.game.board.points[1][6], is_starting=True)
-                
-
-                # Add some roads
-                CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[0][0], end=CatanGame.game.board.points[0][1], is_starting=True)
-                CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[1][2], end=CatanGame.game.board.points[1][3], is_starting=True)
-                CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[1][3], end=CatanGame.game.board.points[1][4], is_starting=True)
-                CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[1][2], end=CatanGame.game.board.points[1][1], is_starting=True)
-                CatanGame.game.add_road(player=0, start=CatanGame.game.board.points[1][1], end=CatanGame.game.board.points[0][0], is_starting=True)
-                CatanGame.game.add_road(player=1, start=CatanGame.game.board.points[3][3], end=CatanGame.game.board.points[3][2], is_starting=True)
-                CatanGame.game.add_road(player=1, start=CatanGame.game.board.points[2][6], end=CatanGame.game.board.points[2][5], is_starting=True)
-                CatanGame.game.add_road(player=2, start=CatanGame.game.board.points[4][3], end=CatanGame.game.board.points[4][4], is_starting=True)
-                CatanGame.game.add_road(player=2, start=CatanGame.game.board.points[3][8], end=CatanGame.game.board.points[3][7], is_starting=True)
-                CatanGame.game.add_road(player=3, start=CatanGame.game.board.points[4][6], end=CatanGame.game.board.points[4][5], is_starting=True)
-                CatanGame.game.add_road(player=3, start=CatanGame.game.board.points[1][6], end=CatanGame.game.board.points[1][7], is_starting=True)
-                
-                CatanGame.game.players[0].add_dev_card(DevCard.Knight)
-                CatanGame.game.players[0].add_dev_card(DevCard.YearOfPlenty)
-                CatanGame.game.players[0].add_dev_card(DevCard.Monopoly)
-                CatanGame.game.players[0].add_dev_card(DevCard.Road)                   
-                # CatanGame.game.players[0].add_cards([ResCard.Wheat, ResCard.Ore, ResCard.Wood, ResCard.Brick, ResCard.Sheep])
-
-                # CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
-                # CatanGame.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
-
-                # CatanGame.game.board.upgrade_settlement(0, CatanGame.game.board.points[1][2])
-
-        # Make players into agents
-        agents = []
-        for player in CatanGame.game.players:
-                if debug:
-                        print('Player ' + str(player.num) + ' human? (y/n)')
-                        is_human = input()
-                        if(is_human == 'y'):
-                                agents.append(Agent(player, True, []))
-                        else:
-                                agents.append(RandomAgent(player))
-                else:
-                        agents.append(Agent(player, True, []))
-
-        # Determine starting order for initial placements
-        # Pick a random player then go in snake order
-        chosen_player = player_index = random.randint(0, 3)
-
-        # Starting placements
-        # 8 total turns, 2 placements per player
-        # Snake means: 0, 1, 2, 3, 3, 2, 1, 0
-
-        starting_play_order = []
-        switch = False
-        for i in range(0, 8):
-                starting_play_order.append(player_index)
-
-                if(not i == 3):
-                        if(not switch):
-                                if(player_index == 3):
-                                        player_index = 0
-                                else:
-                                        player_index += 1
-                        else:
-                                if(player_index == 0):
-                                        player_index = 3
-                                else:
-                                        player_index -= 1
-                else:
-                        switch = True
-
-        print(starting_play_order)
-        placement_okay = False
-
-        if not debug:
-                for player_index in starting_play_order:
-                        
-                        curr_agent = agents[player_index]
-                        if(curr_agent.is_human):
-                                while(not placement_okay):
-                                        CatanGame.displayBoard()
-                                        print('Player ' + str(curr_agent.player.num))
-                                        # printBlankLines(10)
-                                        
-                                        full_action = CatanGame.promptInitialPlacement()
-                                        status = CatanGame.doInitialPlacement(curr_agent.player, full_action)
-                                        
-                                        if(status == Statuses.ALL_GOOD):
-                                                placement_okay = True
-                                        else:
-                                                print(Statuses.status_list[status])
-                                        print()
-
-                                placement_okay = False
-                        else:
-                                # AI stuff
-                                pass
-
-        # Add initial placement yield
-        # (This might be the wrong way to do it)
-        for i in range(2, 13):
-                if i != 7:
-                        CatanGame.game.board.add_yield(i)
-
-        player_index = chosen_player
-
-        # Game Loop
-        # Cycle over all players per turn steps to allow for responses to trades
-        turn_counter = 0
-        game_over = False
-        turn_over = False
-        cycle_complete = False        
-        while(not CatanGame.game.has_ended):
-                # Reset roll
-                CatanGame.game.can_roll = True
-
-                # Iterate to next player with turn
-                curr_agent = agents[player_index]
-                player_with_turn = curr_player = curr_agent.player
-                player_with_turn_index = player_index
-                player_with_turn.turn_over = turn_over = False
-
-                # Reset number of trades the player has conducted
-                player_with_turn.num_trades_in_turn = 0
-
-                # Cycle, starting with the player playing their turn, through all other players
-                while(not turn_over):
-                        curr_agent = agents[player_index]
-                        curr_player = curr_agent.player 
-                        # allowed_actions = CatanGame.getAllowedActions(player, player_with_turn)
-                        
-                        # Check if the action taken is valid 
-                        action_okay = False
-                        while(not action_okay):
-                               
-                                allowed_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
-                                
-                                # If the player only has one available action, and that action is NO_OP
-                                # Skip their step
-                                if(len(allowed_actions['allowed_actions']) == 1 and (NO_OP in allowed_actions['allowed_actions'])):
-                                        action_okay = True
-                                else:
-                                        # Display turn relevant info
-                                        CatanGame.displayBoard()
-                                        print('Turn: ' + str(turn_counter))
-                                        print('Player with turn: ' + colors[player_with_turn_index])
-                                        print('Roll: ' + str(CatanGame.game.last_roll))
-                                        print()
-                                        if(CatanGame.game.largest_army != None):
-                                                print('Largest Army: ' + colors[CatanGame.game.largest_army])
-                                        else:
-                                                print('Largest Army: None')
-
-                                        if(CatanGame.game.longest_road_owner != None):
-                                                print('Longest Road: ' + colors[CatanGame.game.longest_road_owner])
-                                        else:
-                                                print('Longest Road: None')
-
-                                        print()
-                                        # Display player relevant info
-                                        CatanGame.displayPlayerGameInfo(curr_player)
-
-                                        if(curr_agent.human):
-                                                full_action = CatanGame.promptActions(curr_player, allowed_actions)
-                                        else:
-                                                full_action = curr_agent.doTurn(allowed_actions)
-                                        print(full_action)
-                                        print(action_types[full_action[0]])
-                                        status = CatanGame.doAction(curr_player, full_action)
-
-                                        CatanGame.game.set_longest_road()
-
-                                        if status == Statuses.ALL_GOOD:
-                                                action_okay = True
-                                        elif status == Statuses.ROLLED_SEVEN:
-                                                CatanGame.game.rolled_seven = True
-                                                for p in CatanGame.game.players:
-                                                        if(len(p.cards) >= 8):
-                                                                p.forfeited_cards_left = int(len(p.cards)/2)
-                                        else:
-                                                print('Error: ')
-                                                print(Statuses.status_list[int(status)])
-
-                                        # If the player still has cards to forfeit, stay on this player
-                                        if(curr_player.forfeited_cards_left > 0):
-                                                action_okay = False
-
-                        if(player_with_turn.get_VP(True) >= 10):
-                                CatanGame.game.has_ended = True
-                                CatanGame.game.winner = player_with_turn
-                                player_with_turn.turn_over = True
-
-                        turn_over = player_with_turn.turn_over 
-                        CatanGame.game.rolled_seven = False
-
-                        if(not turn_over):
-                                # 2 -> 3 -> 0 -> 1 -> 2
-                                if(player_index == 3):
-                                        player_index = 0
-                                else:
-                                        player_index += 1
-
-
-
-                # Turn has ended
-                player_index = player_with_turn_index
-                turn_counter += 1
-
-
-                # 2 -> 3 -> 0 -> 1 -> 2
-                if(player_index == 3):
-                        player_index = 0
-                else:
-                        player_index += 1
-
-        print('Winner: ' + str(colors[CatanGame.game.winner.num]))
-
-
-if __name__ == "__main__":
-        main()
+CatanGame = GameWrapper()
+CatanGame.setup()

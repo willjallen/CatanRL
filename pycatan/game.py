@@ -38,6 +38,8 @@ class Game:
         # the longest road owner and largest army owner
         self.longest_road_owner = None
         self.largest_army = None
+        # whether the game is in initial placement mode
+        self.initial_placement_mode = False
         # whether the game has finished or not
         self.has_ended = False
         # whether a player can roll
