@@ -2,3 +2,4 @@
 - Add road building dev card functionality
 - Add non human agent debug view
 - Implement initial placement actions
+- Dev card can only be played at least a turn after it was purchased

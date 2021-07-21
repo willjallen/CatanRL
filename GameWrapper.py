@@ -32,10 +32,10 @@ def printBlankLines(num):
 
 class GameWrapper:
     def __init__(self):
-            self.num_of_players = 0
-            self.game = None
-            self.boardRenderer = None
-            self.agents = []
+        self.num_of_players = 0
+        self.game = None
+        self.boardRenderer = None
+        self.agents = []
 
 
 
@@ -413,7 +413,8 @@ class GameWrapper:
                                     
                                     if(available_road_pairs):
                                             if not(Building.BUILDING_ROAD in actions['allowed_buildings']):
-                                                    actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
+                                                    if not(PURCHASE_AND_PLAY_BUILDING in actions['allowed_actions']):
+                                                        actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
                                                     actions['allowed_buildings'].append(Building.BUILDING_ROAD)
 
 
@@ -422,7 +423,8 @@ class GameWrapper:
                                     actions['allowed_city_points'] = available_cities
                                     if(available_cities):
                                             if not(Building.BUILDING_CITY in actions['allowed_buildings']):
-                                                    actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
+                                                    if not(PURCHASE_AND_PLAY_BUILDING in actions['allowed_actions']):
+                                                        actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
                                                     actions['allowed_buildings'].append(Building.BUILDING_CITY)                                
 
 
