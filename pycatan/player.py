@@ -2,6 +2,7 @@ from pycatan.building import Building
 from pycatan.statuses import Statuses
 from pycatan.card import ResCard, DevCard
 
+import operator
 import math
 
 # The player class for
@@ -456,60 +457,194 @@ class Player:
     # since this player's longest road will only change if a new road is build
     def get_longest_road(self, new_road):
 
+        continuous_road = []
         # gets the roads that belong to this player
         roads = self.get_roads()
-        del roads[roads.index(new_road)]
-
+        # del roads[roads.index(new_road)]
+        print('roads:')
+        print(roads)
+        print('---')
         # checks for longest road
-        print('===Debug===')
-        self.check_connected_roads(road=new_road, all_roads=roads, length=1)
+        
+        # for every player road
+        for road in roads:
+            longest_continuous_road = []
+            continuous_roads = []
+            no_new_roads = False
+            # road -> a, b
+            # a -> e
+            # b -> c, d
+            # c -> f
+            # d -> x, y
+            # y -> g
+            # [[road, a, e], [road, b, c, f], [road, b, d, x], [road, b, d, y, g]]
+            # input: road
+            # temp_arr = [road]
+            # find connected points to road
+            # =a, b
+            # check if num_connections > 1 or == 0
+            # =true (>1)
+                # explore 'a' path
+                # check if 'a' is already in temp_arr
+                # =false
+                # temp_arr.append('a')
+                # find connected points to 'a'
+                # =e
+                # check if num_connections > 1 or == 0 or None
+                # =(None)
+                    # explore 'e' path
+                    # check if 'e' is already in temp_arr
+                    # =false
+                    # temp_arr.append('e')
+                    # find connected points to 'e'
+                    # =None
+                    # check if num_connections > 1 or == 0 or None
+                    # =(None)
+                    # if(None):
+                        # continuous_roads.append(temp_arr)                 # temp_arr = [road, 'a', 'e']
+                        # temp_arr = [road]
 
-    # checks the roads for connected roads, and then checks those roads until there are no more
-    def check_connected_roads(self, road, all_roads, length):
-        print('---------------')
-        print(road)
-        print(all_roads)
-        print(length)
-        print()
-        print()
+                # explore 'b' path
+                # check if 'b' is already in temp_arr
+                # =false
+                # temp_arr.append('b')
+                # find connected points to 'b'
+                # =c, d
+                # check if num_connections > 1 or == 0 or None
+                # (>1)
+                    # explore 'c' path
+                    # check if 'c' is already in temp_arr
+                    # =false
+                    # temp_arr.append('c')
+                    # find connected points to 'c'
+                    # =f
+                    # check if num_connections > 1 or == 0 or None
+                    # (==1)
+                        # explore 'f' path
+                        # check if 'f' is already in temp_arr
+                        # =false
+                        # temp_arr.append('f')
+                        # find connected points to 'f'
+                        # =None
+                        # check if num_connections > 1 or == 0 or None
+                        # if(None):
+                            # continuous_roads.append(temp_arr)             # temp_arr = [road, 'a', 'b', 'c', 'f']
+                            # temp_arr = [road]                 
 
-        # do both point one and two
-        points = [
-            road.point_one,
-            road.point_two
-        ]
+                    # explore 'd' path
+                    # check if 'd' is already in temp_arr
+                    # =false
+                    # temp_arr.append('d')
+                    # find connected points to 'd'
+                    # =x, y
+                    # check if num_connections > 1 or == 0 or None
+                    # =true(>1)
+                        # explore 'x' path
+                        # check if 'x' is already in temp_arr
+                        # =false
+                        # temp_arr.append('x')
+                        # find connected points to 'x'
+                        # =None
+                        # check if num_connections > 1 or == 0 or None
+                        # if(None):
+                            # continuous_roads.append(temp_arr)             # temp_arr = [road, 'a', 'b', 'd', 'x']
+                            # temp_arr = [road]  
 
-        for p in points:
-            # gets the connected roads
-            connected = self.get_connected_roads(point=p, roads=all_roads)
-            print(connected)
-            print('---------------')
-            # if there are no new connected roads
-            if len(connected) == 0:
-                # if this is the longest road so far
-                if (length-1) > self.longest_road_length:
-                    # records the length
-                    self.longest_road_length = (length-1)
-                    # self.begin_celebration()
 
-            # if there are connected roads
-            else:
-                # check each of them for connections if they have not been used
+            # anytime there is > 1 connected roads, split the array
+            # Find connecting roads to iterated road
+            
+            connected_roads = self.get_connected_roads(road)
+            continuous_road.append(road)
+
+            # Keep checking and adding roads until there are none left
+            while(not no_new_roads):
                 for c in connected:
                     # checks it hasn't used this road before
                     if all_roads.count(c) > 0:
-                        # copies all usable roads
-                        c_roads = all_roads[:]
-                        # removes this road from them
-                        del c_roads[c_roads.index(c)]
-                        # checks for connected roads to this road
-                        self.check_connected_roads(c, c_roads, length + 1)
+                        pass
+            print('Done')
+            print(connected_roads)
 
-    # returns which roads in the roads array are connected to the point
-    def get_connected_roads(self, point, roads):
+            # For every road:
+                # continuous_road = []
+                # Find connected roads
+                # For each of those connected roads
+                    # Check if they are not duplicates
+
+
+
+        # print('===Debug===')
+        # self.check_connected_roads(road=new_road, all_roads=roads, length=1)
+
+    # checks the roads for connected roads, and then checks those roads until there are no more
+    # def check_connected_roads(self, road, all_roads, length):
+    #     print('---------------')
+    #     print('check_connected_roads')
+    #     print('road:' )
+    #     print(road)
+    #     print()
+    #     print('all roads:')
+    #     print(all_roads)
+    #     print()
+    #     print('length:')
+    #     print(length)
+    #     print()
+    #     print()
+    #     print()
+
+    #     # do both point one and two
+    #     points = [
+    #         road.point_one,
+    #         road.point_two
+    #     ]
+
+    #     for p in points:
+    #         # gets the connected roads
+    #         connected = self.get_connected_roads(point=p, roads=all_roads)
+    #         print('===')
+    #         print('')
+    #         print(p)
+    #         print(connected)
+    #         print('---------------')
+    #         # if there are no new connected roads
+    #         if len(connected) == 0:
+    #             # if this is the longest road so far
+    #             if length > self.longest_road_length:
+    #                 # records the length
+    #                 self.longest_road_length = length
+    #                 # self.begin_celebration()
+
+    #         # if there are connected roads
+    #         else:
+    #             # check each of them for connections if they have not been used
+    #             for c in connected:
+    #                 # checks it hasn't used this road before
+    #                 if all_roads.count(c) > 0:
+    #                     # copies all usable roads
+    #                     c_roads = all_roads[:]
+    #                     # removes this road from them
+    #                     del c_roads[c_roads.index(c)]
+    #                     # checks for connected roads to this road
+    #                     self.check_connected_roads(c, c_roads, length + 1)
+
+
+    # # returns which roads in the roads array are connected to the point
+    # def get_connected_roads(self, point, roads):
+    #     con_roads = []
+    #     for r in roads:
+    #         if r.point_one == point or r.point_two == point:
+    #             con_roads.append(r)
+
+    #     return con_roads
+
+    def get_connected_roads(self, road):
+        roads = self.get_roads()
+        
         con_roads = []
         for r in roads:
-            if r.point_one == point or r.point_two == point:
+            # If one point in r matches one, but not both, points in road
+            if operator.xor((r.point_one == road.point_one) or (r.point_one == road.point_two), ((r.point_two == road.point_one) or (r.point_two == road.point_two))):
                 con_roads.append(r)
 
         return con_roads

@@ -71,12 +71,12 @@ class GameWrapper:
                 self.game.add_road(player=0, start=self.game.board.points[1][3], end=self.game.board.points[1][4], is_starting=True)
                 self.game.add_road(player=0, start=self.game.board.points[1][2], end=self.game.board.points[1][1], is_starting=True)
                 self.game.add_road(player=0, start=self.game.board.points[1][1], end=self.game.board.points[0][0], is_starting=True)
-                self.game.add_road(player=1, start=self.game.board.points[3][3], end=self.game.board.points[3][2], is_starting=True)
-                self.game.add_road(player=1, start=self.game.board.points[2][6], end=self.game.board.points[2][5], is_starting=True)
-                self.game.add_road(player=2, start=self.game.board.points[4][3], end=self.game.board.points[4][4], is_starting=True)
-                self.game.add_road(player=2, start=self.game.board.points[3][8], end=self.game.board.points[3][7], is_starting=True)
-                self.game.add_road(player=3, start=self.game.board.points[4][6], end=self.game.board.points[4][5], is_starting=True)
-                self.game.add_road(player=3, start=self.game.board.points[1][6], end=self.game.board.points[1][7], is_starting=True)
+                # self.game.add_road(player=1, start=self.game.board.points[3][3], end=self.game.board.points[3][2], is_starting=True)
+                # self.game.add_road(player=1, start=self.game.board.points[2][6], end=self.game.board.points[2][5], is_starting=True)
+                # self.game.add_road(player=2, start=self.game.board.points[4][3], end=self.game.board.points[4][4], is_starting=True)
+                # self.game.add_road(player=2, start=self.game.board.points[3][8], end=self.game.board.points[3][7], is_starting=True)
+                # self.game.add_road(player=3, start=self.game.board.points[4][6], end=self.game.board.points[4][5], is_starting=True)
+                # self.game.add_road(player=3, start=self.game.board.points[1][6], end=self.game.board.points[1][7], is_starting=True)
                 
                 self.game.players[0].add_dev_card(DevCard.Knight)
                 self.game.players[0].add_dev_card(DevCard.YearOfPlenty)
@@ -714,7 +714,6 @@ class GameWrapper:
     
     def doAction(self, player, args):
         action_type = args[0]
-
 
 
         # No op
