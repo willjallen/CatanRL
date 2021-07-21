@@ -628,90 +628,88 @@ class GameWrapper:
                         second_resource_response = int(input())
                         full_action.append(second_resource_response)
 
+        # Prompt Play robber
+        if(response == 6):
+            print('Allowed Locations: (r, i)')
+            for action in allowed_actions['allowed_robber_tiles']:
+                print('(', end='')
+                print(action[0], end='')
+                print(', ', end='')
+                print(colors[action[1].num], end='')
+                print('(' + str(action[1].num) + ')', end='')
+                print(') ', end='') 
+            
+            print()
 
+            print('r:')
+            loc_r_response = int(input())
+            full_action.append(loc_r_response)
+            print('i:')
+            loc_i_response = int(input())
+            full_action.append(loc_i_response)
+            
+            allowed_players = [y for x, y in allowed_actions['allowed_robber_tiles'] if (x.position[0] == loc_r_response and x.position[1] == loc_i_response)]
 
-            # Prompt Play robber
-            if(response == 6):
-                print('Allowed Locations: (r, i)')
-                for action in allowed_actions['allowed_robber_tiles']:
-                    print('(', end='')
-                    print(action[0], end='')
-                    print(', ', end='')
-                    print(colors[action[1].num], end='')
-                    print('(' + str(action[1].num) + ')', end='')
-                    print(') ', end='') 
+            print('Player:')
+            for allowed_player in allowed_players:
+                print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
+            print()
+            player_response = int(input())
+            full_action.append(player_response)
+        # Prompt Do trade
+        if(response == 7):
+
+                for allowed_player in allowed_actions['allowed_trade_partners']:
+                        print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
+                print()
+                which_player_response = int(input())
+                full_action.append(self.game.players[which_player_response])
                 
+
+                allowed_cards = allowed_actions['allowed_trade_pairs']
+                allowed_cards = [(x,y) for x, y in allowed_cards if x == which_player_response][0][1]
+                allowed_cards = [x[0] for x in allowed_cards]
+
+
+                print('You offer:') 
+                for allowed_card in allowed_cards:
+                        print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
                 print()
 
-                print('r:')
-                loc_r_response = int(input())
-                full_action.append(loc_r_response)
-                print('i:')
-                loc_i_response = int(input())
-                full_action.append(loc_i_response)
-                
-                allowed_players = [y for x, y in allowed_actions['allowed_robber_tiles'] if (x.position[0] == loc_r_response and x.position[1] == loc_i_response)]
+                offered_resource_response = int(input())
+                full_action.append(ResCard(offered_resource_response))  
 
-                print('Player:')
-                for allowed_player in allowed_players:
-                    print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
+
+                other_player_allowed_cards = allowed_actions['allowed_trade_pairs']
+                other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x == which_player_response][0][1]
+                other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x.value == offered_resource_response][0]
+
+                print('You receive:')
+                for allowed_card in other_player_allowed_cards[1]:
+                        print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
                 print()
+                received_resource_response = int(input())
+                full_action.append(ResCard(received_resource_response))
+        # Accept Trade
+        if(response == 8):
+                pass
+        # Deny trade
+        if(response == 9):
+                pass
+        # Forfeit card
+        if(response == 10):
+                print('Forfeit(' + str(player.forfeited_cards_left) + ' left): ') 
+                
+                for allowed_card in allowed_actions['allowed_forfeit_cards']:
+                        print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
+                print()
+
                 player_response = int(input())
                 full_action.append(player_response)
-            # Prompt Do trade
-            if(response == 7):
 
-                    for allowed_player in allowed_actions['allowed_trade_partners']:
-                            print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
-                    print()
-                    which_player_response = int(input())
-                    full_action.append(self.game.players[which_player_response])
-                    
-
-                    allowed_cards = allowed_actions['allowed_trade_pairs']
-                    allowed_cards = [(x,y) for x, y in allowed_cards if x == which_player_response][0][1]
-                    allowed_cards = [x[0] for x in allowed_cards]
-
-
-                    print('You offer:') 
-                    for allowed_card in allowed_cards:
-                            print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
-                    print()
-
-                    offered_resource_response = int(input())
-                    full_action.append(ResCard(offered_resource_response))  
-
-
-                    other_player_allowed_cards = allowed_actions['allowed_trade_pairs']
-                    other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x == which_player_response][0][1]
-                    other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x.value == offered_resource_response][0]
-
-                    print('You receive:')
-                    for allowed_card in other_player_allowed_cards[1]:
-                            print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
-                    print()
-                    received_resource_response = int(input())
-                    full_action.append(ResCard(received_resource_response))
-            # Accept Trade
-            if(response == 8):
-                    pass
-            # Deny trade
-            if(response == 9):
-                    pass
-            # Forfeit card
-            if(response == 10):
-                    print('Forfeit(' + str(player.forfeited_cards_left) + ' left): ') 
-                    
-                    for allowed_card in allowed_actions['allowed_forfeit_cards']:
-                            print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
-                    print()
-
-                    player_response = int(input())
-                    full_action.append(player_response)
-
-            if(response == 11):
-                    pass
-            return full_action        
+        if(response == 11):
+                pass
+        return full_action        
 
     
     def doAction(self, player, args):
