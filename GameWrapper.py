@@ -53,6 +53,15 @@ class GameWrapper:
         
         # Other stuff here  
         # Maybe a manual board input, but thats sounds lame rn
+        print('Print Mode? (y/n)')
+        response = input()
+
+        self.print_mode = False
+
+        if(response.lower() == 'y'):
+                self.print_mode = True
+
+
 
         # Init
         debug = True
@@ -213,32 +222,36 @@ class GameWrapper:
                                 if(len(allowed_actions['allowed_actions']) == 1 and (NO_OP in allowed_actions['allowed_actions'])):
                                         action_okay = True
                                 else:
-                                        # Display turn relevant info
-                                        CatanGame.displayBoard()
-                                        print('Turn: ' + str(turn_counter))
-                                        print('Player with turn: ' + colors[player_with_turn_index])
-                                        print('Roll: ' + str(self.game.last_roll))
-                                        print()
-                                        if(self.game.largest_army != None):
-                                                print('Largest Army: ' + colors[self.game.largest_army])
-                                        else:
-                                                print('Largest Army: None')
+                                        if(self.print_mode):
+                                                # Display turn relevant info
+                                                CatanGame.displayBoard()
+                                                print('Turn: ' + str(turn_counter))
+                                                print('Player with turn: ' + colors[player_with_turn_index])
+                                                print('Roll: ' + str(self.game.last_roll))
+                                                print()
+                                                if(self.game.largest_army != None):
+                                                        print('Largest Army: ' + colors[self.game.largest_army])
+                                                else:
+                                                        print('Largest Army: None')
 
-                                        if(self.game.longest_road_owner != None):
-                                                print('Longest Road: ' + colors[self.game.longest_road_owner])
-                                        else:
-                                                print('Longest Road: None')
+                                                if(self.game.longest_road_owner != None):
+                                                        print('Longest Road: ' + colors[self.game.longest_road_owner])
+                                                else:
+                                                        print('Longest Road: None')
 
-                                        print()
-                                        # Display player relevant info
-                                        CatanGame.displayPlayerGameInfo(curr_player)
+                                                print()
+                                                # Display player relevant info
+                                                CatanGame.displayPlayerGameInfo(curr_player)
 
                                         if(curr_agent.human):
                                                 full_action = CatanGame.promptActions(curr_player, allowed_actions)
                                         else:
                                                 full_action = curr_agent.doTurn(allowed_actions)
-                                        print(full_action)
-                                        print(action_types[full_action[0]])
+                                        
+                                        if(self.print_mode):
+                                                print(full_action)
+                                                print(action_types[full_action[0]])
+                                        
                                         status = CatanGame.doAction(curr_player, full_action)
 
                                         self.game.set_longest_road()
@@ -252,8 +265,9 @@ class GameWrapper:
                                                         if(len(p.cards) >= 8):
                                                                 p.forfeited_cards_left = int(len(p.cards)/2)
                                         else:
-                                                print('Error: ')
-                                                print(Statuses.status_list[int(status)])
+                                                if(self.print_mode):
+                                                        print('Error: ')
+                                                        print(Statuses.status_list[int(status)])
 
                                         # If the player still has cards to forfeit, stay on this player
                                         if(curr_player.forfeited_cards_left > 0):
@@ -263,6 +277,13 @@ class GameWrapper:
                                 self.game.has_ended = True
                                 self.game.winner = player_with_turn
                                 player_with_turn.turn_over = True
+
+                                 # Display turn relevant info
+                                CatanGame.displayBoard()
+                                print('Turn: ' + str(turn_counter))
+                                print('Player with turn: ' + colors[player_with_turn_index])
+                                print('Roll: ' + str(self.game.last_roll))
+                                print()
 
                         turn_over = player_with_turn.turn_over 
                         self.game.rolled_seven = False
