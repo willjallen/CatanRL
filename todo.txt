@@ -7,6 +7,7 @@ Game Engine Related:
 	- Might have to redo the entire purchase_play building into seperate purchase and play priority action (to preserve only having one set of (r,i) output neurons)
 - Add non human agent debug view
 -** Implement initial placement actions
+	- Add initial road placement function to account for the fact that initial roads can only be placed off the last building, not any other road or building
 - Dev card can only be played at least a turn after it was purchased
 - Saving states for undo, analysis and training
 - Arenas, matchmaking and ELO

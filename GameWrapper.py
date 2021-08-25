@@ -57,26 +57,26 @@ class GameWrapper:
         # Init
         debug = True
         if debug:
-                self.game.add_settlement(player=0, point=self.game.board.points[0][0], is_starting=True)                
-                self.game.add_settlement(player=0, point=self.game.board.points[1][2], is_starting=True)
-                self.game.add_settlement(player=1, point=self.game.board.points[3][3], is_starting=True)
-                self.game.add_settlement(player=1, point=self.game.board.points[2][6], is_starting=True)
-                self.game.add_settlement(player=2, point=self.game.board.points[4][3], is_starting=True)
-                self.game.add_settlement(player=2, point=self.game.board.points[3][8], is_starting=True)
-                self.game.add_settlement(player=3, point=self.game.board.points[4][6], is_starting=True)
-                self.game.add_settlement(player=3, point=self.game.board.points[1][6], is_starting=True)
-                # Add some roads
-                self.game.add_road(player=0, start=self.game.board.points[0][0], end=self.game.board.points[0][1], is_starting=True)
-                self.game.add_road(player=0, start=self.game.board.points[1][2], end=self.game.board.points[1][3], is_starting=True)
-                self.game.add_road(player=0, start=self.game.board.points[1][3], end=self.game.board.points[1][4], is_starting=True)
-                self.game.add_road(player=0, start=self.game.board.points[1][2], end=self.game.board.points[1][1], is_starting=True)
-                self.game.add_road(player=0, start=self.game.board.points[1][1], end=self.game.board.points[0][0], is_starting=True)
-                self.game.add_road(player=1, start=self.game.board.points[3][3], end=self.game.board.points[3][2], is_starting=True)
-                self.game.add_road(player=1, start=self.game.board.points[2][6], end=self.game.board.points[2][5], is_starting=True)
-                self.game.add_road(player=2, start=self.game.board.points[4][3], end=self.game.board.points[4][4], is_starting=True)
-                self.game.add_road(player=2, start=self.game.board.points[3][8], end=self.game.board.points[3][7], is_starting=True)
-                self.game.add_road(player=3, start=self.game.board.points[4][6], end=self.game.board.points[4][5], is_starting=True)
-                self.game.add_road(player=3, start=self.game.board.points[1][6], end=self.game.board.points[1][7], is_starting=True)
+                # self.game.add_settlement(player=0, point=self.game.board.points[0][0], is_starting=True)                
+                # self.game.add_settlement(player=0, point=self.game.board.points[1][2], is_starting=True)
+                # self.game.add_settlement(player=1, point=self.game.board.points[3][3], is_starting=True)
+                # self.game.add_settlement(player=1, point=self.game.board.points[2][6], is_starting=True)
+                # self.game.add_settlement(player=2, point=self.game.board.points[4][3], is_starting=True)
+                # self.game.add_settlement(player=2, point=self.game.board.points[3][8], is_starting=True)
+                # self.game.add_settlement(player=3, point=self.game.board.points[4][6], is_starting=True)
+                # self.game.add_settlement(player=3, point=self.game.board.points[1][6], is_starting=True)
+                # # Add some roads
+                # self.game.add_road(player=0, start=self.game.board.points[0][0], end=self.game.board.points[0][1], is_starting=True)
+                # self.game.add_road(player=0, start=self.game.board.points[1][2], end=self.game.board.points[1][3], is_starting=True)
+                # self.game.add_road(player=0, start=self.game.board.points[1][3], end=self.game.board.points[1][4], is_starting=True)
+                # self.game.add_road(player=0, start=self.game.board.points[1][2], end=self.game.board.points[1][1], is_starting=True)
+                # self.game.add_road(player=0, start=self.game.board.points[1][1], end=self.game.board.points[0][0], is_starting=True)
+                # self.game.add_road(player=1, start=self.game.board.points[3][3], end=self.game.board.points[3][2], is_starting=True)
+                # self.game.add_road(player=1, start=self.game.board.points[2][6], end=self.game.board.points[2][5], is_starting=True)
+                # self.game.add_road(player=2, start=self.game.board.points[4][3], end=self.game.board.points[4][4], is_starting=True)
+                # self.game.add_road(player=2, start=self.game.board.points[3][8], end=self.game.board.points[3][7], is_starting=True)
+                # self.game.add_road(player=3, start=self.game.board.points[4][6], end=self.game.board.points[4][5], is_starting=True)
+                # self.game.add_road(player=3, start=self.game.board.points[1][6], end=self.game.board.points[1][7], is_starting=True)
                 
                 self.game.players[0].add_dev_card(DevCard.Knight)
                 self.game.players[0].add_dev_card(DevCard.YearOfPlenty)
@@ -137,21 +137,34 @@ class GameWrapper:
 
         ## TODO
         # This is not debug
-        if not debug:
-                for player_index in starting_play_order:
-                    curr_agent = self.agents[player_index]
-                    curr_player = player_with_turn = curr_agent.player
-                    allowed_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
-                    while(not placement_okay):
-                        if(curr_agent.human):
-                            full_action = CatanGame.promptActions(curr_player, allowed_actions)
-                        else:
-                            full_action = curr_agent.doTurn(allowed_actions)
 
-                        status = CatanGame.doAction(curr_player, full_action)
-                        
-                        if(status == Statuses.ALL_GOOD):
-                            placement_okay = True
+        for player_index in starting_play_order:
+                CatanGame.displayBoard()
+                printBlankLines(8)
+                print('Player with turn: ' + colors[player_index])
+                curr_agent = self.agents[player_index]
+                curr_player = player_with_turn = curr_agent.player
+
+                curr_player.has_completed_initial_placement = False
+                curr_player.has_placed_initial_settlement = False
+
+                # Two iterations for settlement and road
+                for i in range(0, 2):
+                        allowed_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
+                        placement_okay = False
+                        while(not placement_okay):
+                                if(curr_agent.human):
+                                    full_action = CatanGame.promptActions(curr_player, allowed_actions)
+                                else:
+                                    full_action = curr_agent.doTurn(allowed_actions)
+
+                                status = CatanGame.doAction(curr_player, full_action)
+
+                                if(status == Statuses.ALL_GOOD):
+                                    placement_okay = True
+
+
+        self.game.initial_placement_mode = False
 
         # Add initial placement yield
         # (This might be the wrong way to do it)
@@ -309,13 +322,18 @@ class GameWrapper:
         # - It is players turn
         # - initial_placement_mode is true
         if(is_players_turn and self.game.initial_placement_mode):
-            if(player.num_initial_settlements > 0):
-                actions['allowed_actions'].append(INITIAL_PLACE_BUILDING)
-                actions['allowed_intial_settlement_points'] = player.get_available_initial_settlement_points()
-            if(player.num_initial_roads > 0):
-                actions['allowed_actions'].append(INITIAL_PLACE_ROAD)
+                if(player.has_completed_initial_placement):
+                        actions['allowed_actions'].append(END_TURN)
+                        return actions
+                if(player.num_initial_settlements > 0 and not player.has_placed_initial_settlement):
+                        actions['allowed_actions'].append(INITIAL_PLACE_BUILDING)
+                        actions['allowed_settlement_points'] = player.get_available_initial_settlement_points()
+                        # actions['allowed_intial_settlement_points'] = player.get_available_initial_settlement_points()
+                if(player.num_initial_roads > 0 and player.has_placed_initial_settlement):
+                        actions['allowed_actions'].append(INITIAL_PLACE_ROAD)
+                        actions['allowed_road_point_pairs'] = player.get_available_initial_road_point_pairs()
 
-            return actions
+                return actions
 
         ## FORFEIT_CARDS (Priority action, others ignored)
         # - A 7 is active and player has >= 8 cards
@@ -867,18 +885,22 @@ class GameWrapper:
         # Initial placements
         # Road
         if(action_type == 12):
-            loc_r_response = args[1]
-            loc_i_response = args[2]     
-            loc_r_response_2 = args[3]
-            loc_i_response_2 = args[4]     
-            status = player.build_road(self.game.board.points[loc_r_response][loc_i_response], self.game.board.points[loc_r_response_2][loc_i_response_2])
+                loc_r_response = args[1]
+                loc_i_response = args[2]     
+                loc_r_response_2 = args[3]
+                loc_i_response_2 = args[4]     
+                status = player.build_road(self.game.board.points[loc_r_response][loc_i_response], self.game.board.points[loc_r_response_2][loc_i_response_2], is_starting=True)
+                player.has_completed_initial_placement = True
 
         # Building
         if(action_type == 13):
-            loc_r_response = args[1]
-            loc_i_response = args[2]
-            status = player.build_settlement(self.game.board.points[loc_r_response][loc_i_response])
-            
+                loc_r_response = args[1]
+                loc_i_response = args[2]
+                status = player.build_settlement(self.game.board.points[loc_r_response][loc_i_response], is_starting=True)
+                player.has_placed_initial_settlement = True
+                player.initial_settlement = self.game.board.points[loc_r_response][loc_i_response]
+
+
         return Statuses.ALL_GOOD
 
 
