@@ -328,7 +328,6 @@ class GameWrapper:
                 if(player.num_initial_settlements > 0 and not player.has_placed_initial_settlement):
                         actions['allowed_actions'].append(INITIAL_PLACE_BUILDING)
                         actions['allowed_settlement_points'] = player.get_available_initial_settlement_points()
-                        # actions['allowed_intial_settlement_points'] = player.get_available_initial_settlement_points()
                 if(player.num_initial_roads > 0 and player.has_placed_initial_settlement):
                         actions['allowed_actions'].append(INITIAL_PLACE_ROAD)
                         actions['allowed_road_point_pairs'] = player.get_available_initial_road_point_pairs()

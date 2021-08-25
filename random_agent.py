@@ -129,15 +129,26 @@ class RandomAgent():
 		if(action == 10):
 				choice = random.choice(allowed_actions['allowed_forfeit_cards'])
 				full_action.append(choice)
+		
+
 		# if(response == 11):
 		# 		pass
 
 		# Initial Placements
+
 		# Initial road placement
 		if(action == 12):
-			pass
+			loc = random.choice(allowed_actions['allowed_road_point_pairs'])
+			full_action.append(loc[0].position[0])
+			full_action.append(loc[0].position[1])
+			full_action.append(loc[1].position[0])
+			full_action.append(loc[1].position[1])
+
+		# Initial settlement placement
 		if(action == 13):
-			pass
+			loc = random.choice(allowed_actions['allowed_settlement_points'])
+			full_action.append(loc.position[0])
+			full_action.append(loc.position[1])
 
 		return full_action
 
