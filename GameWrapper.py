@@ -51,7 +51,7 @@ class GameWrapper:
         self.game = game
         self.boardRenderer = BoardRenderer(game.board, [50, 10])
         
-        # Other stuff here
+        # Other stuff here  
         # Maybe a manual board input, but thats sounds lame rn
 
         # Init
@@ -89,7 +89,7 @@ class GameWrapper:
 
                 # self.game.board.upgrade_settlement(0, self.game.board.points[1][2])
 
-        # Make players into agents
+        # Wrap players into agents
         
         for player in self.game.players:
                 if debug:
@@ -133,29 +133,25 @@ class GameWrapper:
         print(starting_play_order)
         placement_okay = False
 
+        self.game.initial_placement_mode = True
+
+        ## TODO
+        # This is not debug
         if not debug:
                 for player_index in starting_play_order:
-                        
-                        curr_agent = self.agents[player_index]
-                        if(curr_agent.is_human):
-                                while(not placement_okay):
-                                        CatanGame.displayBoard()
-                                        print('Player ' + str(curr_agent.player.num))
-                                        # printBlankLines(10)
-                                        
-                                        full_action = CatanGame.promptInitialPlacement()
-                                        status = CatanGame.doInitialPlacement(curr_agent.player, full_action)
-                                        
-                                        if(status == Statuses.ALL_GOOD):
-                                                placement_okay = True
-                                        else:
-                                                print(Statuses.status_list[status])
-                                        print()
-
-                                placement_okay = False
+                    curr_agent = self.agents[player_index]
+                    curr_player = player_with_turn = curr_agent.player
+                    allowed_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
+                    while(not placement_okay):
+                        if(curr_agent.human):
+                            full_action = CatanGame.promptActions(curr_player, allowed_actions)
                         else:
-                                # AI stuff
-                                pass
+                            full_action = curr_agent.doTurn(allowed_actions)
+
+                        status = CatanGame.doAction(curr_player, full_action)
+                        
+                        if(status == Statuses.ALL_GOOD):
+                            placement_okay = True
 
         # Add initial placement yield
         # (This might be the wrong way to do it)
@@ -290,6 +286,7 @@ class GameWrapper:
         'allowed_buildings': [],
         'allowed_robber_tiles': [],
         'allowed_road_point_pairs': [],
+        'allowed_intial_settlement_points': [], 
         'allowed_settlement_points': [], 
         'allowed_city_points': [],
         'allowed_victim_players': [],
@@ -312,7 +309,13 @@ class GameWrapper:
         # - It is players turn
         # - initial_placement_mode is true
         if(is_players_turn and self.game.initial_placement_mode):
-            pass
+            if(player.num_initial_settlements > 0):
+                actions['allowed_actions'].append(INITIAL_PLACE_BUILDING)
+                actions['allowed_intial_settlement_points'] = player.get_available_initial_settlement_points()
+            if(player.num_initial_roads > 0):
+                actions['allowed_actions'].append(INITIAL_PLACE_ROAD)
+
+            return actions
 
         ## FORFEIT_CARDS (Priority action, others ignored)
         # - A 7 is active and player has >= 8 cards
@@ -709,13 +712,51 @@ class GameWrapper:
 
         if(response == 11):
                 pass
+
+        # Prompt initial road placement
+        if(response == 12):
+            print('Place initial road')
+
+            print('Allowed Locations: (r, i)->(r2, i2)')
+            print(allowed_actions['allowed_road_point_pairs'])
+
+            print('r:')
+            loc_r_response = int(input())
+            full_action.append(loc_r_response)
+            print('i:')
+            loc_i_response = int(input())
+            full_action.append(loc_i_response)
+
+            print('r 2:')
+            loc_r_response = int(input())
+            full_action.append(loc_r_response)
+            print('i 2:')
+            loc_i_response = int(input())
+            full_action.append(loc_i_response)
+
+        # Prompt initial settlement placement
+        if(response == 13):
+            print('Place initial settlement')
+            
+            # TODO
+            # Get all places on the board which are >=2 distance to next player settlement
+            
+            print('Allowed Locations: (r, i)')
+            print(allowed_actions['allowed_settlement_points'])
+
+            print('r:')
+            loc_r_response = int(input())
+            full_action.append(loc_r_response)
+            print('i:')
+            loc_i_response = int(input())
+            full_action.append(loc_i_response)
+
         return full_action        
 
-    
+
+
     def doAction(self, player, args):
         action_type = args[0]
-
-
 
         # No op
         if(action_type == 0):
@@ -822,41 +863,57 @@ class GameWrapper:
         if(action_type == 11):
                 player.turn_over = True
                 return Statuses.ALL_GOOD
+
+        # Initial placements
+        # Road
+        if(action_type == 12):
+            loc_r_response = args[1]
+            loc_i_response = args[2]     
+            loc_r_response_2 = args[3]
+            loc_i_response_2 = args[4]     
+            status = player.build_road(self.game.board.points[loc_r_response][loc_i_response], self.game.board.points[loc_r_response_2][loc_i_response_2])
+
+        # Building
+        if(action_type == 13):
+            loc_r_response = args[1]
+            loc_i_response = args[2]
+            status = player.build_settlement(self.game.board.points[loc_r_response][loc_i_response])
+            
         return Statuses.ALL_GOOD
 
 
-    def promptInitialPlacement(self):
-        full_action = []
-        print('Settlement')
-        print('Tile Location X:')
-        loc_x_response = int(input())
-        full_action.append(loc_x_response)
-        print('Tile Location Y:')
-        loc_y_response = int(input())
-        full_action.append(loc_y_response)
+    # def promptInitialPlacement(self):
+    #     full_action = []
+    #     print('Settlement')
+    #     print('Tile Location X:')
+    #     loc_x_response = int(input())
+    #     full_action.append(loc_x_response)
+    #     print('Tile Location Y:')
+    #     loc_y_response = int(input())
+    #     full_action.append(loc_y_response)
 
-        print('Location road endpoint')
-        print('Road Location X:')
-        road_loc_x_response = int(input())
-        full_action.append(road_loc_x_response)
-        print('Road Location Y:')
-        road_loc_y_response = int(input())
-        full_action.append(road_loc_y_response)
+    #     print('Location road endpoint')
+    #     print('Road Location X:')
+    #     road_loc_x_response = int(input())
+    #     full_action.append(road_loc_x_response)
+    #     print('Road Location Y:')
+    #     road_loc_y_response = int(input())
+    #     full_action.append(road_loc_y_response)
 
-        return full_action
+    #     return full_action
 
 
-    def doInitialPlacement(self, player, args):
-        loc_x = args[0]
-        loc_y = args[1]
+    # def doInitialPlacement(self, player, args):
+    #     loc_x = args[0]
+    #     loc_y = args[1]
 
-        loc_x_2 = args[2]
-        loc_y_2 = args[3]
-        status = player.build_settlement(self.game.board.points[loc_x][loc_y], True)
-        if(status != Statuses.ALL_GOOD):
-                return status
-        status = player.build_road(self.game.board.points[loc_x][loc_y], self.game.board.points[loc_x_2][loc_y_2], True)
-        return status
+    #     loc_x_2 = args[2]
+    #     loc_y_2 = args[3]
+    #     status = player.build_settlement(self.game.board.points[loc_x][loc_y], True)
+    #     if(status != Statuses.ALL_GOOD):
+    #             return status
+    #     status = player.build_road(self.game.board.points[loc_x][loc_y], self.game.board.points[loc_x_2][loc_y_2], True)
+    #     return status
 
     
     def displayBoard(self):
@@ -889,7 +946,30 @@ class GameWrapper:
                 print('Forfeit: ' + ResCard(player.trade_forfeit_card).name)
                 print('Receive: ' + ResCard(player.trade_receive_card).name)
 
+    # Used for pitboss mode
+    def displayLimitedPlayerGameInfo(self, player):
+        print('Player ' + str(player.num) + '(' + colors[player.num] + ')'  ':')
+        print('Knight Cards Played: ' + str(player.knight_cards))
+        print('Longest Road Length: ' + str(player.longest_road_length))
+        print('Forfeited cards left: ' + str(player.forfeited_cards_left))
+        print('Number of attempted trades this turn: ' + str(player.num_trades_in_turn))
+        print('Accessible Ports:')
+        harbors = player.get_connected_harbor_types()
+        print(harbors)
+        print('Robber Location:')
+        print(self.game.board.robber)
+        
+        # Pending trades
+        if(player.pending_trade):
+                print('Pending Trade from player ' + str(player.trading_player.num) + '(' + colors[player.trading_player.num] + ')')
+                print('Forfeit: ' + ResCard(player.trade_forfeit_card).name)
+                print('Receive: ' + ResCard(player.trade_receive_card).name)
+
+    def displayNonHumanGameInfo(self, player):
+        pass
     
+
+
     def displayFullGameInfo(self):
         self.displayBoard()
         for player in self.game.players:

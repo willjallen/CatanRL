@@ -132,6 +132,13 @@ class RandomAgent():
 		# if(response == 11):
 		# 		pass
 
+		# Initial Placements
+		# Initial road placement
+		if(action == 12):
+			pass
+		if(action == 13):
+			pass
+
 		return full_action
 
 

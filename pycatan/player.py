@@ -12,7 +12,9 @@ class Player:
         self.game = game
         # the player number for this player
         self.num = num
-        # the starting roads for this player
+        # used to track which initial placements the player has made        
+        self.num_initial_settlements = 2
+        self.num_initial_roads = 2
         # used to determine the longest road
         self.starting_roads = []
         # the number of victory points
@@ -226,6 +228,25 @@ class Player:
         [unique_road_point_pairs.append(pair) for pair in road_point_pairs if pair not in unique_road_point_pairs]
         return unique_road_point_pairs
 
+
+    def get_available_initial_settlement_points(self):
+        available_points = []
+
+        for r in self.game.board.points:
+            for point in r:
+
+                # Check if there is already a building here
+                if(point.building == None):
+                    # Get all adjacent points and check for buildings there
+                    adj_points_clear = True
+                    for adj_point in point.get_connected_points:
+                        if(adj_point == Building.BUILDING_SETTLEMENT or adj_point == Building.BUILDING_CITY):
+                            adj_points_clear = False
+
+                    if(adj_points_clear):
+                        available_points.append(point) 
+
+        return available_points
 
     def get_available_settlement_points(self):
 
