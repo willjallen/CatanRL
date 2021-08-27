@@ -9,7 +9,7 @@ import random
 
 colors = ['Red', 'Cyan', 'Green', 'Yellow']
 
-action_types = ["no_op", "roll", "purchase_resource", "purchase_and_play_building", "purchase_dev_card", "play_dev_card", "play_robber", "start_trade", "accept_trade", "deny_trade", "forfeit_cards", "end_turn", "initial_placement_road", "initial_placement_building"]
+action_types = ["no_op", "roll", "purchase_resource", "purchase_and_play_building", "purchase_dev_card", "play_dev_card", "play_robber", "start_trade", "accept_trade", "deny_trade", "forfeit_cards", "end_turn", "initial_placement_road", "initial_placement_building", "place_road"]
 NO_OP = 0
 ROLL = 1
 PURCHASE_RESOURCE = 2
@@ -24,6 +24,7 @@ FORFEIT_CARDS = 10
 END_TURN = 11
 INITIAL_PLACE_ROAD = 12
 INITIAL_PLACE_BUILDING = 13
+PLACE_ROAD = 14
 
 def printBlankLines(num):
         for i in range(0, num):

@@ -45,6 +45,10 @@ class Player:
         self.trade_receive_card = None
         # number of cards the player must discard (from a 7 roll)
         self.forfeited_cards_left = 0
+        # whether the player has played a road building dev card
+        self.played_road_building = False
+        # how many roads the player has left to place
+        self.roads_remaining = 0
 
     # builds a settlement belonging to this player
     def build_settlement(self, point, is_starting=False):
@@ -503,7 +507,7 @@ class Player:
         del roads[roads.index(new_road)]
 
         # checks for longest road
-        print('===Debug===')
+        # print('===Debug===')
         self.check_connected_roads(road=new_road, all_roads=roads, length=1)
 
     # checks the roads for connected roads, and then checks those roads until there are no more

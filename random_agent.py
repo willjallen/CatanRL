@@ -9,8 +9,8 @@ class RandomAgent():
 		self.human = False
 
 	def doTurn(self, allowed_actions):
-		print('allowed_actions: ')
-		print(allowed_actions['allowed_actions'])
+		# print('allowed_actions: ')
+		# print(allowed_actions['allowed_actions'])
 		action = random.choice(allowed_actions['allowed_actions'])
 		full_action = []
 
@@ -20,7 +20,8 @@ class RandomAgent():
 			pass
 		# Prompt No op
 		if(action == 1):
-				print(1)
+			pass
+				# print(1)
 		# Prompt Purchase Resource
 		if(action == 2):
 			requested_resource = random.choice(list(ResCard)).value
