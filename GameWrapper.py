@@ -147,6 +147,7 @@ class GameWrapper:
 
         ## TODO
         # This is not debug
+        
 
         for player_index in starting_play_order:
                 CatanGame.displayBoard()
@@ -356,6 +357,12 @@ class GameWrapper:
 
                 return actions
 
+
+        ## PLACE_ROAD (Priority action, others ignored)
+        if(player.played_road_building and player.roads_remaining > 0):
+                actions['allowed_actions'].append(PLACE_ROAD)
+                actions['allowed_road_point_pairs'] = player.get_available_road_point_pairs()
+                return actions
         ## FORFEIT_CARDS (Priority action, others ignored)
         # - A 7 is active and player has >= 8 cards
         if(player.forfeited_cards_left > 0):
@@ -388,7 +395,7 @@ class GameWrapper:
                 playable_dev_card = False
                 for card in DevCard:
                         if(card in player.dev_cards):
-                                if(card == DevCard.Knight or card == DevCard.YearOfPlenty or card == DevCard.Monopoly):
+                                if(card == DevCard.Knight or card == DevCard.YearOfPlenty or card == DevCard.Monopoly or card == DevCard.Road):
                                         actions['allowed_dev_cards'].append(card)
                                         playable_dev_card = True
 
@@ -535,13 +542,13 @@ class GameWrapper:
         
         print(action_types[response])
         # Roll
-        if(response == 0):
+        if(response == ROLL):
                 pass
         # Prompt No op
-        if(response == 1):
+        if(response == NO_OP):
                 print(1)
         # Prompt Purchase Resource
-        if(response == 2):
+        if(response == PURCHASE_RESOURCE):
                 print('Request Resource:')
                 print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
                 requested_resource = int(input())
@@ -553,7 +560,7 @@ class GameWrapper:
                 forfeited_resource = int(input())
                 full_action.append(forfeited_resource)
         # Prompt Purchase & play building
-        if(response == 3):
+        if(response == PURCHASE_AND_PLAY_BUILDING):
                 for allowed_building in allowed_actions['allowed_buildings']:
                         print(str(allowed_building) + ': ' + Building.BUILDINGS[allowed_building] + ' | ', end='')
                 print()
@@ -606,10 +613,10 @@ class GameWrapper:
                         full_action.append(loc_i_response)
 
         # Prompt Purchase dev card
-        if(response == 4):
+        if(response == PURCHASE_DEV_CARD):
                 pass
         # Prompt Play dev card
-        if(response == 5):
+        if(response == PLAY_DEV_CARD):
                 for allowed_card in allowed_actions['allowed_dev_cards']:
                         print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
                 print()
@@ -619,12 +626,7 @@ class GameWrapper:
 
 
                 if(dev_card_response == 0):
-                        print('Location X:')
-                        loc_x_response = int(input())
-                        full_action.append(loc_x_response)
-                        print('Location Y:')
-                        loc_y_response = int(input())
-                        full_action.append(loc_y_response)
+                        pass
 
                 if(dev_card_response == 2):
                         print('Allowed Locations: (r, i)')
@@ -671,7 +673,7 @@ class GameWrapper:
                         full_action.append(second_resource_response)
 
         # Prompt Play robber
-        if(response == 6):
+        if(response == PLAY_ROBBER):
             print('Allowed Locations: (r, i)')
             for action in allowed_actions['allowed_robber_tiles']:
                 print('(', end='')
@@ -699,7 +701,7 @@ class GameWrapper:
             player_response = int(input())
             full_action.append(player_response)
         # Prompt Do trade
-        if(response == 7):
+        if(response == START_TRADE):
 
                 for allowed_player in allowed_actions['allowed_trade_partners']:
                         print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
@@ -733,13 +735,13 @@ class GameWrapper:
                 received_resource_response = int(input())
                 full_action.append(ResCard(received_resource_response))
         # Accept Trade
-        if(response == 8):
+        if(response == ACCEPT_TRADE):
                 pass
         # Deny trade
-        if(response == 9):
+        if(response == DENY_TRADE):
                 pass
         # Forfeit card
-        if(response == 10):
+        if(response == FORFEIT_CARDS):
                 print('Forfeit(' + str(player.forfeited_cards_left) + ' left): ') 
                 
                 for allowed_card in allowed_actions['allowed_forfeit_cards']:
@@ -753,7 +755,7 @@ class GameWrapper:
                 pass
 
         # Prompt initial road placement
-        if(response == 12):
+        if(response == INITIAL_PLACE_ROAD):
             print('Place initial road')
 
             print('Allowed Locations: (r, i)->(r2, i2)')
@@ -774,7 +776,7 @@ class GameWrapper:
             full_action.append(loc_i_response)
 
         # Prompt initial settlement placement
-        if(response == 13):
+        if(response == INITIAL_PLACE_BUILDING):
             print('Place initial settlement')
             
             # TODO
@@ -790,6 +792,26 @@ class GameWrapper:
             loc_i_response = int(input())
             full_action.append(loc_i_response)
 
+        if(response == PLACE_ROAD):
+
+                print('Place road:')
+                print('Allowed Locations: (r, i)->(r2, i2)')
+                print(allowed_actions['allowed_road_point_pairs'])
+
+                print('r:')
+                loc_r_response = int(input())
+                full_action.append(loc_r_response)
+                print('i:')
+                loc_i_response = int(input())
+                full_action.append(loc_i_response)
+
+                print('r 2:')
+                loc_r_response = int(input())
+                full_action.append(loc_r_response)
+                print('i 2:')
+                loc_i_response = int(input())
+                full_action.append(loc_i_response)
+
         return full_action        
 
 
@@ -798,10 +820,10 @@ class GameWrapper:
         action_type = args[0]
 
         # No op
-        if(action_type == 0):
+        if(action_type == NO_OP):
                 return Statuses.ALL_GOOD
         # Roll
-        if(action_type == 1):
+        if(action_type == ROLL):
                 if(self.game.can_roll):
                         self.game.last_roll = roll = self.game.get_roll()
                         self.game.can_roll = False
@@ -813,14 +835,14 @@ class GameWrapper:
                 else:
                         return Statuses.ERR_ROLL
         # Purchase Resource
-        if(action_type == 2):
+        if(action_type == PURCHASE_RESOURCE):
                 requested_resource = args[1]
                 forfeited_resource = args[2]
                 status = self.game.trade_to_bank(player, forfeited_resource, requested_resource)
                 return status
 
         # Purchase & play building
-        if(action_type == 3):
+        if(action_type == PURCHASE_AND_PLAY_BUILDING):
                 building_response = args[1]
                 loc_r_response = args[2]
                 loc_i_response = args[3]
@@ -835,29 +857,34 @@ class GameWrapper:
                 return status
 
         # Purchase dev card
-        if(action_type == 4):
+        if(action_type == PURCHASE_DEV_CARD):
                 status = self.game.build_dev(player.num)
                 return status
 
         # Play Item
-        if(action_type == 5):
+        if(action_type == PLAY_DEV_CARD):
                 dev_card_response = args[1]
-                # Knight
-                if(dev_card_response == 2):
+
+                if(dev_card_response == DevCard.Road.value):
+                        player.played_road_building = True
+                        player.roads_remaining = 2
+                        player.remove_dev_card(DevCard.Road)
+
+                if(dev_card_response == DevCard.Knight.value):
                         loc_x_response = args[2]
                         loc_y_response = args[3]
                         victim_player_response = args[4]
 
                         status = self.game.use_dev_card(player.num, DevCard.Knight, {'robber_pos': [loc_x_response, loc_y_response], 'victim': victim_player_response})
                         return status
-                # Monopoly
-                if(dev_card_response == 3):
+
+                if(dev_card_response == DevCard.Monopoly.value):
                         resource_response = args[2]
 
                         status = self.game.use_dev_card(player.num, DevCard.Monopoly, {'card_type': ResCard(resource_response)})
                         return status
-                # YOP
-                if(dev_card_response == 4):
+
+                if(dev_card_response == DevCard.YearOfPlenty.value):
                         first_resource_response = args[2]
                         second_resource_response = args[3]
                         
@@ -865,7 +892,7 @@ class GameWrapper:
                         status = self.game.use_dev_card(player.num, DevCard.YearOfPlenty, {'card_one': ResCard(first_resource_response), 'card_two': ResCard(second_resource_response)})
                         return status
         # Play robber
-        if(action_type == 6):
+        if(action_type == PLAY_ROBBER):
                 loc_x_response = args[1]
                 loc_y_response = args[2]
                 victim_player_response = args[3]
@@ -875,7 +902,7 @@ class GameWrapper:
                 return status
 
         # Do trade
-        if(action_type == 7):
+        if(action_type == START_TRADE):
                 player.num_trades_in_turn += 1
                 # Which player
                 other_player = args[1]
@@ -889,23 +916,27 @@ class GameWrapper:
 
 
         # Accept Trade
-        if(action_type == 8):
+        if(action_type == ACCEPT_TRADE):
                 status = self.game.trade(player.num, player.trading_player.num, [player.trade_forfeit_card], [player.trade_receive_card])
                 player.pending_trade = False
                 return status
         # Deny trade
-        if(action_type == 9):
+        if(action_type == DENY_TRADE):
                 player.pending_trade = False
-        if(action_type == 10):
+
+        # Forfeit cards
+        if(action_type == FORFEIT_CARDS):
                 player.remove_cards([args[1]])
                 player.forfeited_cards_left -= 1
-        if(action_type == 11):
+
+        # End turn
+        if(action_type == END_TURN):
                 player.turn_over = True
                 return Statuses.ALL_GOOD
 
         # Initial placements
         # Road
-        if(action_type == 12):
+        if(action_type == INITIAL_PLACE_ROAD):
                 loc_r_response = args[1]
                 loc_i_response = args[2]     
                 loc_r_response_2 = args[3]
@@ -914,13 +945,24 @@ class GameWrapper:
                 player.has_completed_initial_placement = True
 
         # Building
-        if(action_type == 13):
+        if(action_type == INITIAL_PLACE_BUILDING):
                 loc_r_response = args[1]
                 loc_i_response = args[2]
                 status = player.build_settlement(self.game.board.points[loc_r_response][loc_i_response], is_starting=True)
                 player.has_placed_initial_settlement = True
                 player.initial_settlement = self.game.board.points[loc_r_response][loc_i_response]
 
+        # Road building 
+        if(action_type == PLACE_ROAD):
+                loc_r_response = args[1]
+                loc_i_response = args[2]     
+                loc_r_response_2 = args[3]
+                loc_i_response_2 = args[4]     
+                status = player.build_road(self.game.board.points[loc_r_response][loc_i_response], self.game.board.points[loc_r_response_2][loc_i_response_2], is_starting=True)
+                if(player.roads_remaining > 0):
+                        player.roads_remaining -= 1
+                else:
+                        player.played_road_building = False
 
         return Statuses.ALL_GOOD
 

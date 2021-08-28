@@ -2,7 +2,7 @@
 
 Game Engine Related:
 - Fix longest road length
-- Add road building dev card functionality
+-** Add road building dev card functionality
 	- In order to facilitate masking at runtime, permutations of the second road would need to be done for each permutation of the first road
 	- Might have to redo the entire purchase_play building into seperate purchase and play priority action (to preserve only having one set of (r,i) output neurons)
 - Add non human agent debug view
