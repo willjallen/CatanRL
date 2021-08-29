@@ -151,6 +151,15 @@ class RandomAgent():
 			full_action.append(loc.position[0])
 			full_action.append(loc.position[1])
 
+		# Place Road
+		if(action == 14):
+			loc = random.choice(allowed_actions['allowed_road_point_pairs'])
+			full_action.append(loc[0].position[0])
+			full_action.append(loc[0].position[1])
+			full_action.append(loc[1].position[0])
+			full_action.append(loc[1].position[1])
+
+
 		return full_action
 
 
