@@ -88,11 +88,12 @@ class Game:
         # removes the cards
         self.players[player].remove_cards(needed_cards)
         # gives the player a dev card
-        self.players[player].add_dev_card(self.dev_deck[0])
+        dev_card = self.dev_deck[0]
+        self.players[player].add_dev_card(dev_card)
         # removes that dev card from the deck
         del self.dev_deck[0]
 
-        return Statuses.ALL_GOOD
+        return (dev_card, Statuses.ALL_GOOD)
 
     # gives players the proper cards for a given roll
     def add_yield_for_roll(self, roll):

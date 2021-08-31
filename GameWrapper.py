@@ -1,3 +1,7 @@
+import cProfile
+import pstats
+from pstats import SortKey
+
 from pycatan import Game
 from pycatan import Statuses
 from pycatan import Building
@@ -37,6 +41,8 @@ class GameWrapper:
         self.game = None
         self.boardRenderer = None
         self.agents = []
+
+        self.turn_counter
 
     def setup(self):
         # Game Set-up questions
@@ -395,14 +401,21 @@ class GameWrapper:
                 playable_dev_card = False
                 for card in DevCard:
                         if(card in player.dev_cards):
-                                if(card == DevCard.Knight or card == DevCard.YearOfPlenty or card == DevCard.Monopoly or card == DevCard.Road):
-                                        actions['allowed_dev_cards'].append(card)
-                                        playable_dev_card = True
+                                # Check for playing purchased dev card on the same turn
+                                sameTurn = False
+                                if(card == player.last_bought_dev_card):
+                                        if(len([x for x in player.dev_cards if x == card]) <= 2):
+                                                sameTurn = True
+                                
+                                if(not sameTurn):
+                                        if(card == DevCard.Knight or card == DevCard.YearOfPlenty or card == DevCard.Monopoly or card == DevCard.Road):
+                                                actions['allowed_dev_cards'].append(card)
+                                                playable_dev_card = True
 
-                                if(card == DevCard.Knight):
-                                        possible_robber_tiles_and_victims = player.get_available_robber_placement_tiles_and_victims()
-                                        actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims
-                                        actions['allowed_victim_players'] = possible_robber_tiles_and_victims
+                                        if(card == DevCard.Knight):
+                                                possible_robber_tiles_and_victims = player.get_available_robber_placement_tiles_and_victims()
+                                                actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims
+                                                actions['allowed_victim_players'] = possible_robber_tiles_and_victims
                 if(playable_dev_card):
                         actions['allowed_actions'].append(PLAY_DEV_CARD)
 
@@ -476,6 +489,7 @@ class GameWrapper:
         # - Player has relevant cards
         if(is_players_turn and player.can_build_dev()==Statuses.ALL_GOOD and not self.game.can_roll):
                 actions['allowed_actions'].append(PURCHASE_DEV_CARD)
+
 
         ## START_TRADE
         # - It is the players turn
@@ -858,10 +872,11 @@ class GameWrapper:
 
         # Purchase dev card
         if(action_type == PURCHASE_DEV_CARD):
-                status = self.game.build_dev(player.num)
-                return status
+                status_and_card = self.game.build_dev(player.num)
+                player.last_bought_dev_card = status_and_card[0] 
+                return status_and_card[1]
 
-        # Play Item
+        # Play Dev Card
         if(action_type == PLAY_DEV_CARD):
                 dev_card_response = args[1]
 
@@ -1065,4 +1080,9 @@ class GameWrapper:
 
 
 CatanGame = GameWrapper()
-CatanGame.setup()
+cProfile.run('CatanGame.setup()', 'restats')
+
+p = pstats.Stats('restats')
+# print([key for key in SortKey])
+p.strip_dirs().sort_stats(SortKey.TIME).print_stats(10)
+p.print_stats()

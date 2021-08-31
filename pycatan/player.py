@@ -49,7 +49,9 @@ class Player:
         self.played_road_building = False
         # how many roads the player has left to place
         self.roads_remaining = 0
-
+        # store the last bought dev card and the turn it was bought on 
+        self.last_bought_dev_card = 0
+        self.last_bought_dev_card_turn = 0
     # builds a settlement belonging to this player
     def build_settlement(self, point, is_starting=False):
 
