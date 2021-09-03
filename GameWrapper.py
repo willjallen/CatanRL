@@ -42,7 +42,7 @@ class GameWrapper:
         self.boardRenderer = None
         self.agents = []
 
-        self.turn_counter
+        self.turn_counter = 0
 
     def setup(self):
         # Game Set-up questions
@@ -191,7 +191,15 @@ class GameWrapper:
 
         player_index = chosen_player
 
-        self.run(player_index)
+        cProfile.runctx('CatanGame.run(player_index)', globals(), locals(), 'restats')
+
+        p = pstats.Stats('restats')
+        # print([key for key in SortKey])
+        p.strip_dirs().sort_stats(SortKey.TIME).print_stats(10)
+        p.print_stats()
+
+
+        # self.run(player_index)
 
     def run(self, player_index):
         # Game Loop
@@ -1080,9 +1088,4 @@ class GameWrapper:
 
 
 CatanGame = GameWrapper()
-cProfile.run('CatanGame.setup()', 'restats')
-
-p = pstats.Stats('restats')
-# print([key for key in SortKey])
-p.strip_dirs().sort_stats(SortKey.TIME).print_stats(10)
-p.print_stats()
+CatanGame.setup()
