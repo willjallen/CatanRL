@@ -509,17 +509,24 @@ class Player:
         del roads[roads.index(new_road)]
 
         # checks for longest road
-        # print('===Debug===')
+        print('===Debug===')
         self.check_connected_roads(road=new_road, all_roads=roads, length=1)
 
     # checks the roads for connected roads, and then checks those roads until there are no more
     def check_connected_roads(self, road, all_roads, length):
-        # print('---------------')
-        # print(road)
-        # print(all_roads)
-        # print(length)
-        # print()
-        # print()
+        print()
+        print('---------------')
+        print('Current Road: ')
+        print(road)
+        print()
+
+        print('All available roads: ')
+        print(all_roads)
+        print()
+
+        print('Current length: ')
+        print(length)
+        print()
 
         # do both point one and two
         points = [
@@ -530,7 +537,9 @@ class Player:
         for p in points:
             # gets the connected roads
             connected = self.get_connected_roads(point=p, roads=all_roads)
-            # print(connected)
+            print('Connected roads: ')
+            print(connected)
+            print()
             # print('---------------')
             # if there are no new connected roads
             if len(connected) == 0:
@@ -551,6 +560,17 @@ class Player:
                         # removes this road from them
                         del c_roads[c_roads.index(c)]
                         # checks for connected roads to this road
+                        print('New road: ')
+                        print(c)
+                        print()
+
+                        print('New available roads: ')
+                        print(c_roads)
+                        print()
+
+                        print('---------------')
+                        print()
+
                         self.check_connected_roads(c, c_roads, length + 1)
 
     # returns which roads in the roads array are connected to the point

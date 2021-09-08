@@ -51,6 +51,46 @@ class Game:
         # whether robber has been moved yet after rolling a 7
         self.robber_moved = True
 
+
+
+    # get starting play order
+    def get_starting_play_order(self, num_of_players):
+        # Determine starting order for initial placements
+        # Pick a random player then go in snake order
+        chosen_player = player_index = random.randint(0, num_of_players-1)
+
+        # Starting placements
+        # 8 total turns, 2 placements per player
+        # Snake means: 0, 1, 2, 3, 3, 2, 1, 0
+
+        starting_play_order = []
+        switch = False
+        for i in range(0, 8):
+                starting_play_order.append(player_index)
+
+                if(not i == 3):
+                        if(not switch):
+                                if(player_index == 3):
+                                        player_index = 0
+                                else:
+                                        player_index += 1
+                        else:
+                                if(player_index == 0):
+                                        player_index = 3
+                                else:
+                                        player_index -= 1
+                else:
+                        switch = True
+
+        return starting_play_order
+
+    def add_initial_placement_yield(self):
+        for i in range(2, 13):
+            if i != 7:
+                self.board.add_yield(i)
+
+
+
     # creates a new settlement belong to the player at the coodinates
     def add_settlement(self, player, point, is_starting=False):
         # builds the settlement

@@ -1,3 +1,0 @@
-
-class CatanEnvironment:
-	pass

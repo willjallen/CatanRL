@@ -7,6 +7,7 @@ from pycatan import Statuses
 from pycatan import Building
 from pycatan.card import ResCard, DevCard
 from board_renderer import BoardRenderer
+from display import Display
 from agent import Agent
 from random_agent import RandomAgent
 import random
@@ -30,36 +31,22 @@ INITIAL_PLACE_ROAD = 12
 INITIAL_PLACE_BUILDING = 13
 PLACE_ROAD = 14
 
-def printBlankLines(num):
-        for i in range(0, num):
-                print()
-
 
 class GameWrapper:
     def __init__(self):
         self.num_of_players = 0
         self.game = None
-        self.boardRenderer = None
         self.agents = []
 
         self.turn_counter = 0
 
     def setup(self):
-        # Game Set-up questions
-        print('Manual Mode (y/n)')
-        #manual_mode = input()
-        
-        #print('Number of players (2-4)')
-        # Might just cap this at 4 for training
-        # num_players = int(input())
-        
-        num_players = 4
-        game = Game(num_players)
+
+        num_of_players = 4
+        game = Game(num_of_players)
         self.game = game
-        self.boardRenderer = BoardRenderer(game.board, [50, 10])
-        
-        # Other stuff here  
-        # Maybe a manual board input, but thats sounds lame rn
+        self.display = Display(self)
+
         print('Print Mode? (y/n)')
         response = input()
 
@@ -68,45 +55,9 @@ class GameWrapper:
         if(response.lower() == 'y'):
                 self.print_mode = True
 
-
-
-        # Init
-        debug = True
-        if debug:
-                # self.game.add_settlement(player=0, point=self.game.board.points[0][0], is_starting=True)                
-                # self.game.add_settlement(player=0, point=self.game.board.points[1][2], is_starting=True)
-                # self.game.add_settlement(player=1, point=self.game.board.points[3][3], is_starting=True)
-                # self.game.add_settlement(player=1, point=self.game.board.points[2][6], is_starting=True)
-                # self.game.add_settlement(player=2, point=self.game.board.points[4][3], is_starting=True)
-                # self.game.add_settlement(player=2, point=self.game.board.points[3][8], is_starting=True)
-                # self.game.add_settlement(player=3, point=self.game.board.points[4][6], is_starting=True)
-                # self.game.add_settlement(player=3, point=self.game.board.points[1][6], is_starting=True)
-                # # Add some roads
-                # self.game.add_road(player=0, start=self.game.board.points[0][0], end=self.game.board.points[0][1], is_starting=True)
-                # self.game.add_road(player=0, start=self.game.board.points[1][2], end=self.game.board.points[1][3], is_starting=True)
-                # self.game.add_road(player=0, start=self.game.board.points[1][3], end=self.game.board.points[1][4], is_starting=True)
-                # self.game.add_road(player=0, start=self.game.board.points[1][2], end=self.game.board.points[1][1], is_starting=True)
-                # self.game.add_road(player=0, start=self.game.board.points[1][1], end=self.game.board.points[0][0], is_starting=True)
-                # self.game.add_road(player=1, start=self.game.board.points[3][3], end=self.game.board.points[3][2], is_starting=True)
-                # self.game.add_road(player=1, start=self.game.board.points[2][6], end=self.game.board.points[2][5], is_starting=True)
-                # self.game.add_road(player=2, start=self.game.board.points[4][3], end=self.game.board.points[4][4], is_starting=True)
-                # self.game.add_road(player=2, start=self.game.board.points[3][8], end=self.game.board.points[3][7], is_starting=True)
-                # self.game.add_road(player=3, start=self.game.board.points[4][6], end=self.game.board.points[4][5], is_starting=True)
-                # self.game.add_road(player=3, start=self.game.board.points[1][6], end=self.game.board.points[1][7], is_starting=True)
-                
-                self.game.players[0].add_dev_card(DevCard.Knight)
-                self.game.players[0].add_dev_card(DevCard.YearOfPlenty)
-                self.game.players[0].add_dev_card(DevCard.Monopoly)
-                self.game.players[0].add_dev_card(DevCard.Road)                   
-                # self.game.players[0].add_cards([ResCard.Wheat, ResCard.Ore, ResCard.Wood, ResCard.Brick, ResCard.Sheep])
-
-                # self.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
-                # self.game.players[0].add_cards([ResCard.Ore, ResCard.Ore, ResCard.Ore, ResCard.Wheat, ResCard.Wheat, ResCard.Wheat])   
-
-                # self.game.board.upgrade_settlement(0, self.game.board.points[1][2])
-
         # Wrap players into agents
-        
+        debug = True
+
         for player in self.game.players:
                 if debug:
                         print('Player ' + str(player.num) + ' human? (y/n)')
@@ -118,46 +69,18 @@ class GameWrapper:
                 else:
                         self.agents.append(Agent(player, True, []))
 
-        # Determine starting order for initial placements
-        # Pick a random player then go in snake order
-        chosen_player = player_index = random.randint(0, 3)
-
-        # Starting placements
-        # 8 total turns, 2 placements per player
-        # Snake means: 0, 1, 2, 3, 3, 2, 1, 0
-
-        starting_play_order = []
-        switch = False
-        for i in range(0, 8):
-                starting_play_order.append(player_index)
-
-                if(not i == 3):
-                        if(not switch):
-                                if(player_index == 3):
-                                        player_index = 0
-                                else:
-                                        player_index += 1
-                        else:
-                                if(player_index == 0):
-                                        player_index = 3
-                                else:
-                                        player_index -= 1
-                else:
-                        switch = True
 
         print('Starting play order: ')
+        starting_play_order = self.game.get_starting_play_order(num_of_players)
         print(starting_play_order)
         placement_okay = False
 
+        # Set initial placement mode flag
         self.game.initial_placement_mode = True
 
-        ## TODO
-        # This is not debug
-        
-
         for player_index in starting_play_order:
-                CatanGame.displayBoard()
-                printBlankLines(8)
+                self.display.displayBoard()
+                self.display.printBlankLines(8)
                 print('Player with turn: ' + colors[player_index])
                 curr_agent = self.agents[player_index]
                 curr_player = player_with_turn = curr_agent.player
@@ -183,18 +106,14 @@ class GameWrapper:
 
         self.game.initial_placement_mode = False
 
-        # Add initial placement yield
-        # (This might be the wrong way to do it)
-        for i in range(2, 13):
-                if i != 7:
-                        self.game.board.add_yield(i)
+        self.game.add_initial_placement_yield();
 
-        player_index = chosen_player
+        player_index = starting_play_order[0]
 
+
+        # Profiling
         cProfile.runctx('CatanGame.run(player_index)', globals(), locals(), 'restats')
-
         p = pstats.Stats('restats')
-        # print([key for key in SortKey])
         p.strip_dirs().sort_stats(SortKey.TIME).print_stats(10)
         p.print_stats()
 
@@ -240,7 +159,7 @@ class GameWrapper:
                                 else:
                                         if(self.print_mode):
                                                 # Display turn relevant info
-                                                CatanGame.displayBoard()
+                                                self.display.displayBoard()
                                                 print('Turn: ' + str(turn_counter))
                                                 print('Player with turn: ' + colors[player_with_turn_index])
                                                 print('Roll: ' + str(self.game.last_roll))
@@ -257,10 +176,10 @@ class GameWrapper:
 
                                                 print()
                                                 # Display player relevant info
-                                                CatanGame.displayPlayerGameInfo(curr_player)
+                                                self.display.displayPlayerGameInfo(curr_player)
 
                                         if(curr_agent.human):
-                                                full_action = CatanGame.promptActions(curr_player, allowed_actions)
+                                                full_action = self.display.promptActions(curr_player, allowed_actions)
                                         else:
                                                 full_action = curr_agent.doTurn(allowed_actions)
                                         
@@ -295,7 +214,7 @@ class GameWrapper:
                                 player_with_turn.turn_over = True
 
                                  # Display turn relevant info
-                                CatanGame.displayBoard()
+                                self.display.displayBoard()
                                 print('Turn: ' + str(turn_counter))
                                 print('Player with turn: ' + colors[player_with_turn_index])
                                 print('Roll: ' + str(self.game.last_roll))
@@ -535,10 +454,6 @@ class GameWrapper:
                 if(len(actions['allowed_trade_partners']) > 0):
                         actions['allowed_actions'].append(START_TRADE)
 
-
-        
-
-
         ## END_TURN
         # - It is the players turn
         # - The dice has been rolled                
@@ -546,296 +461,6 @@ class GameWrapper:
             actions['allowed_actions'].append(END_TURN)
 
         return actions
-
-    # An interface for human players to interact with the game
-    def promptActions(self, player, allowed_actions):
-        print('Possible Actions')
-        
-        # print('0: No Op | 1: Roll | 2: Purchase Resource (From Bank/Port) | 3: Purchase Building | 4: Purchase Dev Card | 5: Play Dev Card |\n6: Play Robber | 7: Do Trade | 8: Accept Trade | 9: Reject Trade | 10: Forfeit Cards | 11: End Turn')
-        for action in allowed_actions['allowed_actions']:
-                print(str(action) + ': ' + action_types[action] + ' | ', end='')
-        print()
-
-        full_action = [] 
-
-        response = int(input())
-
-        full_action.append(response)
-        
-        print(action_types[response])
-        # Roll
-        if(response == ROLL):
-                pass
-        # Prompt No op
-        if(response == NO_OP):
-                print(1)
-        # Prompt Purchase Resource
-        if(response == PURCHASE_RESOURCE):
-                print('Request Resource:')
-                print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
-                requested_resource = int(input())
-                full_action.append(requested_resource)
-                print('Forfeited Resource:')
-                for allowed_card in allowed_actions['allowed_bank_trade_cards']:
-                        print(str(allowed_card[0].value) + ': ' + allowed_card[0].name + '(' + str(allowed_card[1])  + ')' + ' | ', end='')
-                print()
-                forfeited_resource = int(input())
-                full_action.append(forfeited_resource)
-        # Prompt Purchase & play building
-        if(response == PURCHASE_AND_PLAY_BUILDING):
-                for allowed_building in allowed_actions['allowed_buildings']:
-                        print(str(allowed_building) + ': ' + Building.BUILDINGS[allowed_building] + ' | ', end='')
-                print()
-
-                building_response = int(input())
-                full_action.append(building_response)
-
-                
-                # Settlement
-                if(building_response == 0):
-                        print('Allowed Locations: (r, i)')
-                        print(allowed_actions['allowed_settlement_points'])
-
-                        print('r:')
-                        loc_r_response = int(input())
-                        full_action.append(loc_r_response)
-                        print('i:')
-                        loc_i_response = int(input())
-                        full_action.append(loc_i_response)
-
-                # Road
-                if(building_response == 1):
-                        print('Allowed Locations: (r, i)->(r2, i2)')
-                        print(allowed_actions['allowed_road_point_pairs'])
-                        
-                        print('r:')
-                        loc_r_response = int(input())
-                        full_action.append(loc_r_response)
-                        print('i:')
-                        loc_i_response = int(input())
-                        full_action.append(loc_i_response)
-
-                        print('r 2:')
-                        loc_r_response = int(input())
-                        full_action.append(loc_r_response)
-                        print('i 2:')
-                        loc_i_response = int(input())
-                        full_action.append(loc_i_response)
-
-                # City
-                if(building_response == 2):
-                        print('Allowed Locations: (r, i)')
-                        print(allowed_actions['allowed_city_points'])
-
-                        print('r:')
-                        loc_r_response = int(input())
-                        full_action.append(loc_r_response)
-                        print('i:')
-                        loc_i_response = int(input())
-                        full_action.append(loc_i_response)
-
-        # Prompt Purchase dev card
-        if(response == PURCHASE_DEV_CARD):
-                pass
-        # Prompt Play dev card
-        if(response == PLAY_DEV_CARD):
-                for allowed_card in allowed_actions['allowed_dev_cards']:
-                        print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
-                print()
-
-                dev_card_response = int(input())
-                full_action.append(dev_card_response)
-
-
-                if(dev_card_response == 0):
-                        pass
-
-                if(dev_card_response == 2):
-                        print('Allowed Locations: (r, i)')
-                        for action in allowed_actions['allowed_robber_tiles']:
-                            print('(', end='')
-                            print(action[0], end='')
-                            print(', ', end='')
-                            print(colors[action[1].num], end='')
-                            print('(' + str(action[1].num) + ')', end='')
-                            print(') ', end='') 
-                        
-                        print()
-
-                        print('r:')
-                        loc_r_response = int(input())
-                        full_action.append(loc_r_response)
-                        print('i:')
-                        loc_i_response = int(input())
-                        full_action.append(loc_i_response)
-                        
-                        allowed_players = [y for x, y in allowed_actions['allowed_robber_tiles'] if (x.position[0] == loc_r_response and x.position[1] == loc_i_response)]
-
-                        print('Player:')
-                        for allowed_player in allowed_players:
-                            print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
-                        print()
-                        player_response = int(input())
-                        full_action.append(player_response)
-
-                if(dev_card_response == 3):
-                        print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
-                        resource_response = int(input())
-                        full_action.append(resource_response)
-
-                if(dev_card_response == 4):
-                        print('First resource:')
-                        print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
-                        first_resource_response = int(input())
-                        full_action.append(first_resource_response)
-
-                        print('Second resource:')
-                        print('0: Wood | 1: Brick | 2: Ore | 3: Sheep | 4: Wheat')
-                        second_resource_response = int(input())
-                        full_action.append(second_resource_response)
-
-        # Prompt Play robber
-        if(response == PLAY_ROBBER):
-            print('Allowed Locations: (r, i)')
-            for action in allowed_actions['allowed_robber_tiles']:
-                print('(', end='')
-                print(action[0], end='')
-                print(', ', end='')
-                print(colors[action[1].num], end='')
-                print('(' + str(action[1].num) + ')', end='')
-                print(') ', end='') 
-            
-            print()
-
-            print('r:')
-            loc_r_response = int(input())
-            full_action.append(loc_r_response)
-            print('i:')
-            loc_i_response = int(input())
-            full_action.append(loc_i_response)
-            
-            allowed_players = [y for x, y in allowed_actions['allowed_robber_tiles'] if (x.position[0] == loc_r_response and x.position[1] == loc_i_response)]
-
-            print('Player:')
-            for allowed_player in allowed_players:
-                print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
-            print()
-            player_response = int(input())
-            full_action.append(player_response)
-        # Prompt Do trade
-        if(response == START_TRADE):
-
-                for allowed_player in allowed_actions['allowed_trade_partners']:
-                        print('Player ' + str(allowed_player.num) + '(' + colors[allowed_player.num] + ')' + ' | ', end='')
-                print()
-                which_player_response = int(input())
-                full_action.append(self.game.players[which_player_response])
-                
-
-                allowed_cards = allowed_actions['allowed_trade_pairs']
-                allowed_cards = [(x,y) for x, y in allowed_cards if x == which_player_response][0][1]
-                allowed_cards = [x[0] for x in allowed_cards]
-
-
-                print('You offer:') 
-                for allowed_card in allowed_cards:
-                        print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
-                print()
-
-                offered_resource_response = int(input())
-                full_action.append(ResCard(offered_resource_response))  
-
-
-                other_player_allowed_cards = allowed_actions['allowed_trade_pairs']
-                other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x == which_player_response][0][1]
-                other_player_allowed_cards = [(x,y) for x, y in other_player_allowed_cards if x.value == offered_resource_response][0]
-
-                print('You receive:')
-                for allowed_card in other_player_allowed_cards[1]:
-                        print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
-                print()
-                received_resource_response = int(input())
-                full_action.append(ResCard(received_resource_response))
-        # Accept Trade
-        if(response == ACCEPT_TRADE):
-                pass
-        # Deny trade
-        if(response == DENY_TRADE):
-                pass
-        # Forfeit card
-        if(response == FORFEIT_CARDS):
-                print('Forfeit(' + str(player.forfeited_cards_left) + ' left): ') 
-                
-                for allowed_card in allowed_actions['allowed_forfeit_cards']:
-                        print(str(allowed_card.value) + ': ' + allowed_card.name + ' | ', end='')
-                print()
-
-                player_response = int(input())
-                full_action.append(player_response)
-
-        if(response == 11):
-                pass
-
-        # Prompt initial road placement
-        if(response == INITIAL_PLACE_ROAD):
-            print('Place initial road')
-
-            print('Allowed Locations: (r, i)->(r2, i2)')
-            print(allowed_actions['allowed_road_point_pairs'])
-
-            print('r:')
-            loc_r_response = int(input())
-            full_action.append(loc_r_response)
-            print('i:')
-            loc_i_response = int(input())
-            full_action.append(loc_i_response)
-
-            print('r 2:')
-            loc_r_response = int(input())
-            full_action.append(loc_r_response)
-            print('i 2:')
-            loc_i_response = int(input())
-            full_action.append(loc_i_response)
-
-        # Prompt initial settlement placement
-        if(response == INITIAL_PLACE_BUILDING):
-            print('Place initial settlement')
-            
-            # TODO
-            # Get all places on the board which are >=2 distance to next player settlement
-            
-            print('Allowed Locations: (r, i)')
-            print(allowed_actions['allowed_settlement_points'])
-
-            print('r:')
-            loc_r_response = int(input())
-            full_action.append(loc_r_response)
-            print('i:')
-            loc_i_response = int(input())
-            full_action.append(loc_i_response)
-
-        if(response == PLACE_ROAD):
-
-                print('Place road:')
-                print('Allowed Locations: (r, i)->(r2, i2)')
-                print(allowed_actions['allowed_road_point_pairs'])
-
-                print('r:')
-                loc_r_response = int(input())
-                full_action.append(loc_r_response)
-                print('i:')
-                loc_i_response = int(input())
-                full_action.append(loc_i_response)
-
-                print('r 2:')
-                loc_r_response = int(input())
-                full_action.append(loc_r_response)
-                print('i 2:')
-                loc_i_response = int(input())
-                full_action.append(loc_i_response)
-
-        return full_action        
-
 
 
     def doAction(self, player, args):
@@ -988,104 +613,6 @@ class GameWrapper:
                         player.played_road_building = False
 
         return Statuses.ALL_GOOD
-
-
-    # def promptInitialPlacement(self):
-    #     full_action = []
-    #     print('Settlement')
-    #     print('Tile Location X:')
-    #     loc_x_response = int(input())
-    #     full_action.append(loc_x_response)
-    #     print('Tile Location Y:')
-    #     loc_y_response = int(input())
-    #     full_action.append(loc_y_response)
-
-    #     print('Location road endpoint')
-    #     print('Road Location X:')
-    #     road_loc_x_response = int(input())
-    #     full_action.append(road_loc_x_response)
-    #     print('Road Location Y:')
-    #     road_loc_y_response = int(input())
-    #     full_action.append(road_loc_y_response)
-
-    #     return full_action
-
-
-    # def doInitialPlacement(self, player, args):
-    #     loc_x = args[0]
-    #     loc_y = args[1]
-
-    #     loc_x_2 = args[2]
-    #     loc_y_2 = args[3]
-    #     status = player.build_settlement(self.game.board.points[loc_x][loc_y], True)
-    #     if(status != Statuses.ALL_GOOD):
-    #             return status
-    #     status = player.build_road(self.game.board.points[loc_x][loc_y], self.game.board.points[loc_x_2][loc_y_2], True)
-    #     return status
-
-    
-    def displayBoard(self):
-            self.boardRenderer.render()
-
-    def displayPlayerGameInfo(self, player):
-        print('Player ' + str(player.num) + '(' + colors[player.num] + ')'  ':')
-        print('VP: ' + str(player.get_VP(True)))
-        print('Knight Cards Played: ' + str(player.knight_cards))
-        print('Longest Road Length: ' + str(player.longest_road_length))
-        print('Forfeited cards left: ' + str(player.forfeited_cards_left))
-        print('Number of attempted trades this turn: ' + str(player.num_trades_in_turn))
-        print('Accessible Ports:')
-        harbors = player.get_connected_harbor_types()
-        print(harbors)
-        print('Robber Location:')
-        print(self.game.board.robber)
-        # TODO
-        # Find connected ports
-
-        print('Dev Cards:')
-        player.print_cards(player.dev_cards)
-
-        print('Cards:')
-        player.print_cards(player.cards)
-        
-        # Pending trades
-        if(player.pending_trade):
-                print('Pending Trade from player ' + str(player.trading_player.num) + '(' + colors[player.trading_player.num] + ')')
-                print('Forfeit: ' + ResCard(player.trade_forfeit_card).name)
-                print('Receive: ' + ResCard(player.trade_receive_card).name)
-
-    # Used for pitboss mode
-    def displayLimitedPlayerGameInfo(self, player):
-        print('Player ' + str(player.num) + '(' + colors[player.num] + ')'  ':')
-        print('Knight Cards Played: ' + str(player.knight_cards))
-        print('Longest Road Length: ' + str(player.longest_road_length))
-        print('Forfeited cards left: ' + str(player.forfeited_cards_left))
-        print('Number of attempted trades this turn: ' + str(player.num_trades_in_turn))
-        print('Accessible Ports:')
-        harbors = player.get_connected_harbor_types()
-        print(harbors)
-        print('Robber Location:')
-        print(self.game.board.robber)
-        
-        # Pending trades
-        if(player.pending_trade):
-                print('Pending Trade from player ' + str(player.trading_player.num) + '(' + colors[player.trading_player.num] + ')')
-                print('Forfeit: ' + ResCard(player.trade_forfeit_card).name)
-                print('Receive: ' + ResCard(player.trade_receive_card).name)
-
-    def displayNonHumanGameInfo(self, player):
-        pass
-    
-
-
-    def displayFullGameInfo(self):
-        self.displayBoard()
-        for player in self.game.players:
-                print('Player ' + str(player.num) + ':')
-                print('Cards:')
-                player.print_cards(player.cards) 
-                print()
-
 
 CatanGame = GameWrapper()
 CatanGame.setup()

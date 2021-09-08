@@ -5,6 +5,8 @@ Game Engine Related:
 - Add non human agent debug view
 - Saving states for undo, analysis and training
 - Arenas, matchmaking and ELO
+-** Test cases
+	-** Longest road
 
 Network Related:
 - Seperate network for initial placements?
