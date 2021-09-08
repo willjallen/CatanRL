@@ -4,6 +4,24 @@ from pycatan.card import ResCard, DevCard
 colors = ['Red', 'Cyan', 'Green', 'Yellow']
 
 
+action_types = ["no_op", "roll", "purchase_resource", "purchase_and_play_building", "purchase_dev_card", "play_dev_card", "play_robber", "start_trade", "accept_trade", "deny_trade", "forfeit_cards", "end_turn", "initial_placement_road", "initial_placement_building", "place_road"]
+NO_OP = 0
+ROLL = 1
+PURCHASE_RESOURCE = 2
+PURCHASE_AND_PLAY_BUILDING = 3
+PURCHASE_DEV_CARD = 4
+PLAY_DEV_CARD = 5
+PLAY_ROBBER = 6
+START_TRADE = 7
+ACCEPT_TRADE = 8
+DENY_TRADE = 9
+FORFEIT_CARDS = 10
+END_TURN = 11
+INITIAL_PLACE_ROAD = 12
+INITIAL_PLACE_BUILDING = 13
+PLACE_ROAD = 14
+
+
 class Display:
         def __init__(self, game_wrapper):
                 self.game_wrapper = game_wrapper
@@ -359,10 +377,26 @@ class Display:
                 pass
 
 
+        def displayGameInfo(self):
+                print('Turn: ' + str(self.game_wrapper.turn_counter))
+                print('Player with turn: ' + colors[self.game_wrapper.player_with_turn_index])
+                print('Roll: ' + str(self.game_wrapper.game.last_roll))
+                print()
+                if(self.game.largest_army != None):
+                        print('Largest Army: ' + colors[self.game_wrapper.game.largest_army])
+                else:
+                        print('Largest Army: None')
+
+                if(self.game.longest_road_owner != None):
+                        print('Longest Road: ' + colors[self.game_wrapper.longest_road_owner])
+                else:
+                        print('Longest Road: None')
+
+                print()
 
         def displayFullGameInfo(self):
                 self.displayBoard()
-                for player in self.game.players:
+                for player in self.game_wrapper.game.players:
                         print('Player ' + str(player.num) + ':')
                         print('Cards:')
                         player.print_cards(player.cards) 

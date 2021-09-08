@@ -83,18 +83,18 @@ class GameWrapper:
                 self.display.printBlankLines(8)
                 print('Player with turn: ' + colors[player_index])
                 curr_agent = self.agents[player_index]
-                curr_player = player_with_turn = curr_agent.player
+                self.player_with_turn = curr_player = curr_agent.player
 
                 curr_player.has_completed_initial_placement = False
                 curr_player.has_placed_initial_settlement = False
 
                 # Two iterations for settlement and road
                 for i in range(0, 2):
-                        allowed_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
+                        allowed_actions = self.getAllowedActions(curr_player)
                         placement_okay = False
                         while(not placement_okay):
                                 if(curr_agent.human):
-                                    full_action = CatanGame.promptActions(curr_player, allowed_actions)
+                                    full_action = self.display.promptActions(curr_player, allowed_actions)
                                 else:
                                     full_action = curr_agent.doTurn(allowed_actions)
 
@@ -123,7 +123,7 @@ class GameWrapper:
     def run(self, player_index):
         # Game Loop
         # Cycle over all players per turn steps to allow for responses to trades
-        turn_counter = 0
+        self.turn_counter = 0
         game_over = False
         turn_over = False
         cycle_complete = False        
@@ -133,24 +133,24 @@ class GameWrapper:
 
                 # Iterate to next player with turn
                 curr_agent = self.agents[player_index]
-                player_with_turn = curr_player = curr_agent.player
-                player_with_turn_index = player_index
-                player_with_turn.turn_over = turn_over = False
+                self.player_with_turn = curr_player = curr_agent.player
+                self.player_with_turn_index = player_index
+                self.player_with_turn.turn_over = turn_over = False
 
                 # Reset number of trades the player has conducted
-                player_with_turn.num_trades_in_turn = 0
+                self.player_with_turn.num_trades_in_turn = 0
 
                 # Cycle, starting with the player playing their turn, through all other players
                 while(not turn_over):
                         curr_agent = self.agents[player_index]
                         curr_player = curr_agent.player 
-                        # allowed_actions = CatanGame.getAllowedActions(player, player_with_turn)
+                        # allowed_actions = CatanGame.getAllowedActions(player, self.player_with_turn)
                         
                         # Check if the action taken is valid 
                         action_okay = False
                         while(not action_okay):
                                
-                                allowed_actions = CatanGame.getAllowedActions(curr_player, player_with_turn)
+                                allowed_actions = CatanGame.getAllowedActions(curr_player)
                                 
                                 # If the player only has one available action, and that action is NO_OP
                                 # Skip their step
@@ -158,24 +158,8 @@ class GameWrapper:
                                         action_okay = True
                                 else:
                                         if(self.print_mode):
-                                                # Display turn relevant info
                                                 self.display.displayBoard()
-                                                print('Turn: ' + str(turn_counter))
-                                                print('Player with turn: ' + colors[player_with_turn_index])
-                                                print('Roll: ' + str(self.game.last_roll))
-                                                print()
-                                                if(self.game.largest_army != None):
-                                                        print('Largest Army: ' + colors[self.game.largest_army])
-                                                else:
-                                                        print('Largest Army: None')
-
-                                                if(self.game.longest_road_owner != None):
-                                                        print('Longest Road: ' + colors[self.game.longest_road_owner])
-                                                else:
-                                                        print('Longest Road: None')
-
-                                                print()
-                                                # Display player relevant info
+                                                self.display.displayGameInfo()
                                                 self.display.displayPlayerGameInfo(curr_player)
 
                                         if(curr_agent.human):
@@ -208,19 +192,19 @@ class GameWrapper:
                                         if(curr_player.forfeited_cards_left > 0):
                                                 action_okay = False
 
-                        if(player_with_turn.get_VP(True) >= 10):
+                        if(self.player_with_turn.get_VP(True) >= 10):
                                 self.game.has_ended = True
-                                self.game.winner = player_with_turn
-                                player_with_turn.turn_over = True
+                                self.game.winner = self.player_with_turn
+                                self.player_with_turn.turn_over = True
 
                                  # Display turn relevant info
                                 self.display.displayBoard()
-                                print('Turn: ' + str(turn_counter))
-                                print('Player with turn: ' + colors[player_with_turn_index])
+                                print('Turn: ' + str(self.turn_counter))
+                                print('Player with turn: ' + colors[self.player_with_turn_index])
                                 print('Roll: ' + str(self.game.last_roll))
                                 print()
 
-                        turn_over = player_with_turn.turn_over 
+                        turn_over = self.player_with_turn.turn_over 
                         self.game.rolled_seven = False
 
                         if(not turn_over):
@@ -233,8 +217,8 @@ class GameWrapper:
 
 
                 # Turn has ended
-                player_index = player_with_turn_index
-                turn_counter += 1
+                player_index = self.player_with_turn_index
+                self.turn_counter += 1
 
 
                 # 2 -> 3 -> 0 -> 1 -> 2
@@ -246,7 +230,7 @@ class GameWrapper:
         print('Winner: ' + str(colors[self.game.winner.num]))
 
     # Get allowed actions
-    def getAllowedActions(self, player, player_with_turn):
+    def getAllowedActions(self, player):
         actions = {
         'allowed_actions': [],
         'allowed_forfeit_cards': [],
@@ -265,7 +249,7 @@ class GameWrapper:
         'allowed_trade_partner_forfeit_cards': []
         }
 
-        is_players_turn = (player.num == player_with_turn.num)
+        is_players_turn = (player.num == self.player_with_turn.num)
 
         ## NO_OP
         # - It is not the player's turn
