@@ -388,7 +388,7 @@ class Display:
                         print('Largest Army: None')
 
                 if(self.game.longest_road_owner != None):
-                        print('Longest Road: ' + colors[self.game_wrapper.longest_road_owner])
+                        print('Longest Road: ' + colors[self.game_wrapper.game.longest_road_owner])
                 else:
                         print('Longest Road: None')
 
