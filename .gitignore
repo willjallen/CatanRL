@@ -6,3 +6,6 @@ __pycache__/
 architecture.txt
 .DS_Store
 restats
+
+.sublime-project
+.sublime-workspace
