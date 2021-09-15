@@ -509,25 +509,25 @@ class Player:
         # del roads[roads.index(new_road)]
 
         # checks for longest road
-        print('===Debug===')
+        # print('===Debug===')
         for r in roads:
             self.check_connected_roads(road=r, all_roads=roads, length=0)
 
     # checks the roads for connected roads, and then checks those roads until there are no more
     def check_connected_roads(self, road, all_roads, length):
-        print()
-        print('---------------')
-        print('Current Road: ')
-        print(road)
-        print()
+        # print()
+        # print('---------------')
+        # print('Current Road: ')
+        # print(road)
+        # print()
 
-        print('All available roads: ')
-        print(all_roads)
-        print()
+        # print('All available roads: ')
+        # print(all_roads)
+        # print()
 
-        print('Current length: ')
-        print(length)
-        print()
+        # print('Current length: ')
+        # print(length)
+        # print()
 
         # do both point one and two
         points = [
@@ -538,19 +538,19 @@ class Player:
         for p in points:
             # gets the connected roads
             connected = self.get_connected_roads(point=p, roads=all_roads)
-            print('Connected roads: ')
-            print(connected)
-            print()
-            print('---------------')
+            # print('Connected roads: ')
+            # print(connected)
+            # print()
+            # print('---------------')
             # if there are no new connected roads
             if len(connected) == 0:
                 # if this is the longest road so far
                 if length > self.longest_road_length:
                     # records the length
                     self.longest_road_length = length
-                    print('longest_road_length: ', self.longest_road_length)
-                    if(length == 7):
-                        quit()
+                    # print('longest_road_length: ', self.longest_road_length)
+                    # if(length == 7):
+                    #     quit()
                     # self.begin_celebration()
 
             # if there are connected roads
@@ -564,16 +564,16 @@ class Player:
                         # removes this road from them
                         del c_roads[c_roads.index(c)]
                         # checks for connected roads to this road
-                        print('New road: ')
-                        print(c)
-                        print()
+                        # print('New road: ')
+                        # print(c)
+                        # print()
 
-                        print('New available roads: ')
-                        print(c_roads)
-                        print()
+                        # print('New available roads: ')
+                        # print(c_roads)
+                        # print()
 
-                        print('---------------')
-                        print()
+                        # print('---------------')
+                        # print()
 
                         self.check_connected_roads(c, c_roads, length + 1)
 
