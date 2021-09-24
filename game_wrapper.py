@@ -176,6 +176,9 @@ class GameWrapper:
                                                 full_action = curr_agent.doTurn(allowed_actions)
                                         
                                         if(self.print_mode):
+                                                print('Allowed Actions')
+                                                print(allowed_actions['allowed_actions'])
+                                                print('Full action:')
                                                 print(full_action)
                                                 print(action_types[full_action[0]])
                                                 for i in full_action:
