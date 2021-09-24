@@ -2,6 +2,7 @@ import cProfile
 import pstats
 from pstats import SortKey
 
+from pycatan import Player
 from pycatan import Game
 from pycatan import Statuses
 from pycatan import Building
@@ -39,6 +40,8 @@ class GameWrapper:
         self.agents = []
 
         self.turn_counter = 0
+        self.user_mode = False;
+        self.print_mode = False;
 
     def setup(self):
 
@@ -46,6 +49,11 @@ class GameWrapper:
         game = Game(num_of_players)
         self.game = game
         self.display = Display(self)
+
+        print('User Mode? (y/n)')
+        response = input()
+        if(response.lower() == 'y'):
+                self.user_mode = True
 
         print('Print Mode? (y/n)')
         response = input()
@@ -170,6 +178,9 @@ class GameWrapper:
                                         if(self.print_mode):
                                                 print(full_action)
                                                 print(action_types[full_action[0]])
+                                                for i in full_action:
+                                                        if(isinstance(i, Player)):
+                                                                print('player: ' + str(i.num))
                                         
                                         status = CatanGame.doAction(curr_player, full_action)
 
@@ -191,6 +202,10 @@ class GameWrapper:
                                         # If the player still has cards to forfeit, stay on this player
                                         if(curr_player.forfeited_cards_left > 0):
                                                 action_okay = False
+
+                                        # Pause
+                                        if(self.user_mode):
+                                                response = input("type anything to continue")
 
                         if(self.player_with_turn.get_VP(True) >= 10):
                                 self.game.has_ended = True
