@@ -124,6 +124,7 @@ class Player:
         if not self.has_cards(needed_cards):
             return Statuses.ERR_CARDS
         return Statuses.ALL_GOOD
+        
         # checks if the player has all of the cards given in an array
     def has_cards(self, cards):
 
@@ -506,12 +507,14 @@ class Player:
 
         # gets the roads that belong to this player
         roads = self.get_roads()
-        # del roads[roads.index(new_road)]
-
-        # checks for longest road
-        # print('===Debug===')
-        for r in roads:
-            self.check_connected_roads(road=r, all_roads=roads, length=0)
+       
+        roads_c = roads[:];
+        for road in roads_c:
+            # remove the new road from all player roads
+            del roads_c[roads_c.index(road)]
+            # checks for longest road
+            self.check_connected_roads(road=road, all_roads=roads_c, length=1)
+            roads_c = roads[:];
 
     # checks the roads for connected roads, and then checks those roads until there are no more
     def check_connected_roads(self, road, all_roads, length):
@@ -538,7 +541,7 @@ class Player:
         for p in points:
             # gets the connected roads
             connected = self.get_connected_roads(point=p, roads=all_roads)
-            # print('Connected roads: ')
+            # print('Connected roads at point: ', p)
             # print(connected)
             # print()
             # print('---------------')
@@ -555,27 +558,17 @@ class Player:
 
             # if there are connected roads
             else:
+                c_roads = all_roads[:]
+                
                 # check each of them for connections if they have not been used
                 for c in connected:
+                
+                    # print('road ' + str(c) + ' in connected');
                     # checks it hasn't used this road before
-                    if all_roads.count(c) > 0:
-                        # copies all usable roads
-                        c_roads = all_roads[:]
-                        # removes this road from them
-                        del c_roads[c_roads.index(c)]
-                        # checks for connected roads to this road
-                        # print('New road: ')
-                        # print(c)
-                        # print()
-
-                        # print('New available roads: ')
-                        # print(c_roads)
-                        # print()
-
-                        # print('---------------')
-                        # print()
-
-                        self.check_connected_roads(c, c_roads, length + 1)
+                    del c_roads[c_roads.index(c)]
+        
+                for c in connected:    
+                    self.check_connected_roads(c, c_roads, length + 1)
 
     # returns which roads in the roads array are connected to the point
     def get_connected_roads(self, point, roads):
