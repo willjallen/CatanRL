@@ -27,7 +27,6 @@ class RandomAgent():
 			requested_resource = random.choice(list(ResCard)).value
 			full_action.append(requested_resource)
 			forfeited_resource = random.choice(allowed_actions['allowed_bank_trade_cards'])[0].value
-			print(allowed_actions['allowed_bank_trade_cards'])
 			full_action.append(forfeited_resource)
 		# Prompt Purchase & play building
 		if(action == 3):

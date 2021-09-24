@@ -18,7 +18,7 @@ available actions [0, 7] (OHE)
 Player's cards (P_0):
 	resource cards [0,4]
 	-># of each [0, 9]
-	dev cards [0,20]
+	dev cards [0,2]
 	-># of each [0, 9]
 	buildings [0,2]
 	-># of each [0, 1]
@@ -56,48 +56,53 @@ Model outputs:
 
 
 ------------Categorical:------------------ 
-Action type (OHE) [Max 8]
-0000000001 action_type_no_op     
-0000000010 action_type_purchase_resource
-0000000100 action_type_purchase_building  
-0000001000 action_type_purchase_dev_card
-0000010000 action_type_play_item
-0000100000 action_type_play_robber
-0001000000 action_type_do_trade
-0010000000 action_type_accept_trade
-0100000000 action_type_reject_trade
-1000000000 action_type_end_turn
+Action type (OHE) [Max 15]
+no_op
+roll
+purchase_resource
+purchase_and_play_building
+purchase_dev_card
+play_dev_card
+play_robber 
+start_trade
+accept_trade
+deny_trade
+forfeit_cards
+end_turn
+initial_placement_road
+initial_placement_building
+place_road
 
 // Maybe use pointer networks?
 Resource Type 1 (OHE)
-00001 resource_type_wood
-00010 resource_type_wheat
-00100 resource_type_ore 
-01000 resource_type_sheep
-10000 resource_type_brick
+resource_type_wood
+resource_type_wheat
+resource_type_ore 
+resource_type_sheep
+resource_type_brick
 
 Resource Type 2 (OHE)
-00001 resource_type_wood
-00010 resource_type_wheat
-00100 resource_type_ore 
-01000 resource_type_sheep
-10000 resource_type_brick
+resource_type_wood
+resource_type_wheat
+resource_type_ore 
+resource_type_sheep
+resource_type_brick
 
 Building type (OHE)
-001 building_type_road
-010	building_type_settlement
-100	building_type_city
+building_type_road
+building_type_settlement
+building_type_city
 
 Dev Card type (OHE)
-000 dev_type_knight
-000 dev_type_VP
-000 dev_type_knight
+dev_type_knight
+dev_type_VP
+dev_type_knight
 
 Player (OHE)
-0001 Player 1
-0010 Player 2
-0100 Player 3
-1000 Player 4
+Player 0
+Player 1
+Player 2
+Player 3
 
 ------------Numerical:------------------
 Win Probability
