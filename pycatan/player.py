@@ -26,7 +26,8 @@ PLACE_ROAD = 14
 # The player class for
 class Player:
 
-    def __init__ (self, game, num):
+    def __init__ (self, game, num, agent_type):
+        self.agent_type = agent_type
         # the game the player belongs to
         self.game = game
         # the player number for this player

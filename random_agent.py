@@ -1,14 +1,13 @@
 from pycatan.card import ResCard, DevCard
-from agent import Agent
+from pycatan.player import Player
 import random
 
 
-class RandomAgent():
-	def __init__(self, player):
-		self.player = player
-		self.human = False
+class RandomAgent(Player):
+	def __init__(self, game, num, agent_type):
+		super().__init__(game, num, agent_type)
 
-	def doTurn(self, allowed_actions):
+	def do_turn(self, allowed_actions):
 		# print('allowed_actions: ')
 		# print(allowed_actions['allowed_actions'])
 		action = random.choice(allowed_actions['allowed_actions'])

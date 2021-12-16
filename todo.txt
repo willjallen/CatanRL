@@ -14,7 +14,7 @@ Game Engine Related:
 Network Related:
 - Seperate network for initial placements?
 
-
+- Edge case: road point pairs are empty when map is full of roads
 
 Done:
 - Implement initial placement actions

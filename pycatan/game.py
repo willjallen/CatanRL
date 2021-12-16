@@ -8,7 +8,7 @@ from pycatan.statuses import Statuses
 from pycatan.card import ResCard, DevCard
 from pycatan.building import Building
 from pycatan.harbor import Harbor
-from agent import Agent
+from human_agent import HumanAgent
 from random_agent import RandomAgent
 from display import Display
 
@@ -38,10 +38,13 @@ PLACE_ROAD = 14
 class Game:
 
     # initializes the  game
-    def __init__(self, num_of_players=3, on_win=None, starting_board=False, headless=False):
+    def __init__(self, num_of_players=4, print_mode=False, user_mode=False, agent_type_arr=['R','R','R','R'], on_win=None, starting_board=False, headless=False):
         
         self.num_of_players = num_of_players
         self.headless = headless
+        self.print_mode = print_mode
+        self.user_mode = user_mode
+        self.agent_type_arr = agent_type_arr
 
 
         # creates a board
@@ -50,7 +53,12 @@ class Game:
         self.agents = []
         self.players = []
         for i in range(num_of_players):
-            self.players.append(Player(num=i, game=self))
+            if(agent_type_arr[i] == 'H'):
+                self.players.append(HumanAgent(num=i, game=self, agent_type=agent_type_arr[i]))
+            if(agent_type_arr[i] == 'R'):
+                self.players.append(RandomAgent(num=i, game=self, agent_type=agent_type_arr[i]))
+
+
         # Set onWin method
         self.on_win = on_win
         # creates a new Developement deck
@@ -88,8 +96,6 @@ class Game:
         self.init = False
 
         self.turn_counter = 0
-        self.user_mode = False
-        self.print_mode = False
         
 
 
@@ -131,49 +137,39 @@ class Game:
                 self.board.add_yield(i)
 
     def setup(self):
-        print('User Mode? (y/n)')
-        response = input()
-        if(response.lower() == 'y'):
-                self.user_mode = True
-
-        print('Print Mode? (y/n)')
-        response = input()
-
-        self.print_mode = False
-
-        if(response.lower() == 'y'):
-                self.print_mode = True
 
 
-        # Wrap players into agents
-        debug = True
-
-        for player in self.players:
-                if debug:
-                        print('Player ' + str(player.num) + ' human? (y/n)')
-                        is_human = input()
-                        if(is_human == 'y'):
-                                self.agents.append(Agent(player, True, []))
-                        else:
-                                self.agents.append(RandomAgent(player))
-                else:
-                        self.agents.append(Agent(player, True, []))
+        # # Wrap players into agents
+        # for player in self.players:
+        #         if self.user_mode:
+        #                 print('Player ' + str(player.num) + ' human? (y/n)')
+        #                 is_human = input()
+        #                 if(is_human == 'y'):
+        #                         self.agents.append(Agent(player, True, []))
+        #                 else:
+        #                         self.agents.append(RandomAgent(player))
+        #         else:
+        #                 self.agents.append(Agent(player, True, []))
 
 
-        print('Starting play order: ')
         starting_play_order = self.get_starting_play_order()
-        print(starting_play_order)
         placement_okay = False
+        
+        if(self.print_mode):
+            print('Starting play order: ')
+            print(starting_play_order)
 
         # Set initial placement mode flag
         self.initial_placement_mode = True
 
         for player_index in starting_play_order:
-                self.display.displayBoard()
-                self.display.printBlankLines(8)
-                print('Player with turn: ' + colors[player_index])
-                curr_agent = self.agents[player_index]
-                self.player_with_turn = curr_player = curr_agent.player
+                curr_player = self.players[player_index]
+                self.player_with_turn = curr_player
+                
+                if(self.print_mode):
+                    self.display.displayBoard()
+                    self.display.printBlankLines(8)
+                    print('Player with turn: ' + colors[player_index])
 
                 curr_player.has_completed_initial_placement = False
                 curr_player.has_placed_initial_settlement = False
@@ -183,10 +179,7 @@ class Game:
                         allowed_actions = self.getAllowedActions(curr_player)
                         placement_okay = False
                         while(not placement_okay):
-                                if(curr_agent.human):
-                                    full_action = self.display.promptActions(curr_player, allowed_actions)
-                                else:
-                                    full_action = curr_agent.doTurn(allowed_actions)
+                                full_action = curr_player.do_turn(allowed_actions)
 
                                 status = self.doAction(curr_player, full_action)
 
@@ -202,11 +195,7 @@ class Game:
 
         self.init = True
 
-        # Profiling
-        cProfile.runctx('self.run()', globals(), locals(), 'restats')
-        p = pstats.Stats('restats')
-        p.strip_dirs().sort_stats(SortKey.TIME).print_stats(10)
-        p.print_stats()
+
 
     def run(self):
 
@@ -226,8 +215,8 @@ class Game:
                 self.can_roll = True
 
                 # Iterate to next player with turn
-                curr_agent = self.agents[player_index]
-                self.player_with_turn = curr_player = curr_agent.player
+                curr_player = self.players[player_index]
+                self.player_with_turn = curr_player
                 self.player_with_turn_index = player_index
                 self.player_with_turn.turn_over = turn_over = False
 
@@ -236,8 +225,7 @@ class Game:
 
                 # Cycle, starting with the player playing their turn, through all other players
                 while(not turn_over):
-                        curr_agent = self.agents[player_index]
-                        curr_player = curr_agent.player 
+
                         # allowed_actions = self.getAllowedActions(player, self.player_with_turn)
                         
                         # Check if the action taken is valid 
@@ -256,11 +244,8 @@ class Game:
                                                 self.display.displayGameInfo()
                                                 self.display.displayPlayerGameInfo(curr_player)
 
-                                        if(curr_agent.human):
-                                                full_action = self.display.promptActions(curr_player, allowed_actions)
-                                        else:
-                                                full_action = curr_agent.doTurn(allowed_actions)
-                                        
+             
+                                        full_action = curr_player.do_turn(allowed_actions)
                                         if(self.print_mode):
                                                 print('Allowed Actions')
                                                 print(allowed_actions['allowed_actions'])
@@ -539,7 +524,7 @@ class Game:
                 actions['allowed_road_point_pairs'] = player.get_available_road_point_pairs()
                 return actions
         ## FORFEIT_CARDS (Priority action, others ignored)
-        # - A 7 is active and player has >= 8 cards
+        # - A 7 is active and player has cards left to forfeit
         if(player.forfeited_cards_left > 0):
                 actions['allowed_actions'].append(FORFEIT_CARDS)
                 actions['allowed_forfeit_cards'] = player.get_types_of_cards_possessed()
@@ -1126,7 +1111,7 @@ class Game:
 
             # moves the robber
             result = self.move_robber(tile=self.board.tiles[args["robber_pos"][0]][args["robber_pos"][1]], player=player, victim=args["victim"])
-            print(result)
+
             if result != Statuses.ALL_GOOD:
                 return result
 

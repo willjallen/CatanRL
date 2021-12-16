@@ -35,15 +35,11 @@ PLACE_ROAD = 14
 
 class GameWrapper:
     def __init__(self, headless=False):
-        self.headless = headless
 
         self.num_of_players = 0
         self.game = Game(4)
         self.agents = []
 
-        self.turn_counter = 0
-        self.user_mode = False
-        self.print_mode = False
 
 
 
