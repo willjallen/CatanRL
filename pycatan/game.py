@@ -176,12 +176,12 @@ class Game:
 
                 # Two iterations for settlement and road
                 for i in range(0, 2):
-                        allowed_actions = self.getAllowedActions(curr_player)
+                        allowed_actions = self.get_allowed_actions(curr_player)
                         placement_okay = False
                         while(not placement_okay):
                                 full_action = curr_player.do_turn(allowed_actions)
 
-                                status = self.doAction(curr_player, full_action)
+                                status = self.do_action(curr_player, full_action)
 
                                 if(status == Statuses.ALL_GOOD):
                                     placement_okay = True
@@ -226,13 +226,13 @@ class Game:
                 # Cycle, starting with the player playing their turn, through all other players
                 while(not turn_over):
 
-                        # allowed_actions = self.getAllowedActions(player, self.player_with_turn)
+                        curr_player = self.players[player_index]
                         
                         # Check if the action taken is valid 
                         action_okay = False
                         while(not action_okay):
                                
-                                allowed_actions = self.getAllowedActions(curr_player)
+                                allowed_actions = self.get_allowed_actions(curr_player)
                                 
                                 # If the player only has one available action, and that action is NO_OP
                                 # Skip their step
@@ -256,7 +256,7 @@ class Game:
                                                         if(isinstance(i, Player)):
                                                                 print('player: ' + str(i.num))
                                         
-                                        status = self.doAction(curr_player, full_action)
+                                        status = self.do_action(curr_player, full_action)
 
                                         self.set_longest_road()
 
@@ -267,7 +267,11 @@ class Game:
                                                 self.robber_moved = False
                                                 for p in self.players:
                                                         if(len(p.cards) >= 8):
-                                                                p.forfeited_cards_left = int(len(p.cards)/2)
+                                                            # print('player', p.num)
+                                                            # print(p.cards)
+                                                            # print(len(p.cards))
+                                                            # print()
+                                                            p.forfeited_cards_left = math.floor(len(p.cards)/2)
                                         else:
                                                 if(self.print_mode):
                                                         print('Error: ')
@@ -293,16 +297,15 @@ class Game:
                                 print('Roll: ' + str(self.last_roll))
                                 print()
 
+
                         turn_over = self.player_with_turn.turn_over 
                         self.rolled_seven = False
-
                         if(not turn_over):
                                 # 2 -> 3 -> 0 -> 1 -> 2
                                 if(player_index == 3):
                                         player_index = 0
                                 else:
                                         player_index += 1
-
 
 
                 # Turn has ended
@@ -318,7 +321,7 @@ class Game:
 
         print('Winner: ' + str(colors[self.winner.num]))
 
-    def doAction(self, player, args):
+    def do_action(self, player, args):
         action_type = args[0]
 
         # No op
@@ -473,7 +476,7 @@ class Game:
 
 
 # Get allowed actions
-    def getAllowedActions(self, player):
+    def get_allowed_actions(self, player):
         actions = {
         'allowed_actions': [],
         'allowed_forfeit_cards': [],
@@ -494,12 +497,6 @@ class Game:
 
         is_players_turn = (player.num == self.player_with_turn.num)
 
-        ## NO_OP
-        # - It is not the player's turn
-        # - There are no pending trades
-        if(not is_players_turn and not player.pending_trade):
-                actions['allowed_actions'].append(NO_OP)
-                return actions
 
         ## INITIAL_PLACEMENT (Priority action, other ignors)
         # - It is players turn
@@ -520,14 +517,18 @@ class Game:
 
         ## PLACE_ROAD (Priority action, others ignored)
         if(player.played_road_building and player.roads_remaining > 0):
-                actions['allowed_actions'].append(PLACE_ROAD)
                 actions['allowed_road_point_pairs'] = player.get_available_road_point_pairs()
-                return actions
+                
+                if(actions['allowed_road_point_pairs']):
+                    actions['allowed_actions'].append(PLACE_ROAD)
+                    return actions
         ## FORFEIT_CARDS (Priority action, others ignored)
-        # - A 7 is active and player has cards left to forfeit
+        # - A 7 is active player has cards left to forfeit
         if(player.forfeited_cards_left > 0):
                 actions['allowed_actions'].append(FORFEIT_CARDS)
                 actions['allowed_forfeit_cards'] = player.get_types_of_cards_possessed()
+                # print(actions['allowed_forfeit_cards'])
+                # print(player.cards)
                 return actions
 
         ## PLAY_ROBBER (Priority action, others ignored)
@@ -546,6 +547,13 @@ class Game:
         if(player.pending_trade):
                 actions['allowed_actions'].append(ACCEPT_TRADE)
                 actions['allowed_actions'].append(DENY_TRADE)
+                return actions
+                
+        ## NO_OP
+        # - It is not the player's turn
+        # - There are no pending trades
+        if(not is_players_turn and not player.pending_trade):
+                actions['allowed_actions'].append(NO_OP)
                 return actions
 
         ## PLAY_DEV_CARD
@@ -570,6 +578,7 @@ class Game:
                                                 possible_robber_tiles_and_victims = player.get_available_robber_placement_tiles_and_victims()
                                                 actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims
                                                 actions['allowed_victim_players'] = possible_robber_tiles_and_victims
+                                                # print('possible vitctims:', possible_robber_tiles_and_victims)
                 if(playable_dev_card):
                         actions['allowed_actions'].append(PLAY_DEV_CARD)
 
@@ -619,6 +628,7 @@ class Game:
                         if(Building.BUILDING_ROAD in available_buildings):
                                 available_road_pairs = player.get_available_road_point_pairs()
                                 actions['allowed_road_point_pairs'] = available_road_pairs
+                                
                                 
                                 if(available_road_pairs):
                                         if not(Building.BUILDING_ROAD in actions['allowed_buildings']):
@@ -690,7 +700,7 @@ class Game:
         return actions
 
 
-    def doAction(self, player, args):
+    def do_action(self, player, args):
         action_type = args[0]
 
         # No op

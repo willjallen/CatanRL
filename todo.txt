@@ -14,7 +14,11 @@ Game Engine Related:
 Network Related:
 - Seperate network for initial placements?
 
-- Edge case: road point pairs are empty when map is full of roads
+Crash: Forfeit cards is empty?
+
+Multithreading
+
+Game states saving
 
 Done:
 - Implement initial placement actions
@@ -27,3 +31,9 @@ Done:
 	-X Might have to redo the entire purchase_play building into seperate purchase and play priority action (to preserve only having one set of (r,i) output neurons)
 
 - Dev card can only be played at least a turn after it was purchased
+- Edge case: road point pairs are empty when map is full of roads
+
+
+Effeciency Measurmenets:
+Average Time / Game (printMode off, 1000 games)
+Current Commit: 

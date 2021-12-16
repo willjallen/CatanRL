@@ -18,16 +18,20 @@ def main():
     
     # GLOBAL SETTINGS
     
-    print_mode = True
+    print_mode = False
     user_mode = False
 
     number_of_players = 4
 
-    number_of_matches = 100;
+    number_of_matches = 1000
+    matches_played = 0
 
     for i in range(0, number_of_matches):
         match = Match(number_of_players, print_mode, user_mode, ['R', 'R', 'R', 'R'])
         match.begin()
+
+        matches_played += 1
+        print('Match #', matches_played)
 
 
 

@@ -42,6 +42,7 @@ class RandomAgent(Player):
 
 			# Road
 			if(building_response == 1):
+
 				loc = random.choice(allowed_actions['allowed_road_point_pairs'])
 				full_action.append(loc[0].position[0])
 				full_action.append(loc[0].position[1])
@@ -86,6 +87,10 @@ class RandomAgent(Player):
 
 		# Prompt Play robber
 		if(action == 6):
+			if(len(allowed_actions['allowed_robber_tiles']) == 0):
+				self.game.display.displayBoard()
+				self.game.display.displayFullGameInfo()
+				self.game.display.displayPlayerGameInfo(self)
 			choice = random.choice(allowed_actions['allowed_robber_tiles'])
 			tile_choice = choice[0]
 			victim_choice = choice[1]
@@ -127,6 +132,11 @@ class RandomAgent(Player):
 		
 		# Forfeit cards
 		if(action == 10):
+				if(len(allowed_actions['allowed_forfeit_cards']) == 0):
+					self.game.display.displayBoard()
+					self.game.display.displayFullGameInfo()
+					self.game.display.displayPlayerGameInfo(self)
+
 				choice = random.choice(allowed_actions['allowed_forfeit_cards'])
 				full_action.append(choice)
 		
@@ -150,7 +160,7 @@ class RandomAgent(Player):
 			full_action.append(loc.position[0])
 			full_action.append(loc.position[1])
 
-		# Place Road
+		# Place Road (from road building dev card)
 		if(action == 14):
 			loc = random.choice(allowed_actions['allowed_road_point_pairs'])
 			full_action.append(loc[0].position[0])
