@@ -57,21 +57,21 @@ Model outputs:
 
 ------------Categorical:------------------ 
 Action type (OHE) [Max 15]
-no_op
-roll
-purchase_resource
-purchase_and_play_building
-purchase_dev_card
-play_dev_card
-play_robber 
-start_trade
-accept_trade
-deny_trade
-forfeit_cards
-end_turn
-initial_placement_road
-initial_placement_building
-place_road
+NO_OP
+ROLL
+PURCHASE_RESOURCE
+PURCHASE_AND_PLAY_BUILDING
+PURCHASE_DEV_CARD
+PLAY_DEV_CARD
+PLAY_ROBBER
+START_TRADE
+ACCEPT_TRAD
+DENY_TRADE
+FORFEIT_CARDS
+END_TURN
+INITIAL_PLACE_ROAD
+INITIAL_PLACE_BUILDING
+PLACE_ROAD
 
 // Maybe use pointer networks?
 Resource Type 1 (OHE)

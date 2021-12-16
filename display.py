@@ -23,10 +23,9 @@ PLACE_ROAD = 14
 
 
 class Display:
-        def __init__(self, game_wrapper):
-                self.game_wrapper = game_wrapper
-                self.game = game_wrapper.game
-                self.board_renderer = BoardRenderer(game_wrapper.game.board, [50, 10])
+        def __init__(self, game):
+                self.game = game
+                self.board_renderer = BoardRenderer(self.game.board, [50, 10])
                 
 
         def printBlankLines(self, num):
@@ -378,17 +377,17 @@ class Display:
 
 
         def displayGameInfo(self):
-                print('Turn: ' + str(self.game_wrapper.turn_counter))
-                print('Player with turn: ' + colors[self.game_wrapper.player_with_turn_index])
-                print('Roll: ' + str(self.game_wrapper.game.last_roll))
+                print('Turn: ' + str(self.game.turn_counter))
+                print('Player with turn: ' + colors[self.game.player_with_turn_index])
+                print('Roll: ' + str(self.game.last_roll))
                 print()
                 if(self.game.largest_army != None):
-                        print('Largest Army: ' + colors[self.game_wrapper.game.largest_army])
+                        print('Largest Army: ' + colors[self.game.largest_army])
                 else:
                         print('Largest Army: None')
 
                 if(self.game.longest_road_owner != None):
-                        print('Longest Road: ' + colors[self.game_wrapper.game.longest_road_owner])
+                        print('Longest Road: ' + colors[self.game.longest_road_owner])
                 else:
                         print('Longest Road: None')
 
@@ -396,7 +395,7 @@ class Display:
 
         def displayFullGameInfo(self):
                 self.displayBoard()
-                for player in self.game_wrapper.game.players:
+                for player in self.game.players:
                         print('Player ' + str(player.num) + ':')
                         print('Cards:')
                         player.print_cards(player.cards) 
