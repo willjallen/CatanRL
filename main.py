@@ -23,7 +23,7 @@ def main():
 
     number_of_players = 4
 
-    number_of_matches = 3000
+    number_of_matches = 100
     matches_played = 0
     turns_played = 0
 
@@ -36,6 +36,7 @@ def main():
         print('Match #', matches_played)
 
     print('Total turns played', turns_played)
+    print('Average time / turn')
 
 def profile():
     pass

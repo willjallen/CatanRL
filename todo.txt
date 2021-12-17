@@ -35,5 +35,5 @@ Done:
 
 
 Effeciency Measurmenets:
-Average Time / Game (printMode off, 1000 games)
-Current Commit: 
+[NumGames, TotalTime(sec), TotalTime / NumGames (sec), TotalTime / TotalTurns (sec)] (printMode off, 100 games)
+Current Commit: [100, 59.980, 0.5998, 0.001787]
