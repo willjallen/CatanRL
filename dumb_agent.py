@@ -1,11 +1,9 @@
-from pycatan.card import ResCard, DevCard
-from pycatan.player import Player
-import random
-
-
-class RandomAgent(Player):
-    def __init__(self, game, num, agent_type):
+class DumbAgent(Player):
+    def __init__(self):
         super().__init__(game, num, agent_type)
+
+
+
 
     def do_turn(self, allowed_actions):
         # print('allowed_actions: ')
@@ -170,5 +168,3 @@ class RandomAgent(Player):
 
 
         return full_action
-
-

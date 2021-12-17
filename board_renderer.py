@@ -108,7 +108,7 @@ class BoardRenderer:
         render_pos = self.terminal.move(pos[1] + self.center[1], pos[0] + self.center[0])
         # Print the road
         print(self.player_colors[road_obj.owner] + render_pos + road_str)
-     
+
     # Get the x, y coordinates for a hex from a row and index
     def get_render_coords(self, row, index):
         # Initial coords

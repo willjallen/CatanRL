@@ -39,7 +39,7 @@ class Game:
 
     # initializes the  game
     def __init__(self, num_of_players=4, print_mode=False, user_mode=False, agent_type_arr=['R','R','R','R'], on_win=None, starting_board=False, headless=False):
-        
+
         self.num_of_players = num_of_players
         self.headless = headless
         self.print_mode = print_mode
@@ -57,7 +57,6 @@ class Game:
                 self.players.append(HumanAgent(num=i, game=self, agent_type=agent_type_arr[i]))
             if(agent_type_arr[i] == 'R'):
                 self.players.append(RandomAgent(num=i, game=self, agent_type=agent_type_arr[i]))
-
 
         # Set onWin method
         self.on_win = on_win
@@ -96,14 +95,20 @@ class Game:
         self.init = False
 
         self.turn_counter = 0
-        
 
 
 
-    # get starting play order
+
+
     def get_starting_play_order(self):
-        # Determine starting order for initial placements
-        # Pick a random player then go in snake order
+        ''''
+                Determine a random initial starting order
+                Args:
+
+                Returns: starting_play_order
+                        arr of size 4 denoting indices of players in snake order
+        '''
+
         chosen_player = player_index = random.randint(0, self.num_of_players-1)
 
         # Starting placements
@@ -113,48 +118,47 @@ class Game:
         starting_play_order = []
         switch = False
         for i in range(0, 8):
-                starting_play_order.append(player_index)
+            starting_play_order.append(player_index)
 
-                if(not i == 3):
-                        if(not switch):
-                                if(player_index == 3):
-                                        player_index = 0
-                                else:
-                                        player_index += 1
-                        else:
-                                if(player_index == 0):
-                                        player_index = 3
-                                else:
-                                        player_index -= 1
+            if(not i == 3):
+                if(not switch):
+                    if(player_index == 3):
+                        player_index = 0
+                    else:
+                        player_index += 1
                 else:
-                        switch = True
+                    if(player_index == 0):
+                        player_index = 3
+                    else:
+                        player_index -= 1
+            else:
+                switch = True
 
         return starting_play_order
 
     def add_initial_placement_yield(self):
+        ''''
+                When the game begins, add resources of all tiles that player initially settled on
+                Args:
+
+                Returns: 
+        '''
         for i in range(2, 13):
             if i != 7:
                 self.board.add_yield(i)
 
     def setup(self):
+        ''''
+                Setup the game for play, this includes creating the players and assigning a starting order to them 
+                Args:
 
-
-        # # Wrap players into agents
-        # for player in self.players:
-        #         if self.user_mode:
-        #                 print('Player ' + str(player.num) + ' human? (y/n)')
-        #                 is_human = input()
-        #                 if(is_human == 'y'):
-        #                         self.agents.append(Agent(player, True, []))
-        #                 else:
-        #                         self.agents.append(RandomAgent(player))
-        #         else:
-        #                 self.agents.append(Agent(player, True, []))
-
+                Returns: starting_play_order
+                        arr of size 4 denoting indices of players in snake order
+        '''
 
         starting_play_order = self.get_starting_play_order()
         placement_okay = False
-        
+
         if(self.print_mode):
             print('Starting play order: ')
             print(starting_play_order)
@@ -163,28 +167,28 @@ class Game:
         self.initial_placement_mode = True
 
         for player_index in starting_play_order:
-                curr_player = self.players[player_index]
-                self.player_with_turn = curr_player
-                
-                if(self.print_mode):
-                    self.display.displayBoard()
-                    self.display.printBlankLines(8)
-                    print('Player with turn: ' + colors[player_index])
+            curr_player = self.players[player_index]
+            self.player_with_turn = curr_player
 
-                curr_player.has_completed_initial_placement = False
-                curr_player.has_placed_initial_settlement = False
+            if(self.print_mode):
+                self.display.displayBoard()
+                self.display.printBlankLines(8)
+                print('Player with turn: ' + colors[player_index])
 
-                # Two iterations for settlement and road
-                for i in range(0, 2):
-                        allowed_actions = self.get_allowed_actions(curr_player)
-                        placement_okay = False
-                        while(not placement_okay):
-                                full_action = curr_player.do_turn(allowed_actions)
+            curr_player.has_completed_initial_placement = False
+            curr_player.has_placed_initial_settlement = False
 
-                                status = self.do_action(curr_player, full_action)
+            # Two iterations for settlement and road
+            for i in range(0, 2):
+                allowed_actions = self.get_allowed_actions(curr_player)
+                placement_okay = False
+                while(not placement_okay):
+                    full_action = curr_player.do_turn(allowed_actions)
 
-                                if(status == Statuses.ALL_GOOD):
-                                    placement_okay = True
+                    status = self.do_action(curr_player, full_action)
+
+                    if(status == Statuses.ALL_GOOD):
+                        placement_okay = True
 
 
         self.initial_placement_mode = False
@@ -194,6 +198,9 @@ class Game:
         self.starting_player_index = starting_play_order[0]
 
         self.init = True
+
+
+
 
 
 
@@ -211,113 +218,122 @@ class Game:
         turn_over = False
         cycle_complete = False        
         while(not self.has_ended):
-                # Reset roll
-                self.can_roll = True
+            # Reset roll
+            self.can_roll = True
 
-                # Iterate to next player with turn
+            # Iterate to next player with turn
+            curr_player = self.players[player_index]
+            self.player_with_turn = curr_player
+            self.player_with_turn_index = player_index
+            self.player_with_turn.turn_over = turn_over = False
+
+            # Reset number of trades the player has conducted
+            self.player_with_turn.num_trades_in_turn = 0
+
+            # Cycle, starting with the player playing their turn, through all other players
+            while(not turn_over):
+
                 curr_player = self.players[player_index]
-                self.player_with_turn = curr_player
-                self.player_with_turn_index = player_index
-                self.player_with_turn.turn_over = turn_over = False
 
-                # Reset number of trades the player has conducted
-                self.player_with_turn.num_trades_in_turn = 0
+                # Check if the action taken is valid 
+                action_okay = False
+                while(not action_okay):
 
-                # Cycle, starting with the player playing their turn, through all other players
-                while(not turn_over):
+                    allowed_actions = self.get_allowed_actions(curr_player)
 
-                        curr_player = self.players[player_index]
-                        
-                        # Check if the action taken is valid 
+                    # If the player only has one available action, and that action is NO_OP
+                    # Skip their step
+                    if(len(allowed_actions['allowed_actions']) == 1 and (NO_OP in allowed_actions['allowed_actions'])):
+                        action_okay = True
+                        continue
+
+                    if(self.print_mode):
+                        self.display.displayBoard()
+                        self.display.displayGameInfo()
+                        self.display.displayPlayerGameInfo(curr_player)
+
+                    # Save Game state 
+
+
+                    full_action = curr_player.do_turn(allowed_actions)
+
+
+
+                    if(self.print_mode):
+                        print('Allowed Actions')
+                        print(allowed_actions['allowed_actions'])
+                        print('Full action:')
+                        print(full_action)
+                        print(action_types[full_action[0]])
+                        for i in full_action:
+                            if(isinstance(i, Player)):
+                                print('player: ' + str(i.num))
+
+
+
+
+                    status = self.do_action(curr_player, full_action)
+
+                    self.set_longest_road()
+
+                    if status == Statuses.ALL_GOOD:
+                        action_okay = True
+                    elif status == Statuses.ROLLED_SEVEN:
+                        self.rolled_seven = True
+                        self.robber_moved = False
+                        for p in self.players:
+                            if(len(p.cards) >= 8):
+                                # print('player', p.num)
+                                # print(p.cards)
+                                # print(len(p.cards))
+                                # print()
+                                p.forfeited_cards_left = math.floor(len(p.cards)/2)
+                    else:
+                        if(self.print_mode):
+                            print('Error: ')
+                            print(Statuses.status_list[int(status)])
+
+                    # If the player still has cards to forfeit, stay on this player
+                    if(curr_player.forfeited_cards_left > 0):
                         action_okay = False
-                        while(not action_okay):
-                               
-                                allowed_actions = self.get_allowed_actions(curr_player)
-                                
-                                # If the player only has one available action, and that action is NO_OP
-                                # Skip their step
-                                if(len(allowed_actions['allowed_actions']) == 1 and (NO_OP in allowed_actions['allowed_actions'])):
-                                        action_okay = True
-                                else:
-                                        if(self.print_mode):
-                                                self.display.displayBoard()
-                                                self.display.displayGameInfo()
-                                                self.display.displayPlayerGameInfo(curr_player)
 
-             
-                                        full_action = curr_player.do_turn(allowed_actions)
-                                        if(self.print_mode):
-                                                print('Allowed Actions')
-                                                print(allowed_actions['allowed_actions'])
-                                                print('Full action:')
-                                                print(full_action)
-                                                print(action_types[full_action[0]])
-                                                for i in full_action:
-                                                        if(isinstance(i, Player)):
-                                                                print('player: ' + str(i.num))
-                                        
-                                        status = self.do_action(curr_player, full_action)
+                    # Pause
+                    if(self.user_mode):
+                        response = input("type anything to continue")
 
-                                        self.set_longest_road()
+                if(self.player_with_turn.get_VP(True) >= 10):
+                    self.has_ended = True
+                    self.winner = self.player_with_turn
+                    self.player_with_turn.turn_over = True
 
-                                        if status == Statuses.ALL_GOOD:
-                                                action_okay = True
-                                        elif status == Statuses.ROLLED_SEVEN:
-                                                self.rolled_seven = True
-                                                self.robber_moved = False
-                                                for p in self.players:
-                                                        if(len(p.cards) >= 8):
-                                                            # print('player', p.num)
-                                                            # print(p.cards)
-                                                            # print(len(p.cards))
-                                                            # print()
-                                                            p.forfeited_cards_left = math.floor(len(p.cards)/2)
-                                        else:
-                                                if(self.print_mode):
-                                                        print('Error: ')
-                                                        print(Statuses.status_list[int(status)])
-
-                                        # If the player still has cards to forfeit, stay on this player
-                                        if(curr_player.forfeited_cards_left > 0):
-                                                action_okay = False
-
-                                        # Pause
-                                        if(self.user_mode):
-                                                response = input("type anything to continue")
-
-                        if(self.player_with_turn.get_VP(True) >= 10):
-                                self.has_ended = True
-                                self.winner = self.player_with_turn
-                                self.player_with_turn.turn_over = True
-
-                                 # Display turn relevant info
-                                self.display.displayBoard()
-                                print('Turn: ' + str(self.turn_counter))
-                                print('Player with turn: ' + colors[self.player_with_turn_index])
-                                print('Roll: ' + str(self.last_roll))
-                                print()
+                     # Display turn relevant info
+                    self.display.displayBoard()
+                    print('Turn: ' + str(self.turn_counter))
+                    print('Player with turn: ' + colors[self.player_with_turn_index])
+                    print('Roll: ' + str(self.last_roll))
+                    print()
 
 
-                        turn_over = self.player_with_turn.turn_over 
-                        self.rolled_seven = False
-                        if(not turn_over):
-                                # 2 -> 3 -> 0 -> 1 -> 2
-                                if(player_index == 3):
-                                        player_index = 0
-                                else:
-                                        player_index += 1
-
-
-                # Turn has ended
-                player_index = self.player_with_turn_index
-                self.turn_counter += 1
-
-
-                # 2 -> 3 -> 0 -> 1 -> 2
-                if(player_index == 3):
+                turn_over = self.player_with_turn.turn_over 
+                self.rolled_seven = False
+                if(not turn_over):
+                    # 2 -> 3 -> 0 -> 1 -> 2
+                    if(player_index == 3):
                         player_index = 0
-                else:
+                    else:
                         player_index += 1
+
+
+            # Turn has ended
+            player_index = self.player_with_turn_index
+            self.turn_counter += 1
+
+
+            # 2 -> 3 -> 0 -> 1 -> 2
+            if(player_index == 3):
+                player_index = 0
+            else:
+                player_index += 1
 
         print('Winner: ' + str(colors[self.winner.num]))
 
@@ -326,156 +342,156 @@ class Game:
 
         # No op
         if(action_type == NO_OP):
-                return Statuses.ALL_GOOD
+            return Statuses.ALL_GOOD
         # Roll
         if(action_type == ROLL):
-                if(self.can_roll):
-                        self.last_roll = roll = self.get_roll()
-                        self.can_roll = False
-                        if(roll != 7):
-                                self.board.add_yield(roll)
-                        else:
-                                return Statuses.ROLLED_SEVEN
-                        return Statuses.ALL_GOOD
+            if(self.can_roll):
+                self.last_roll = roll = self.get_roll()
+                self.can_roll = False
+                if(roll != 7):
+                    self.board.add_yield(roll)
                 else:
-                        return Statuses.ERR_ROLL
+                    return Statuses.ROLLED_SEVEN
+                return Statuses.ALL_GOOD
+            else:
+                return Statuses.ERR_ROLL
         # Purchase Resource
         if(action_type == PURCHASE_RESOURCE):
-                requested_resource = args[1]
-                forfeited_resource = args[2]
-                status = self.trade_to_bank(player, forfeited_resource, requested_resource)
-                return status
+            requested_resource = args[1]
+            forfeited_resource = args[2]
+            status = self.trade_to_bank(player, forfeited_resource, requested_resource)
+            return status
 
         # Purchase & play building
         if(action_type == PURCHASE_AND_PLAY_BUILDING):
-                building_response = args[1]
-                loc_r_response = args[2]
-                loc_i_response = args[3]
-                if(building_response == 0):
-                        status = player.build_settlement(self.board.points[loc_r_response][loc_i_response])
-                if(building_response == 1):
-                        loc_r_response_2 = args[4]
-                        loc_i_response_2 = args[5]     
-                        status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2])
-                if(building_response == 2):
-                        status = self.add_city(self.board.points[loc_r_response][loc_i_response], player)
-                return status
+            building_response = args[1]
+            loc_r_response = args[2]
+            loc_i_response = args[3]
+            if(building_response == 0):
+                status = player.build_settlement(self.board.points[loc_r_response][loc_i_response])
+            if(building_response == 1):
+                loc_r_response_2 = args[4]
+                loc_i_response_2 = args[5]     
+                status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2])
+            if(building_response == 2):
+                status = self.add_city(self.board.points[loc_r_response][loc_i_response], player)
+            return status
 
         # Purchase dev card
         if(action_type == PURCHASE_DEV_CARD):
-                status_and_card = self.build_dev(player.num)
-                player.last_bought_dev_card = status_and_card[0] 
-                return status_and_card[1]
+            status_and_card = self.build_dev(player.num)
+            player.last_bought_dev_card = status_and_card[0] 
+            return status_and_card[1]
 
         # Play Dev Card
         if(action_type == PLAY_DEV_CARD):
-                dev_card_response = args[1]
+            dev_card_response = args[1]
 
-                if(dev_card_response == DevCard.Road.value):
-                        player.played_road_building = True
-                        player.roads_remaining = 2
-                        player.remove_dev_card(DevCard.Road)
+            if(dev_card_response == DevCard.Road.value):
+                player.played_road_building = True
+                player.roads_remaining = 2
+                player.remove_dev_card(DevCard.Road)
 
-                if(dev_card_response == DevCard.Knight.value):
-                        loc_x_response = args[2]
-                        loc_y_response = args[3]
-                        victim_player_response = args[4]
+            if(dev_card_response == DevCard.Knight.value):
+                loc_x_response = args[2]
+                loc_y_response = args[3]
+                victim_player_response = args[4]
 
-                        status = self.use_dev_card(player.num, DevCard.Knight, {'robber_pos': [loc_x_response, loc_y_response], 'victim': victim_player_response})
-                        return status
+                status = self.use_dev_card(player.num, DevCard.Knight, {'robber_pos': [loc_x_response, loc_y_response], 'victim': victim_player_response})
+                return status
 
-                if(dev_card_response == DevCard.Monopoly.value):
-                        resource_response = args[2]
+            if(dev_card_response == DevCard.Monopoly.value):
+                resource_response = args[2]
 
-                        status = self.use_dev_card(player.num, DevCard.Monopoly, {'card_type': ResCard(resource_response)})
-                        return status
+                status = self.use_dev_card(player.num, DevCard.Monopoly, {'card_type': ResCard(resource_response)})
+                return status
 
-                if(dev_card_response == DevCard.YearOfPlenty.value):
-                        first_resource_response = args[2]
-                        second_resource_response = args[3]
-                        
-                        
-                        status = self.use_dev_card(player.num, DevCard.YearOfPlenty, {'card_one': ResCard(first_resource_response), 'card_two': ResCard(second_resource_response)})
-                        return status
+            if(dev_card_response == DevCard.YearOfPlenty.value):
+                first_resource_response = args[2]
+                second_resource_response = args[3]
+
+
+                status = self.use_dev_card(player.num, DevCard.YearOfPlenty, {'card_one': ResCard(first_resource_response), 'card_two': ResCard(second_resource_response)})
+                return status
         # Play robber
         if(action_type == PLAY_ROBBER):
-                loc_x_response = args[1]
-                loc_y_response = args[2]
-                victim_player_response = args[3]
+            loc_x_response = args[1]
+            loc_y_response = args[2]
+            victim_player_response = args[3]
 
-                status = self.move_robber(self.board.tiles[loc_x_response][loc_y_response], player.num, victim_player_response)
-                self.robber_moved = True
-                return status
+            status = self.move_robber(self.board.tiles[loc_x_response][loc_y_response], player.num, victim_player_response)
+            self.robber_moved = True
+            return status
 
         # Do trade
         if(action_type == START_TRADE):
-                player.num_trades_in_turn += 1
-                # Which player
-                other_player = args[1]
-                player_forfieted_resource = args[2]
-                player_received_resource = args[3]
+            player.num_trades_in_turn += 1
+            # Which player
+            other_player = args[1]
+            player_forfieted_resource = args[2]
+            player_received_resource = args[3]
 
-                other_player.trading_player = player
-                other_player.pending_trade = True
-                other_player.trade_forfeit_card = player_received_resource
-                other_player.trade_receive_card = player_forfieted_resource
+            other_player.trading_player = player
+            other_player.pending_trade = True
+            other_player.trade_forfeit_card = player_received_resource
+            other_player.trade_receive_card = player_forfieted_resource
 
 
         # Accept Trade
         if(action_type == ACCEPT_TRADE):
-                status = self.trade(player.num, player.trading_player.num, [player.trade_forfeit_card], [player.trade_receive_card])
-                player.pending_trade = False
-                return status
+            status = self.trade(player.num, player.trading_player.num, [player.trade_forfeit_card], [player.trade_receive_card])
+            player.pending_trade = False
+            return status
         # Deny trade
         if(action_type == DENY_TRADE):
-                player.pending_trade = False
+            player.pending_trade = False
 
         # Forfeit cards
         if(action_type == FORFEIT_CARDS):
-                player.remove_cards([args[1]])
-                player.forfeited_cards_left -= 1
+            player.remove_cards([args[1]])
+            player.forfeited_cards_left -= 1
 
         # End turn
         if(action_type == END_TURN):
-                player.turn_over = True
-                return Statuses.ALL_GOOD
+            player.turn_over = True
+            return Statuses.ALL_GOOD
 
         # Initial placements
         # Road
         if(action_type == INITIAL_PLACE_ROAD):
-                loc_r_response = args[1]
-                loc_i_response = args[2]     
-                loc_r_response_2 = args[3]
-                loc_i_response_2 = args[4]     
-                status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2], is_starting=True)
-                player.has_completed_initial_placement = True
+            loc_r_response = args[1]
+            loc_i_response = args[2]     
+            loc_r_response_2 = args[3]
+            loc_i_response_2 = args[4]     
+            status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2], is_starting=True)
+            player.has_completed_initial_placement = True
 
         # Building
         if(action_type == INITIAL_PLACE_BUILDING):
-                loc_r_response = args[1]
-                loc_i_response = args[2]
-                status = player.build_settlement(self.board.points[loc_r_response][loc_i_response], is_starting=True)
-                player.has_placed_initial_settlement = True
-                player.initial_settlement = self.board.points[loc_r_response][loc_i_response]
+            loc_r_response = args[1]
+            loc_i_response = args[2]
+            status = player.build_settlement(self.board.points[loc_r_response][loc_i_response], is_starting=True)
+            player.has_placed_initial_settlement = True
+            player.initial_settlement = self.board.points[loc_r_response][loc_i_response]
 
         # Road building 
         if(action_type == PLACE_ROAD):
-                loc_r_response = args[1]
-                loc_i_response = args[2]     
-                loc_r_response_2 = args[3]
-                loc_i_response_2 = args[4]     
-                status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2], is_starting=True)
-                if(player.roads_remaining > 0):
-                        player.roads_remaining -= 1
-                else:
-                        player.played_road_building = False
+            loc_r_response = args[1]
+            loc_i_response = args[2]     
+            loc_r_response_2 = args[3]
+            loc_i_response_2 = args[4]     
+            status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2], is_starting=True)
+            if(player.roads_remaining > 0):
+                player.roads_remaining -= 1
+            else:
+                player.played_road_building = False
 
         return Statuses.ALL_GOOD
 
 
 
 
-# Get allowed actions
+    # Get allowed actions
     def get_allowed_actions(self, player):
         actions = {
         'allowed_actions': [],
@@ -502,149 +518,149 @@ class Game:
         # - It is players turn
         # - initial_placement_mode is true
         if(is_players_turn and self.initial_placement_mode):
-                if(player.has_completed_initial_placement):
-                        actions['allowed_actions'].append(END_TURN)
-                        return actions
-                if(player.num_initial_settlements > 0 and not player.has_placed_initial_settlement):
-                        actions['allowed_actions'].append(INITIAL_PLACE_BUILDING)
-                        actions['allowed_settlement_points'] = player.get_available_initial_settlement_points()
-                if(player.num_initial_roads > 0 and player.has_placed_initial_settlement):
-                        actions['allowed_actions'].append(INITIAL_PLACE_ROAD)
-                        actions['allowed_road_point_pairs'] = player.get_available_initial_road_point_pairs()
-
+            if(player.has_completed_initial_placement):
+                actions['allowed_actions'].append(END_TURN)
                 return actions
+            if(player.num_initial_settlements > 0 and not player.has_placed_initial_settlement):
+                actions['allowed_actions'].append(INITIAL_PLACE_BUILDING)
+                actions['allowed_settlement_points'] = player.get_available_initial_settlement_points()
+            if(player.num_initial_roads > 0 and player.has_placed_initial_settlement):
+                actions['allowed_actions'].append(INITIAL_PLACE_ROAD)
+                actions['allowed_road_point_pairs'] = player.get_available_initial_road_point_pairs()
+
+            return actions
 
 
         ## PLACE_ROAD (Priority action, others ignored)
         if(player.played_road_building and player.roads_remaining > 0):
-                actions['allowed_road_point_pairs'] = player.get_available_road_point_pairs()
-                
-                if(actions['allowed_road_point_pairs']):
-                    actions['allowed_actions'].append(PLACE_ROAD)
-                    return actions
+            actions['allowed_road_point_pairs'] = player.get_available_road_point_pairs()
+
+            if(actions['allowed_road_point_pairs']):
+                actions['allowed_actions'].append(PLACE_ROAD)
+                return actions
         ## FORFEIT_CARDS (Priority action, others ignored)
         # - A 7 is active player has cards left to forfeit
         if(player.forfeited_cards_left > 0):
-                actions['allowed_actions'].append(FORFEIT_CARDS)
-                actions['allowed_forfeit_cards'] = player.get_types_of_cards_possessed()
-                # print(actions['allowed_forfeit_cards'])
-                # print(player.cards)
-                return actions
+            actions['allowed_actions'].append(FORFEIT_CARDS)
+            actions['allowed_forfeit_cards'] = player.get_types_of_cards_possessed()
+            # print(actions['allowed_forfeit_cards'])
+            # print(player.cards)
+            return actions
 
         ## PLAY_ROBBER (Priority action, others ignored)
         # - It is the players turn
         # - A 7 is active and robber has not been moved
         if(is_players_turn and not self.robber_moved):
-                actions['allowed_actions'].append(PLAY_ROBBER)
-                possible_robber_tiles_and_victims = player.get_available_robber_placement_tiles_and_victims()
-                actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims
-                actions['allowed_victim_players'] = possible_robber_tiles_and_victims
-                return actions
+            actions['allowed_actions'].append(PLAY_ROBBER)
+            possible_robber_tiles_and_victims = player.get_available_robber_placement_tiles_and_victims()
+            actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims
+            actions['allowed_victim_players'] = possible_robber_tiles_and_victims
+            return actions
 
         ## ACCEPT_TRADE (Priority action, others ignored)
         ## DENY_TRADE
         # - Player has a pending trade
         if(player.pending_trade):
-                actions['allowed_actions'].append(ACCEPT_TRADE)
-                actions['allowed_actions'].append(DENY_TRADE)
-                return actions
-                
+            actions['allowed_actions'].append(ACCEPT_TRADE)
+            actions['allowed_actions'].append(DENY_TRADE)
+            return actions
+
         ## NO_OP
         # - It is not the player's turn
         # - There are no pending trades
         if(not is_players_turn and not player.pending_trade):
-                actions['allowed_actions'].append(NO_OP)
-                return actions
+            actions['allowed_actions'].append(NO_OP)
+            return actions
 
         ## PLAY_DEV_CARD
         # - It is the players turn
         # - Player has at least one development card
         if(is_players_turn):
-                playable_dev_card = False
-                for card in DevCard:
-                        if(card in player.dev_cards):
-                                # Check for playing purchased dev card on the same turn
-                                sameTurn = False
-                                if(card == player.last_bought_dev_card):
-                                        if(len([x for x in player.dev_cards if x == card]) <= 2):
-                                                sameTurn = True
-                                
-                                if(not sameTurn):
-                                        if(card == DevCard.Knight or card == DevCard.YearOfPlenty or card == DevCard.Monopoly or card == DevCard.Road):
-                                                actions['allowed_dev_cards'].append(card)
-                                                playable_dev_card = True
+            playable_dev_card = False
+            for card in DevCard:
+                if(card in player.dev_cards):
+                    # Check for playing purchased dev card on the same turn
+                    sameTurn = False
+                    if(card == player.last_bought_dev_card):
+                        if(len([x for x in player.dev_cards if x == card]) <= 2):
+                            sameTurn = True
 
-                                        if(card == DevCard.Knight):
-                                                possible_robber_tiles_and_victims = player.get_available_robber_placement_tiles_and_victims()
-                                                actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims
-                                                actions['allowed_victim_players'] = possible_robber_tiles_and_victims
-                                                # print('possible vitctims:', possible_robber_tiles_and_victims)
-                if(playable_dev_card):
-                        actions['allowed_actions'].append(PLAY_DEV_CARD)
+                    if(not sameTurn):
+                        if(card == DevCard.Knight or card == DevCard.YearOfPlenty or card == DevCard.Monopoly or card == DevCard.Road):
+                            actions['allowed_dev_cards'].append(card)
+                            playable_dev_card = True
+
+                        if(card == DevCard.Knight):
+                            possible_robber_tiles_and_victims = player.get_available_robber_placement_tiles_and_victims()
+                            actions['allowed_robber_tiles'] = possible_robber_tiles_and_victims
+                            actions['allowed_victim_players'] = possible_robber_tiles_and_victims
+                            # print('possible vitctims:', possible_robber_tiles_and_victims)
+            if(playable_dev_card):
+                actions['allowed_actions'].append(PLAY_DEV_CARD)
 
         ## ROLL (Priority action, others (except play dev card) ignored)
         # - It is the players turn
         # - The dice has not been rolled
         if(is_players_turn and self.can_roll):
-                actions['allowed_actions'].append(ROLL)
-                return actions
+            actions['allowed_actions'].append(ROLL)
+            return actions
 
         ## PURCHASE_RESOURCE
         # - It is the players turn
         # - The dice has been rolled
         # - Player can exchange resource
         if(is_players_turn and not self.can_roll):
-                # Check every resource and append those which are eligable
-                cards = self.cards_tradable_to_bank(player)
-                if cards:
-                        # card_types = [card[0] for card in cards] 
-                        # card_nums = [card[1] for card in cards] 
-                        card_tuples = [(card[0], card[1]) for card in cards]
-                        actions['allowed_actions'].append(PURCHASE_RESOURCE)
-                        for card in cards:
-                                actions['allowed_bank_trade_cards'].append(card)
+            # Check every resource and append those which are eligable
+            cards = self.cards_tradable_to_bank(player)
+            if cards:
+                # card_types = [card[0] for card in cards] 
+                # card_nums = [card[1] for card in cards] 
+                card_tuples = [(card[0], card[1]) for card in cards]
+                actions['allowed_actions'].append(PURCHASE_RESOURCE)
+                for card in cards:
+                    actions['allowed_bank_trade_cards'].append(card)
 
 
 
-                #self.can_trade_to_bank(player, cards, request)
+            #self.can_trade_to_bank(player, cards, request)
 
         ## PURCHASE_AND_PLAY_BUILDING
         # - It is the players turn
         # - The dice has been rolled                
         # - Player has relevant cards
         if(is_players_turn and not self.can_roll):
-                available_buildings = player.get_available_buildings()
+            available_buildings = player.get_available_buildings()
 
-                if(available_buildings):
-                        if(Building.BUILDING_SETTLEMENT in available_buildings):
-                                settlement_points = player.get_available_settlement_points()
-                                actions['allowed_settlement_points'] = settlement_points
-                                
-                                if(settlement_points):
-                                        if not(Building.BUILDING_SETTLEMENT in actions['allowed_buildings']):
-                                                actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
-                                                actions['allowed_buildings'].append(Building.BUILDING_SETTLEMENT)
+            if(available_buildings):
+                if(Building.BUILDING_SETTLEMENT in available_buildings):
+                    settlement_points = player.get_available_settlement_points()
+                    actions['allowed_settlement_points'] = settlement_points
 
-                        if(Building.BUILDING_ROAD in available_buildings):
-                                available_road_pairs = player.get_available_road_point_pairs()
-                                actions['allowed_road_point_pairs'] = available_road_pairs
-                                
-                                
-                                if(available_road_pairs):
-                                        if not(Building.BUILDING_ROAD in actions['allowed_buildings']):
-                                                if not(PURCHASE_AND_PLAY_BUILDING in actions['allowed_actions']):
-                                                    actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
-                                                actions['allowed_buildings'].append(Building.BUILDING_ROAD)
+                    if(settlement_points):
+                        if not(Building.BUILDING_SETTLEMENT in actions['allowed_buildings']):
+                            actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
+                            actions['allowed_buildings'].append(Building.BUILDING_SETTLEMENT)
+
+                if(Building.BUILDING_ROAD in available_buildings):
+                    available_road_pairs = player.get_available_road_point_pairs()
+                    actions['allowed_road_point_pairs'] = available_road_pairs
 
 
-                        if(Building.BUILDING_CITY in available_buildings):
-                                available_cities = player.get_available_upgrade_points()
-                                actions['allowed_city_points'] = available_cities
-                                if(available_cities):
-                                        if not(Building.BUILDING_CITY in actions['allowed_buildings']):
-                                                if not(PURCHASE_AND_PLAY_BUILDING in actions['allowed_actions']):
-                                                    actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
-                                                actions['allowed_buildings'].append(Building.BUILDING_CITY)                                
+                    if(available_road_pairs):
+                        if not(Building.BUILDING_ROAD in actions['allowed_buildings']):
+                            if not(PURCHASE_AND_PLAY_BUILDING in actions['allowed_actions']):
+                                actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
+                            actions['allowed_buildings'].append(Building.BUILDING_ROAD)
+
+
+                if(Building.BUILDING_CITY in available_buildings):
+                    available_cities = player.get_available_upgrade_points()
+                    actions['allowed_city_points'] = available_cities
+                    if(available_cities):
+                        if not(Building.BUILDING_CITY in actions['allowed_buildings']):
+                            if not(PURCHASE_AND_PLAY_BUILDING in actions['allowed_actions']):
+                                actions['allowed_actions'].append(PURCHASE_AND_PLAY_BUILDING)
+                            actions['allowed_buildings'].append(Building.BUILDING_CITY)                                
 
 
         ## PURCHASE_DEV_CARD
@@ -652,7 +668,7 @@ class Game:
         # - The dice has been rolled                
         # - Player has relevant cards
         if(is_players_turn and player.can_build_dev()==Statuses.ALL_GOOD and not self.can_roll):
-                actions['allowed_actions'].append(PURCHASE_DEV_CARD)
+            actions['allowed_actions'].append(PURCHASE_DEV_CARD)
 
 
         ## START_TRADE
@@ -661,35 +677,35 @@ class Game:
         # - Player actually has the card they are forfeiting
         # - Receiving player actually has the card they are forfeiting 
         if(is_players_turn and player.num_trades_in_turn < 4):
-        
-                player_card_types = player.get_types_of_cards_possessed()
 
-                if(player_card_types):
-                        for other_player in self.players:
-                                if(other_player == player):
-                                        continue
+            player_card_types = player.get_types_of_cards_possessed()
 
-                                card_pairs = []
+            if(player_card_types):
+                for other_player in self.players:
+                    if(other_player == player):
+                        continue
 
-                                # If other player has any cards
-                                if(other_player.cards):
-                                        # Iterate through all card types available to player
-                                        for card in player_card_types:
-                                                # Get all card types available to other player
-                                                other_player_forfeit_cards = other_player.get_types_of_cards_possessed()
-                                                
-                                                # Remove duplicate card (prevent trading sheep for sheep)
-                                                if card in other_player_forfeit_cards:
-                                                        other_player_forfeit_cards.remove(card)
-                                                        # If the other player still has cards to forfeit after this
-                                                if(other_player_forfeit_cards):
-                                                        card_pairs.append((card, other_player_forfeit_cards))
-                                if(card_pairs):                   
-                                        actions['allowed_trade_partners'].append(other_player)
-                                        actions['allowed_trade_pairs'].append((other_player.num, card_pairs))
+                    card_pairs = []
 
-                if(len(actions['allowed_trade_partners']) > 0):
-                        actions['allowed_actions'].append(START_TRADE)
+                    # If other player has any cards
+                    if(other_player.cards):
+                        # Iterate through all card types available to player
+                        for card in player_card_types:
+                            # Get all card types available to other player
+                            other_player_forfeit_cards = other_player.get_types_of_cards_possessed()
+
+                            # Remove duplicate card (prevent trading sheep for sheep)
+                            if card in other_player_forfeit_cards:
+                                other_player_forfeit_cards.remove(card)
+                                # If the other player still has cards to forfeit after this
+                            if(other_player_forfeit_cards):
+                                card_pairs.append((card, other_player_forfeit_cards))
+                    if(card_pairs):                   
+                        actions['allowed_trade_partners'].append(other_player)
+                        actions['allowed_trade_pairs'].append((other_player.num, card_pairs))
+
+            if(len(actions['allowed_trade_partners']) > 0):
+                actions['allowed_actions'].append(START_TRADE)
 
         ## END_TURN
         # - It is the players turn
@@ -705,149 +721,149 @@ class Game:
 
         # No op
         if(action_type == NO_OP):
-                return Statuses.ALL_GOOD
+            return Statuses.ALL_GOOD
         # Roll
         if(action_type == ROLL):
-                if(self.can_roll):
-                        self.last_roll = roll = self.get_roll()
-                        self.can_roll = False
-                        if(roll != 7):
-                                self.board.add_yield(roll)
-                        else:
-                                return Statuses.ROLLED_SEVEN
-                        return Statuses.ALL_GOOD
+            if(self.can_roll):
+                self.last_roll = roll = self.get_roll()
+                self.can_roll = False
+                if(roll != 7):
+                    self.board.add_yield(roll)
                 else:
-                        return Statuses.ERR_ROLL
+                    return Statuses.ROLLED_SEVEN
+                return Statuses.ALL_GOOD
+            else:
+                return Statuses.ERR_ROLL
         # Purchase Resource
         if(action_type == PURCHASE_RESOURCE):
-                requested_resource = args[1]
-                forfeited_resource = args[2]
-                status = self.trade_to_bank(player, forfeited_resource, requested_resource)
-                return status
+            requested_resource = args[1]
+            forfeited_resource = args[2]
+            status = self.trade_to_bank(player, forfeited_resource, requested_resource)
+            return status
 
         # Purchase & play building
         if(action_type == PURCHASE_AND_PLAY_BUILDING):
-                building_response = args[1]
-                loc_r_response = args[2]
-                loc_i_response = args[3]
-                if(building_response == 0):
-                        status = player.build_settlement(self.board.points[loc_r_response][loc_i_response])
-                if(building_response == 1):
-                        loc_r_response_2 = args[4]
-                        loc_i_response_2 = args[5]     
-                        status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2])
-                if(building_response == 2):
-                        status = self.add_city(self.board.points[loc_r_response][loc_i_response], player)
-                return status
+            building_response = args[1]
+            loc_r_response = args[2]
+            loc_i_response = args[3]
+            if(building_response == 0):
+                status = player.build_settlement(self.board.points[loc_r_response][loc_i_response])
+            if(building_response == 1):
+                loc_r_response_2 = args[4]
+                loc_i_response_2 = args[5]     
+                status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2])
+            if(building_response == 2):
+                status = self.add_city(self.board.points[loc_r_response][loc_i_response], player)
+            return status
 
         # Purchase dev card
         if(action_type == PURCHASE_DEV_CARD):
-                status_and_card = self.build_dev(player.num)
-                player.last_bought_dev_card = status_and_card[0] 
-                return status_and_card[1]
+            status_and_card = self.build_dev(player.num)
+            player.last_bought_dev_card = status_and_card[0] 
+            return status_and_card[1]
 
         # Play Dev Card
         if(action_type == PLAY_DEV_CARD):
-                dev_card_response = args[1]
+            dev_card_response = args[1]
 
-                if(dev_card_response == DevCard.Road.value):
-                        player.played_road_building = True
-                        player.roads_remaining = 2
-                        player.remove_dev_card(DevCard.Road)
+            if(dev_card_response == DevCard.Road.value):
+                player.played_road_building = True
+                player.roads_remaining = 2
+                player.remove_dev_card(DevCard.Road)
 
-                if(dev_card_response == DevCard.Knight.value):
-                        loc_x_response = args[2]
-                        loc_y_response = args[3]
-                        victim_player_response = args[4]
+            if(dev_card_response == DevCard.Knight.value):
+                loc_x_response = args[2]
+                loc_y_response = args[3]
+                victim_player_response = args[4]
 
-                        status = self.use_dev_card(player.num, DevCard.Knight, {'robber_pos': [loc_x_response, loc_y_response], 'victim': victim_player_response})
-                        return status
+                status = self.use_dev_card(player.num, DevCard.Knight, {'robber_pos': [loc_x_response, loc_y_response], 'victim': victim_player_response})
+                return status
 
-                if(dev_card_response == DevCard.Monopoly.value):
-                        resource_response = args[2]
+            if(dev_card_response == DevCard.Monopoly.value):
+                resource_response = args[2]
 
-                        status = self.use_dev_card(player.num, DevCard.Monopoly, {'card_type': ResCard(resource_response)})
-                        return status
+                status = self.use_dev_card(player.num, DevCard.Monopoly, {'card_type': ResCard(resource_response)})
+                return status
 
-                if(dev_card_response == DevCard.YearOfPlenty.value):
-                        first_resource_response = args[2]
-                        second_resource_response = args[3]
-                        
-                        
-                        status = self.use_dev_card(player.num, DevCard.YearOfPlenty, {'card_one': ResCard(first_resource_response), 'card_two': ResCard(second_resource_response)})
-                        return status
+            if(dev_card_response == DevCard.YearOfPlenty.value):
+                first_resource_response = args[2]
+                second_resource_response = args[3]
+
+
+                status = self.use_dev_card(player.num, DevCard.YearOfPlenty, {'card_one': ResCard(first_resource_response), 'card_two': ResCard(second_resource_response)})
+                return status
         # Play robber
         if(action_type == PLAY_ROBBER):
-                loc_x_response = args[1]
-                loc_y_response = args[2]
-                victim_player_response = args[3]
+            loc_x_response = args[1]
+            loc_y_response = args[2]
+            victim_player_response = args[3]
 
-                status = self.move_robber(self.board.tiles[loc_x_response][loc_y_response], player.num, victim_player_response)
-                self.robber_moved = True
-                return status
+            status = self.move_robber(self.board.tiles[loc_x_response][loc_y_response], player.num, victim_player_response)
+            self.robber_moved = True
+            return status
 
         # Do trade
         if(action_type == START_TRADE):
-                player.num_trades_in_turn += 1
-                # Which player
-                other_player = args[1]
-                player_forfieted_resource = args[2]
-                player_received_resource = args[3]
+            player.num_trades_in_turn += 1
+            # Which player
+            other_player = args[1]
+            player_forfieted_resource = args[2]
+            player_received_resource = args[3]
 
-                other_player.trading_player = player
-                other_player.pending_trade = True
-                other_player.trade_forfeit_card = player_received_resource
-                other_player.trade_receive_card = player_forfieted_resource
+            other_player.trading_player = player
+            other_player.pending_trade = True
+            other_player.trade_forfeit_card = player_received_resource
+            other_player.trade_receive_card = player_forfieted_resource
 
 
         # Accept Trade
         if(action_type == ACCEPT_TRADE):
-                status = self.trade(player.num, player.trading_player.num, [player.trade_forfeit_card], [player.trade_receive_card])
-                player.pending_trade = False
-                return status
+            status = self.trade(player.num, player.trading_player.num, [player.trade_forfeit_card], [player.trade_receive_card])
+            player.pending_trade = False
+            return status
         # Deny trade
         if(action_type == DENY_TRADE):
-                player.pending_trade = False
+            player.pending_trade = False
 
         # Forfeit cards
         if(action_type == FORFEIT_CARDS):
-                player.remove_cards([args[1]])
-                player.forfeited_cards_left -= 1
+            player.remove_cards([args[1]])
+            player.forfeited_cards_left -= 1
 
         # End turn
         if(action_type == END_TURN):
-                player.turn_over = True
-                return Statuses.ALL_GOOD
+            player.turn_over = True
+            return Statuses.ALL_GOOD
 
         # Initial placements
         # Road
         if(action_type == INITIAL_PLACE_ROAD):
-                loc_r_response = args[1]
-                loc_i_response = args[2]     
-                loc_r_response_2 = args[3]
-                loc_i_response_2 = args[4]     
-                status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2], is_starting=True)
-                player.has_completed_initial_placement = True
+            loc_r_response = args[1]
+            loc_i_response = args[2]     
+            loc_r_response_2 = args[3]
+            loc_i_response_2 = args[4]     
+            status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2], is_starting=True)
+            player.has_completed_initial_placement = True
 
         # Building
         if(action_type == INITIAL_PLACE_BUILDING):
-                loc_r_response = args[1]
-                loc_i_response = args[2]
-                status = player.build_settlement(self.board.points[loc_r_response][loc_i_response], is_starting=True)
-                player.has_placed_initial_settlement = True
-                player.initial_settlement = self.board.points[loc_r_response][loc_i_response]
+            loc_r_response = args[1]
+            loc_i_response = args[2]
+            status = player.build_settlement(self.board.points[loc_r_response][loc_i_response], is_starting=True)
+            player.has_placed_initial_settlement = True
+            player.initial_settlement = self.board.points[loc_r_response][loc_i_response]
 
         # Road building 
         if(action_type == PLACE_ROAD):
-                loc_r_response = args[1]
-                loc_i_response = args[2]     
-                loc_r_response_2 = args[3]
-                loc_i_response_2 = args[4]     
-                status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2], is_starting=True)
-                if(player.roads_remaining > 0):
-                        player.roads_remaining -= 1
-                else:
-                        player.played_road_building = False
+            loc_r_response = args[1]
+            loc_i_response = args[2]     
+            loc_r_response_2 = args[3]
+            loc_i_response_2 = args[4]     
+            status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2], is_starting=True)
+            if(player.roads_remaining > 0):
+                player.roads_remaining -= 1
+            else:
+                player.played_road_building = False
 
         return Statuses.ALL_GOOD
     # creates a new settlement belong to the player at the coodinates
@@ -857,7 +873,7 @@ class Game:
         # If successful, check if the player has now won
         if status == Statuses.ALL_GOOD:
             if self.players[player].get_VP() >= 10:
-                # End the game
+            # End the game
                 self.has_ended = True
                 self.winner = player
 
@@ -874,7 +890,7 @@ class Game:
 
     # builds a new developement cards for the player
     def build_dev(self, player):
-        
+
         status = self.players[player].can_build_dev()
         if(status != Statuses.ALL_GOOD):
             return status
@@ -936,8 +952,8 @@ class Game:
             points = tile.points
             for p in points:
                 if p != None and p.building != None:
-                    # print(p.building.owner)
-                    # Check the victim owns the settlement/city
+                # print(p.building.owner)
+                # Check the victim owns the settlement/city
                     if p.building.owner == victim:
                         has_settlement = True
 
@@ -961,7 +977,7 @@ class Game:
         tradable_cards = []
 
         harbor_types = self.players[player.num].get_connected_harbor_types()
-        
+
         has_3_1_harbor = False
         two_one_harbors = []
 
@@ -991,7 +1007,7 @@ class Game:
     # either by 4 for 1 or using a harbor
     def trade_to_bank(self, player, card, request):
         tradable_cards_with_values = self.cards_tradable_to_bank(player)
-        
+
         found = False
         num = 0
 
@@ -1003,7 +1019,7 @@ class Game:
 
         if(not found):
             return Statuses.ERR_CARDS
-                
+
 
         cards = [ResCard(card)] * num 
         # removes cards
@@ -1054,8 +1070,8 @@ class Game:
         if card == DevCard.Road:
             # checks the correct arguments are given
             road_names = [
-                "road_one",
-                "road_two"
+                    "road_one",
+                    "road_two"
             ]
             for r in road_names:
                 if not r in args:
@@ -1087,8 +1103,8 @@ class Game:
                         # checks if the two roads are connected
                         # (since the other one is connected, this road is connected through it)
                         road_points = [
-                            "start",
-                            "end"
+                                "start",
+                                "end"
                         ]
                         roads_are_connected = False
                         for p_one in road_points:
@@ -1166,8 +1182,8 @@ class Game:
 
             # gives the player 2 resource cards of their choice
             self.players[player].add_cards([
-                args['card_one'],
-                args['card_two']
+                    args['card_one'],
+                    args['card_two']
             ])
 
         else:

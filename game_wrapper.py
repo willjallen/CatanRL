@@ -46,8 +46,8 @@ class GameWrapper:
         self.game.run()
 
     def run(self, player_index):
-            self.game.run(player_index)
-        
+        self.game.run(player_index)
+
 
 
 

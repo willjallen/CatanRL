@@ -14,12 +14,15 @@ from random_agent import RandomAgent
 from match import Match
 import random
 
+
+import time
+
 def main():
-    
+
     # GLOBAL SETTINGS
-    
-    print_mode = False
-    user_mode = False
+
+    print_mode = True
+    user_mode = True
 
     number_of_players = 4
 
@@ -28,7 +31,7 @@ def main():
     turns_played = 0
 
     for i in range(0, number_of_matches):
-        match = Match(number_of_players, print_mode, user_mode, ['R', 'R', 'R', 'R'])
+        match = Match(number_of_players, print_mode, user_mode, ['H', 'R', 'R', 'R'])
         match.begin()
 
         matches_played += 1

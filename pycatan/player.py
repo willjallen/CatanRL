@@ -144,7 +144,7 @@ class Player:
         if not self.has_cards(needed_cards):
             return Statuses.ERR_CARDS
         return Statuses.ALL_GOOD
-        
+
         # checks if the player has all of the cards given in an array
     def has_cards(self, cards):
 
@@ -242,12 +242,12 @@ class Player:
                             location_status = self.road_location_is_valid(start=point, end=local_point)
                             if(location_status == Statuses.ALL_GOOD):
                                 road_point_pairs.append((point, local_point))
-                        
+
 
         for road in self.game.board.roads:
             if(road.owner == self.num):
-               positions = [road.point_one, road.point_two]
-               for point in positions:
+                positions = [road.point_one, road.point_two]
+                for point in positions:
                     for local_point in point.connected_points:
                         location_status = self.road_location_is_valid(start=point, end=local_point)
                         if(location_status == Statuses.ALL_GOOD):
@@ -285,7 +285,7 @@ class Player:
         available_points = []
 
         connected_points = self.initial_settlement.connected_points
-        
+
         adj_point_clear = True
         for p in connected_points:
             if(p.building != None):
@@ -527,7 +527,7 @@ class Player:
 
         # gets the roads that belong to this player
         roads = self.get_roads()
-       
+
         roads_c = roads[:];
         for road in roads_c:
             # remove the new road from all player roads
@@ -579,14 +579,14 @@ class Player:
             # if there are connected roads
             else:
                 c_roads = all_roads[:]
-                
+
                 # check each of them for connections if they have not been used
                 for c in connected:
-                
+
                     # print('road ' + str(c) + ' in connected');
                     # checks it hasn't used this road before
                     del c_roads[c_roads.index(c)]
-        
+
                 for c in connected:    
                     self.check_connected_roads(c, c_roads, length + 1)
 
