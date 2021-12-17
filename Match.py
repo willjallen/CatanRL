@@ -27,6 +27,6 @@ class Match:
         pass
 
     def begin(self):
-        game = Game(num_of_players=self.num_of_players, print_mode=self.print_mode, user_mode=self.user_mode, agent_type_arr=self.agent_type_arr)
-        game.run()
+        self.game = Game(num_of_players=self.num_of_players, print_mode=self.print_mode, user_mode=self.user_mode, agent_type_arr=self.agent_type_arr)
+        self.game.run()
 
