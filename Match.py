@@ -34,7 +34,8 @@ class Match():
 
         self.game.players[0].cards.append(ResCard(0))
         self.game.players[0].cards.append(ResCard(1))
-
-        self.game.run()
+        while(not self.game.has_ended):
+            self.game.step()
+        # self.game.run()
 
     # Handle piping to files and general housekeeping

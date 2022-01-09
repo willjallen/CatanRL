@@ -10,6 +10,8 @@ Game Engine Related:
 - Arenas, matchmaking and ELO
 -** Test cases
 	-** Longest road
+- Right now, putting the robber on a player with 0 cards is an illegal move-- but should not be
+- Forfeit cards is being done cyclically, as opposed to each player dumping all then moving on, this might cause issues when trying to play this in person
 
 Network Related:
 - Seperate network for initial placements?

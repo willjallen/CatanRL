@@ -36,6 +36,8 @@ class Player:
         self.num_initial_settlements = 2
         self.num_initial_roads = 2
         self.has_placed_initial_settlement = False
+        self.has_placed_initial_road = False
+
         self.has_completed_initial_placement = False
         self.initial_settlement = None
         # used to determine the longest road
@@ -226,6 +228,7 @@ class Player:
                         for player in self.game.players:
                             if(p.building.owner == player.num) and (player.num != self.num) and (len(player.cards) > 0):
                                 robber_actions.append((tile, player))
+        # print('Robber Actions: ', robber_actions)
         return robber_actions
 
     def get_available_road_point_pairs(self):

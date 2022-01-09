@@ -2,6 +2,7 @@ import cProfile
 import pstats
 from pstats import SortKey
 
+
 from pycatan.default_board import DefaultBoard
 from pycatan.player import Player
 from pycatan.statuses import Statuses
@@ -47,10 +48,6 @@ class Game:
         # Use a display
         self.headless = False
 
-        # Game Display Object
-        if(not headless):
-            self.display = Display(self)
-        
         # Set if print statements are enabled
         self.print_mode = print_mode
         
@@ -63,6 +60,10 @@ class Game:
         # creates a board
         self.board = DefaultBoard(game=self);
 
+        # Game Display Object
+        if(not headless):
+            self.display = Display(self)
+        
         # creates players
         self.agents = []
         self.players = []
@@ -97,14 +98,20 @@ class Game:
 
         # whether the game is in initial placement mode
         self.initial_placement_mode = False
-        # Play orders
-        self.starting_play_order = self.set_starting_play_order()
-        self.play_order = self.set_play_order()
-        # Initial Stuff
+        self.initial_placement_ended = False
+        # Set initial placement mode flag
+        self.give_initial_yield = False
+        
+        # Play order
+        self.set_initial_placement_play_order()
+
+        # Initialization Vars
         self.initial_player_index = 0
         # Set initial placement mode flag
         self.initial_placement_mode = True
         self.give_initial_yield = False
+
+        self.initial_placement_curr_player_index = 0
 
         # whether the game has finished or not
         self.has_ended = False
@@ -113,7 +120,7 @@ class Game:
         self.can_roll = False
 
         # Current roll
-        self.roll = 0
+        self.last_roll = 0
 
         # whether a rolled 7 is in effect
         self.rolled_seven = False
@@ -143,13 +150,15 @@ class Game:
 
 
 
-    def set_starting_play_order(self):
+    def set_initial_placement_play_order(self):
         ''''
             Sets a random initial starting order
             Args:                        
         '''
 
-        chosen_player = player_index = random.randint(0, self.num_of_players-1)
+        self.initial_placement_play_order = []
+
+        player_index = chosen_player = random.randint(0, self.num_of_players-1)
 
         # Starting placements
         # 8 total turns, 2 placements per player
@@ -157,17 +166,21 @@ class Game:
 
         switch = False
         for i in range(0, self.num_of_players * 2):
-            self.starting_play_order.append(player_index)
+            # Done three times:
+            # Twice for playing settlement and road in the same turn, a third time to end turn
+            self.initial_placement_play_order.append(player_index)
+            self.initial_placement_play_order.append(player_index)
+            self.initial_placement_play_order.append(player_index)
 
-            if(not i == self.num_of_players):
+            if(not i == self.num_of_players-1):
                 if(not switch):
-                    if(player_index == self.num_of_players):
+                    if(player_index == self.num_of_players-1):
                         player_index = 0
                     else:
                         player_index += 1
                 else:
                     if(player_index == 0):
-                        player_index = self.num_of_players
+                        player_index = self.num_of_players-1
                     else:
                         player_index -= 1
             else:
@@ -177,14 +190,17 @@ class Game:
 
     def set_play_order(self):
         ''''
-            Determine a random initial starting order
+            Determine a random play order
             Args:
 
             Returns: starting_play_order
                 arr of size 4 denoting indices of players in snake order
         '''
 
-        player_index = self.starting_play_order[0]
+        self.play_order = []
+
+
+        player_index = self.initial_placement_play_order[0]
 
         for i in range(0, self.num_of_players):
             self.play_order.append(player_index)
@@ -195,21 +211,24 @@ class Game:
 
 
     def set_next_turn_player(self):
+
+
         if(self.player_with_turn_index == self.num_of_players-1):
             self.player_with_turn_index = 0
         else:
             self.player_with_turn_index += 1
 
-        self.player_with_turn = self.play_order[player_with_turn_index]
+        self.player_with_turn = self.players[self.play_order[self.player_with_turn_index]]
 
 
     def set_next_curr_player(self):
+
         if(self.curr_player_index == self.num_of_players-1):
             self.curr_player_index = 0
         else:
             self.curr_player_index += 1
 
-        self.curr_player = self.player_order[curr_player_index]
+        self.curr_player = self.players[self.play_order[self.curr_player_index]]
 
     def add_initial_placement_yield(self):
         ''''
@@ -239,57 +258,96 @@ class Game:
             #     print('Starting play order: ')
             #     print(starting_play_order)
 
-            self.curr_player = self.players[player_index]
-            self.player_with_turn = curr_player
-
-            # if(self.print_mode):
-            #     self.display.displayBoard()
-            #     self.display.printBlankLines(8)
-            #     print('Player with turn: ' + colors[player_index])
-
-            curr_player.has_completed_initial_placement = False
-            curr_player.has_placed_initial_settlement = False
-
-            # Two iterations for settlement and road
-            # TODO update allowed_actions
-            allowed_actions = self.get_allowed_actions(curr_player)
-            full_action = curr_player.do_turn(allowed_actions)
-
-            status = self.do_action(curr_player, full_action)
-
-            if(status == Statuses.ALL_GOOD):
-                placement_okay = True
+            # Set the current player
+            if(self.print_mode):
+                print(self.players)
+                print(self.initial_placement_curr_player_index)
+                print(self.initial_placement_play_order)
+            self.player_with_turn = self.curr_player = self.players[self.initial_placement_play_order[self.initial_placement_curr_player_index]]
 
 
-            self.initial_placement_mode = False
+            if(self.print_mode):
+                self.display.displayBoard()
+                self.display.printBlankLines(8)
+                print('Player with turn: ' + colors[self.curr_player.num])
 
-            self.add_initial_placement_yield();
+            allowed_actions = self.get_allowed_actions(self.curr_player)
+            self.full_action = self.curr_player.do_turn(allowed_actions)
 
-            self.player_index = self.starting_play_order[0]
+            self.do_action(self.curr_player, self.full_action)
+
+            self.initial_placement_curr_player_index += 1
+
+            if(self.turn_over):
+                self.turn_over = False
+
+                self.curr_player.has_placed_initial_settlement = False
+                self.curr_player.has_placed_initial_road = False
+
+                if(self.initial_placement_curr_player_index == self.num_of_players * 3 * 2):
+                    # Each player has placed a settlement, road and ended their turn twice
+                    # Initial placement mode is over
+                    self.initial_placement_mode = False
+
+                    # Add initial yields
+                    self.add_initial_placement_yield()
+
+                    # Set play order
+                    self.set_play_order()
+
+
+            return
+
 
 
 
 
         ## MAIN GAME LOOP ##
 
-        
+        # # Set the current player
+        # self.curr_player = self.players[player_index]
+
         # Get allowed actions from player 
-        allowed_actions = self.get_allowed_actions(curr_player)
+        allowed_actions = self.get_allowed_actions(self.curr_player)
 
         # If the only allowed action is no_op, we can skip to the next loop
-        if(len(allowed_actions['allowed_action']) == 1 and allowed_actions['allowed_actions'].contains(NO_OP)):
-            continue
+        if(len(allowed_actions['allowed_actions']) == 1 and NO_OP in allowed_actions['allowed_actions']):
+            self.set_next_curr_player()
+            return
+        #     #TODO
+
+        if(self.print_mode):
+            self.display.displayBoard()
+            self.display.displayGameInfo()
+            self.display.displayPlayerGameInfo(self.curr_player)
+
+        if(self.print_mode):
+            print('Allowed Actions')
+            actions = [action_types[x] for x in allowed_actions['allowed_actions']]
+            print(actions)
 
         # Agent conducts its turn and produces actions
         # TODO: self.full_action?
-        full_action = curr_player.do_turn(allowed_actions)
+        self.full_action = self.curr_player.do_turn(allowed_actions)
 
-        # Game registers the action
-        status = self.do_action(curr_player, full_action)
+        #     print('Allowed Actions')
+        #     print(allowed_actions['allowed_actions'])
+        if(self.print_mode):
+            print('Full action:')
+            print(self.full_action)
+            print(action_types[self.full_action[0]])
+            for i in self.full_action:
+                if(isinstance(i, Player)):
+                    print('player: ' + str(i.num))
 
         # Set post action state
+        
+        # Game registers the action
+        self.do_action(self.curr_player, self.full_action)
+
         self.set_longest_road()
         if(self.rolled_seven):
+                self.rolled_seven = False
                 self.robber_moved = False
                 for p in self.players:
                     if(len(p.cards) >= 8):
@@ -302,26 +360,28 @@ class Game:
 
 
         
-
+        # Win condition
         if(self.player_with_turn.get_VP(True) >= 10):
             self.has_ended = True
             self.winner = self.player_with_turn
             self.player_with_turn.turn_over = True
+            print('Winner: ' + str(colors[self.winner.num]))
 
-        # If the turn is over, start a new turn with current player
+   
         if(self.turn_over):
+            self.turn_counter += 1
+
             self.set_next_turn_player()
             self.curr_player_index = self.player_with_turn_index
-            self.curr_player = self.player_with_turn
-
+            self.player_with_turn.num_trades_in_turn = 0
 
             self.can_roll = True
+            self.rolled_seven = False
             self.turn_over = False
         else:
             self.set_next_curr_player()
 
 
-        print('Winner: ' + str(colors[self.winner.num]))
 
         # Cycle over all players per turn steps to allow for responses to trades
         # self.turn_counter = 0
@@ -339,15 +399,9 @@ class Game:
         # self.player_with_turn.turn_over = turn_over = False
 
         # Reset number of trades the player has conducted
-        # self.player_with_turn.num_trades_in_turn = 0
 
         # Cycle, starting with the player playing their turn, through all other players
 
-        curr_player = self.players[player_index]
-
-        # Check if the action taken is valid 
-        action_okay = False
-        while(not action_okay):
 
 
         # If the player only has one available action, and that action is NO_OP
@@ -356,26 +410,12 @@ class Game:
         #     action_okay = True
         #     continue
 
-        # if(self.print_mode):
-        #     self.display.displayBoard()
-        #     self.display.displayGameInfo()
-        #     self.display.displayPlayerGameInfo(curr_player)
+
         # Save Game state 
 
 
 
 
-
-
-        # if(self.print_mode):
-        #     print('Allowed Actions')
-        #     print(allowed_actions['allowed_actions'])
-        #     print('Full action:')
-        #     print(full_action)
-        #     print(action_types[full_action[0]])
-        #     for i in full_action:
-        #         if(isinstance(i, Player)):
-        #             print('player: ' + str(i.num))
 
 
 
@@ -403,7 +443,7 @@ class Game:
         if(not self.init):
             self.setup()
 
-        player_index = self.starting_player_index
+        player_index = self.initial_player_index
 
         # Game Loop
 
@@ -546,7 +586,7 @@ class Game:
         # Roll
         if(action_type == ROLL):
             if(self.can_roll):
-                self.roll = roll = self.get_roll()
+                self.last_roll = roll = self.get_roll()
                 self.can_roll = False
                 if(roll != 7):
                     self.board.add_yield(roll)
@@ -665,7 +705,7 @@ class Game:
             loc_r_response_2 = args[3]
             loc_i_response_2 = args[4]     
             status = player.build_road(self.board.points[loc_r_response][loc_i_response], self.board.points[loc_r_response_2][loc_i_response_2], is_starting=True)
-            player.has_completed_initial_placement = True
+            player.has_placed_initial_road = True
 
         # Building
         if(action_type == INITIAL_PLACE_BUILDING):
@@ -719,13 +759,13 @@ class Game:
         # - It is players turn
         # - initial_placement_mode is true
         if(is_players_turn and self.initial_placement_mode):
-            if(player.has_completed_initial_placement):
+            if(player.has_placed_initial_settlement and player.has_placed_initial_road):
                 actions['allowed_actions'].append(END_TURN)
                 return actions
             if(player.num_initial_settlements > 0 and not player.has_placed_initial_settlement):
                 actions['allowed_actions'].append(INITIAL_PLACE_BUILDING)
                 actions['allowed_settlement_points'] = player.get_available_initial_settlement_points()
-            if(player.num_initial_roads > 0 and player.has_placed_initial_settlement):
+            if(player.num_initial_roads > 0 and player.has_placed_initial_settlement and not player.has_placed_initial_road):
                 actions['allowed_actions'].append(INITIAL_PLACE_ROAD)
                 actions['allowed_road_point_pairs'] = player.get_available_initial_road_point_pairs()
 
