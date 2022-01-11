@@ -21,7 +21,7 @@ def main():
 
     # GLOBAL SETTINGS
 
-    print_mode = False
+    print_mode = True
     user_mode = False
 
     number_of_players = 4

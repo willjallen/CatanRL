@@ -128,6 +128,9 @@ class Game:
         # whether robber has been moved yet after rolling a 7
         self.robber_moved = True
 
+        self.allowed_actions = []
+        self.full_action = []
+
         # Turn counter
         self.turn_counter = 0
 
@@ -271,7 +274,7 @@ class Game:
                 self.display.printBlankLines(8)
                 print('Player with turn: ' + colors[self.curr_player.num])
 
-            allowed_actions = self.get_allowed_actions(self.curr_player)
+            self.allowed_actions = self.get_allowed_actions(self.curr_player)
             self.full_action = self.curr_player.do_turn(allowed_actions)
 
             self.do_action(self.curr_player, self.full_action)
@@ -308,7 +311,7 @@ class Game:
         # self.curr_player = self.players[player_index]
 
         # Get allowed actions from player 
-        allowed_actions = self.get_allowed_actions(self.curr_player)
+        self.allowed_actions = self.get_allowed_actions(self.curr_player)
 
         # If the only allowed action is no_op, we can skip to the next loop
         if(len(allowed_actions['allowed_actions']) == 1 and NO_OP in allowed_actions['allowed_actions']):
