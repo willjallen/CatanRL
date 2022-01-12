@@ -3,12 +3,74 @@ import pygame as pg
 import thorpy
 import math
 
+class Container():
+	def __init__(self):
+		# Origin is bottom left corner of rectangle
+		self.origin_x = '0'
+		self.origin_y = '0'
+
+		self.width = '0'
+		self.height = '0'
+
+		self.min_width = '0'
+		self.min_height = '0'
+
+
+		self.paddingLeft = '0'
+		self.paddingRight = '0'
+		self.paddingTop = '0'
+		self.paddingBottom = '0'
+
+	def resize(self):
+		pass
+
+
+class FlexContainer():
+	def __init__(self):
+		self.containers = []
+
+	def addContainer(self):
+		pass
+
+	def isFull(self):
+		pass
+
+class Percent():
+	def __init__(self, parent_container, value)
+		self.value = parent_container #TODO wtf, lol
+
+class HexTile():
+	def __init__(self):
+		self.tile = tile
+		self.hex_corner_vertices = []
+
+		self.radius = 0
+
+		self.boardHorizontalOffset = 0
+		self.boardVerticalOffset = 0
+
+		self.localHorizontalOffset = 0
+		self.localVerticalOffset = 0
+
+		self.hex_origin_x = 0
+		self.hex_origin_y = 0
+
+
+	def get_hexagon_vertices(self, horizontalOffset, verticalOffset, size):
+		for i in range(0, 6):
+			hex_vertices.append((horizontalOffset + math.sin(i/6.0*2*math.pi)*size, verticalOffset + math.cos(i/6.0*2*math.pi)*size));
+		return hex_vertices
+
+class HexBoard():
+	def __init__(self):
+		pass
 
 
 class VisualDisplay:
 	def __init__(self):
 
-		self.tile_vertices = [[[]]]
+		# An array of tiles, where the vertices of each exist in rendering surface space
+		self.tiles = []
 
 
 		pg.init()
@@ -25,19 +87,15 @@ class VisualDisplay:
 
 		hex_vertices = []
 
-		for i in range(0,6):
-			hex_vertices.append((100 + math.cos(i/6.0*2*math.pi)*20, 100 + math.sin(i/6.0*2*math.pi)*20));
 
 
-	def calculate_hex_vertices(self):
-		pass
-
-	def calculate_containers(self):
-		pass
 
 
 	def render(self):
 		pg.draw.aalines(pg.display.get_surface(), 255, True, hex_vertices)
+		for i in range(0, len(self.tiles)):
+			for tile in tile_arr:
+
 
 	def main(self):
 		going = True
