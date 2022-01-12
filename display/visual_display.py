@@ -61,10 +61,11 @@ class HexTile():
 		self.hex_vertices = hex_vertices
 
 	def render(self):
-		pg.draw.polygon(pg.display.get_surface(), 255, self.hex_vertices, 2)
-		pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x, self.origin_y), 1)
-		pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x+self.radius, self.origin_y), 1)
-		pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x, self.origin_y+self.big_radius), 1)
+		pg.draw.polygon(pg.display.get_surface(), 255, self.hex_vertices)
+		pg.draw.polygon(pg.display.get_surface(), (0,0,0), self.hex_vertices, 4)
+		# pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x, self.origin_y), 1)
+		# pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x+self.radius, self.origin_y), 1)
+		# pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x, self.origin_y+self.big_radius), 1)
 
 class HexBoard(Container):
 	def __init__(self):
@@ -73,8 +74,8 @@ class HexBoard(Container):
 		self.width = 500
 		self.height = 500
 
-		self.origin_x = 0
-		self.origin_y = 0
+		self.origin_x = 100
+		self.origin_y = 50
 
 		self.tiles = []
 
@@ -95,7 +96,7 @@ class HexBoard(Container):
 		# container TODO
 		genesis_x = self.origin_x
 		genesis_y = self.origin_y
-
+		
 		# Find radius
 		# 10 * r <= width
 		# r <= width/10
@@ -107,19 +108,21 @@ class HexBoard(Container):
 		# take whichever is less
 		
 		min_r_width = self.width/10
-		min_r_height  = self.height/10 * inv_sqrt3o2
+		min_r_height  = self.height/(10 * inv_sqrt3o2)
 
 		r = min(min_r_width, min_r_height)
 
 		t = big_r = r * inv_sqrt3o2
+
+		big_r_o_2 = big_r/2
 
 		itr = 0
 		# Start with the middle row, then do top then bottom
 
 		# Middle
 		# Set the origin as the origin of the leftmost middle tile in the grid, such that the tile is aligned middle and justified left
-		origin_x = genesis_x + (1 * big_r)
-		origin_y = genesis_y + (5 * r)
+		origin_x = genesis_x + (1 * r)
+		origin_y = genesis_y + (4 * big_r)
 		for i in range(0, 5):
 			tile_obj = self.tiles[itr]
 			tile_obj.radius = r
@@ -131,59 +134,63 @@ class HexBoard(Container):
 			itr += 1
 
 
-		# # 2nd from top
-		# origin_x = genesis_x + (2 * big_r)
-		# origin_y = genesis_y + (3 * r)
-		# for i in range(0, 4):
-		# 	tile_obj = self.tiles[itr]
-		# 	tile_obj.radius = big_r
-		# 	tile_obj.origin_x = origin_x
-		# 	tile_obj.origin_y = origin_y
-		# 	origin_x += 2 * r
-		# 	tile_obj.update_hexagon_vertices()
-		# 	itr += 1
+		# 2nd from top
+		origin_x = genesis_x + (2 * r)
+		origin_y = genesis_y + (2 * big_r) + big_r_o_2
+		for i in range(0, 4):
+			tile_obj = self.tiles[itr]
+			tile_obj.radius = r
+			tile_obj.big_radius = big_r
+			tile_obj.origin_x = origin_x
+			tile_obj.origin_y = origin_y
+			origin_x += 2 * r
+			tile_obj.update_hexagon_vertices()
+			itr += 1
 
 
 
-		# # top
-		# origin_x = genesis_x + (3 * r)
-		# origin_y = genesis_y + (9 * big_r)
-		# for i in range(0, 3):
-		# 	tile_obj = self.tiles[itr]
-		# 	tile_obj.radius = r
-		# 	tile_obj.origin_x = origin_x
-		# 	tile_obj.origin_y = origin_y
-		# 	origin_x += 2 * r
-		# 	tile_obj.update_hexagon_vertices()
-		# 	itr += 1
+		# top
+		origin_x = genesis_x + (3 * r)
+		origin_y = genesis_y + big_r
+		for i in range(0, 3):
+			tile_obj = self.tiles[itr]
+			tile_obj.radius = r
+			tile_obj.big_radius = big_r
+			tile_obj.origin_x = origin_x
+			tile_obj.origin_y = origin_y
+			origin_x += 2 * r
+			tile_obj.update_hexagon_vertices()
+			itr += 1
 
 
 
-		# # 2nd from bottom
-		# origin_x = genesis_x + (2 * r)
-		# origin_y = genesis_y + (3 * big_r)
-		# for i in range(0, 4):
-		# 	tile_obj = self.tiles[itr]
-		# 	tile_obj.radius = r
-		# 	tile_obj.origin_x = origin_x
-		# 	tile_obj.origin_y = origin_y
-		# 	origin_x += 2 * r
-		# 	tile_obj.update_hexagon_vertices()
-		# 	itr += 1
+		# 2nd from bottom
+		origin_x = genesis_x + (2 * r)
+		origin_y = genesis_y + (5 * big_r) + big_r_o_2
+		for i in range(0, 4):
+			tile_obj = self.tiles[itr]
+			tile_obj.radius = r
+			tile_obj.big_radius = big_r
+			tile_obj.origin_x = origin_x
+			tile_obj.origin_y = origin_y
+			origin_x += 2 * r
+			tile_obj.update_hexagon_vertices()
+			itr += 1
 
 
 
-		# # bottom
-		# origin_x = genesis_x + (3 * r)
-		# origin_y = genesis_y + (1 * big_r)
-		# for i in range(0, 3):
-		# 	tile_obj = self.tiles[itr]
-		# 	tile_obj.radius = r
-		# 	tile_obj.origin_x = origin_x
-		# 	tile_obj.origin_y = origin_y
-		# 	origin_x += 2 * r
-		# 	tile_obj.update_hexagon_vertices()
-		# 	itr += 1
+		# bottom
+		origin_x = genesis_x + (3 * r)
+		origin_y = genesis_y + (7 * big_r)
+		for i in range(0, 3):
+			tile_obj = self.tiles[itr]
+			tile_obj.radius = r
+			tile_obj.big_radius = big_r
+			tile_obj.origin_x = origin_x
+			tile_obj.origin_y = origin_y
+			origin_x += 2 * r
+			tile_obj.update_hexagon_vertices()
+			itr += 1
 
 
 
@@ -192,6 +199,7 @@ class HexBoard(Container):
 		for tile_obj in self.tiles:
 			if(tile_obj.hex_vertices):
 				tile_obj.render()
+		pg.draw.circle(pg.display.get_surface(), (255, 255, 0), (self.origin_x, self.origin_y), 10)
 
 class VisualDisplay:
 	def __init__(self):
@@ -201,12 +209,12 @@ class VisualDisplay:
 
 
 		pg.init()
-		self.screen = pg.display.set_mode((1920, 1080), pg.SCALED | pg.RESIZABLE)
+		self.screen = pg.display.set_mode((860, 860), pg.SCALED | pg.RESIZABLE)
 		pg.display.set_caption("Monkey Fever")
 		# pg.mouse.set_visible(False)
 		background = pg.Surface(self.screen.get_size())
 		background = background.convert()
-		background.fill((170, 238, 187))
+		background.fill((38, 13, 23))
 		self.background = background
 		self.screen.blit(self.background, (0, 0))
 		pg.display.flip()
