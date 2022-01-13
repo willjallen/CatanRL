@@ -2,6 +2,18 @@ import os
 import pygame as pg
 import thorpy
 import math
+import random
+
+
+
+DESERT_COLOR = (0,0,0)
+FIELDS_COLOR = (211, 181, 29)
+PASTURE_COLOR = (40,255,55)
+MOUNTAINS_COLOR = (139, 236, 244)
+HILLS_COLOR = (165, 96, 21)
+FOREST_COLOR = (0,43,0)
+
+TILE_COLORS = {"DESERT": DESERT_COLOR, "FIELDS": FIELDS_COLOR, "PASTURE": PASTURE_COLOR, "MOUNTAINS": MOUNTAINS_COLOR, "HILLS": HILLS_COLOR, "FOREST": FOREST_COLOR}
 
 class Container():
 	def __init__(self):
@@ -41,28 +53,53 @@ class Percent():
 
 class HexTile():
 	def __init__(self, radius, big_radius, origin_x, origin_y):
-		self.tile_type = None
+
+
+		self.tile_type = random.choice(['DESERT', 'FIELDS', 'PASTURE', 'MOUNTAINS', 'HILLS', 'FOREST'])
 		self.roll_sum = 0
+		# sysfont = pg.font.get_default_font()
+
+		self.tile_color = TILE_COLORS[self.tile_type]
 
 		self.hex_vertices = []
 
-		self.r = radius
+		self.radius = radius
 		self.big_r = big_radius
 
+		self.font_size = self.radius
+		self.font = pg.font.SysFont('5', self.font_size)
+		self.roll_sum_img = self.font.render('5', True, (255,0,0))
 
 		self.origin_x = origin_x
 		self.origin_y = origin_y
 
 
+
+
 	def update_hexagon_vertices(self):
+
+		# Update vertices
 		hex_vertices = []
 		for i in range(0, 6):
 			hex_vertices.append((self.origin_x + math.sin(i/6.0*2*math.pi)*self.big_radius, self.origin_y + math.cos(i/6.0*2*math.pi)*self.big_radius));
 		self.hex_vertices = hex_vertices
+		
+		# Update roll sum img
+		self.font_size = int(self.radius)
+		self.font = pg.font.SysFont('5', self.font_size)
+		ran = random.randint(1,12)
+		self.roll_sum_img = self.font.render(str(ran), True, (255,0,0))
 
-	def render(self):
-		pg.draw.polygon(pg.display.get_surface(), 255, self.hex_vertices)
+
+	def render(self, screen):
+		# Tile
+		pg.draw.polygon(pg.display.get_surface(), self.tile_color, self.hex_vertices)
+
+		# Border
 		pg.draw.polygon(pg.display.get_surface(), (0,0,0), self.hex_vertices, 4)
+		
+		# Rollsum
+		screen.blit(self.roll_sum_img, (self.origin_x - self.font_size/4, self.origin_y - self.font_size/4))
 		# pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x, self.origin_y), 1)
 		# pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x+self.radius, self.origin_y), 1)
 		# pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x, self.origin_y+self.big_radius), 1)
@@ -195,10 +232,10 @@ class HexBoard(Container):
 
 
 
-	def render(self):
+	def render(self, screen):
 		for tile_obj in self.tiles:
 			if(tile_obj.hex_vertices):
-				tile_obj.render()
+				tile_obj.render(screen)
 		pg.draw.circle(pg.display.get_surface(), (255, 255, 0), (self.origin_x, self.origin_y), 10)
 
 class VisualDisplay:
@@ -228,7 +265,7 @@ class VisualDisplay:
 
 
 	def render(self):
-		self.hex_board.render()
+		self.hex_board.render(self.screen)
 
 
 
