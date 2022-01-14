@@ -7,13 +7,12 @@ from pycatan import Game
 from pycatan import Statuses
 from pycatan import Building
 from pycatan.card import ResCard, DevCard
-from board_renderer import BoardRenderer
-from display import Display
 from agent import Agent
 from random_agent import RandomAgent
 from match import Match
 import random
 
+from display.visual_display import VisualDisplay
 
 import time
 
@@ -24,6 +23,11 @@ def main():
     print_mode = False
     user_mode = False
 
+    display_mode = True
+    display = None
+    if(display_mode):
+        display = VisualDisplay()
+
     number_of_players = 4
 
     number_of_matches = 10
@@ -31,12 +35,15 @@ def main():
     turns_played = 0
 
     for i in range(0, number_of_matches):
-        match = Match(number_of_players, print_mode, user_mode, ['R', 'R', 'R', 'R'])
+        match = Match(number_of_players, print_mode, user_mode, ['R', 'R', 'R', 'R'], display)
         match.begin()
 
         matches_played += 1
         turns_played += match.game.turn_counter
         print('Match #', matches_played)
+
+
+
 
     print('Total turns played', turns_played)
     print('Average time / turn')

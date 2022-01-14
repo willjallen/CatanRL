@@ -7,8 +7,6 @@ from pycatan import Game
 from pycatan import Statuses
 from pycatan import Building
 from pycatan.card import ResCard, DevCard
-from board_renderer import BoardRenderer
-from display import Display
 from agent import Agent
 from random_agent import RandomAgent
 import random
@@ -23,9 +21,10 @@ import pickle as cPickle
 # from tensorflow.keras import layers
 
 class Match():
-    def __init__(self, num_of_players, print_mode, user_mode, agent_type_arr):
+    def __init__(self, num_of_players, print_mode, user_mode, agent_type_arr, display):
 
         # threading.Thread.__init__(self)
+        self.display = display
 
         self.print_mode = print_mode
         self.user_mode = user_mode
@@ -35,9 +34,18 @@ class Match():
 
         # Record statistics
         self.game_states = []
-        self.game_id = 0
-        self.version = 0.1
+        self.match_id = 0
+        self.engine_version = 0.1
         self.dump_file = open('data.txt', 'wb')
+
+        self.game = Game(num_of_players=self.num_of_players, print_mode=self.print_mode, user_mode=self.user_mode, agent_type_arr=self.agent_type_arr)
+        # self.game.add_settlement(0, self.game.board.points[3][0], is_starting=True)
+        # self.game.add_settlement(0, (0,1))
+        # self.game.add_settlement(0, (0,2))
+        self.display.new_game(self.game)
+        print('new game')
+
+
 
 
     def begin(self):
@@ -60,14 +68,18 @@ class Match():
         # running_reward = 0
         # episode_count = 0
 
-
-        self.game = Game(num_of_players=self.num_of_players, print_mode=self.print_mode, user_mode=self.user_mode, agent_type_arr=self.agent_type_arr)
+        # print(self.game.board.tiles)
+        # return
 
         while(not self.game.has_ended):
             # Prompts action from player and updates game state
+            print(self.game.turn_counter)
             self.game.step()
             # Save game state
             self.game_states.append(self.game)
+            # Tick display
+            if(self.display):
+                self.display.tick()
 
         # Save game states to disk
         self.serialize()
