@@ -75,6 +75,7 @@ class Match():
             # Prompts action from player and updates game state
             print(self.game.turn_counter)
             self.game.step()
+            print(self.game.board.roads)
             # Save game state
             self.game_states.append(self.game)
             # Tick display

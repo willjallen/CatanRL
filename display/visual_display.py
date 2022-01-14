@@ -185,7 +185,7 @@ class HexTile():
 		# pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x, self.origin_y+self.big_radius), 1)
 
 class HexBoard(Container):
-	def __init__(self, game_tiles):
+	def __init__(self, game_tiles, roads):
 		super().__init__()
 		# Will be implemented as a container later
 		self.width = 500
@@ -195,6 +195,7 @@ class HexBoard(Container):
 		self.origin_y = 50
 
 		self.tiles = []
+		self.roads = roads
 
 		# Create board
 		for game_tile_row in game_tiles:
@@ -326,23 +327,35 @@ class HexBoard(Container):
 	def render_settlements_cities_roads(self, screen):
 		# Roads and cities
 		# print(self.game_tile.points)
+
+		# Cities and roads
 		for tile_obj in self.tiles:
 			# pg.draw.circle(pg.display.get_surface(), (255, 255, 0), tile_obj.point_ordered_hex_vertices[5], 10)
 
 			for itr in range(0, len(tile_obj.game_tile.points)):
 				point = tile_obj.game_tile.points[itr]
+				
+				# Road
+				for road in self.roads:
+					if(road.point_one == point):
+						for j in range(0, len(tile_obj.game_tile.points)):
+							if(road.point_two == tile_obj.game_tile.points[j]):
+								point_one = point
+								point_one_coords = tile_obj.point_ordered_hex_vertices[itr]
+								point_two = road.point_two
+								point_two_coords = tile_obj.point_ordered_hex_vertices[j]
+								pg.draw.line(pg.display.get_surface(), PLAYER_COLORS[road.owner], point_one_coords, point_two_coords, 5)
 				# print(point)
 				if(not point.building == None):
 					# Settlement
 					if(point.building.type == 0):
 						# print(point)
 						pg.draw.circle(pg.display.get_surface(), PLAYER_COLORS[point.building.owner], tile_obj.point_ordered_hex_vertices[itr], 10)
-					
 					# City
 					if(point.building.type == 2):
 						pg.draw.circle(pg.display.get_surface(), PLAYER_COLORS[point.building.owner], tile_obj.point_ordered_hex_vertices[itr], 10)
-						pg.draw.circle(pg.display.get_surface(), (0,0,0), tile_obj.point_ordered_hex_vertices[itr], 3)
-			# print('hi')
+						pg.draw.circle(pg.display.get_surface(), (0,0,0), tile_obj.point_ordered_hex_vertices[itr], 5)
+
 
 class VisualDisplay:
 
@@ -362,7 +375,7 @@ class VisualDisplay:
 
 	def new_game(self, game):
 		self.game = game
-		self.hex_board = HexBoard(self.game.board.tiles)
+		self.hex_board = HexBoard(self.game.board.tiles, self.game.board.roads)
 		self.old_display = Display(self.game)
 
 
