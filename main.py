@@ -21,12 +21,12 @@ def main():
 
     # GLOBAL SETTINGS
 
-    print_mode = True
+    print_mode = False
     user_mode = False
 
     number_of_players = 4
 
-    number_of_matches = 100
+    number_of_matches = 10
     matches_played = 0
     turns_played = 0
 

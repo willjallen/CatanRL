@@ -38,7 +38,7 @@ PLACE_ROAD = 14
 
 class Game:
 
-    # initializes the  game
+    # Initialize the  game
     def __init__(self, num_of_players=4, print_mode=False, user_mode=False, agent_type_arr=['R','R','R','R'], on_win=None, starting_board=False, headless=False):
 
         # Game properties
@@ -61,11 +61,10 @@ class Game:
         self.board = DefaultBoard(game=self);
 
         # Game Display Object
-        if(not headless):
-            self.display = Display(self)
+        # if(not print_mode):
+        #     self.display = Display(self)
         
         # creates players
-        self.agents = []
         self.players = []
         for i in range(num_of_players):
             if(agent_type_arr[i] == 'H'):
@@ -152,7 +151,7 @@ class Game:
         self.init = True
 
 
-
+    # Set the initial play order of starting placement phase of the game as conducted in snake order
     def set_initial_placement_play_order(self):
         ''''
             Sets a random initial starting order
@@ -189,8 +188,7 @@ class Game:
             else:
                 switch = True
 
-
-
+    # Set the circular play order
     def set_play_order(self):
         ''''
             Determine a random play order
@@ -212,7 +210,7 @@ class Game:
             else:
                 player_index += 1
 
-
+    # Set the next player with a turn
     def set_next_turn_player(self):
 
 
@@ -223,7 +221,7 @@ class Game:
 
         self.player_with_turn = self.players[self.play_order[self.player_with_turn_index]]
 
-
+    # Set the next player to conduct an operation
     def set_next_curr_player(self):
 
         if(self.curr_player_index == self.num_of_players-1):
@@ -233,6 +231,7 @@ class Game:
 
         self.curr_player = self.players[self.play_order[self.curr_player_index]]
 
+    # Add the one time resource yields from the starting placement phase
     def add_initial_placement_yield(self):
         ''''
                 When the game begins, add resources of all tiles that player initially settled on
@@ -244,7 +243,7 @@ class Game:
             if i != 7:
                 self.board.add_yield(i)
 
-
+    # Conduct one step of the game
     def step(self):
 
         ## INITIAL PLACEMENT PHASE ##
@@ -275,7 +274,7 @@ class Game:
                 print('Player with turn: ' + colors[self.curr_player.num])
 
             self.allowed_actions = self.get_allowed_actions(self.curr_player)
-            self.full_action = self.curr_player.do_turn(allowed_actions)
+            self.full_action = self.curr_player.do_turn(self.allowed_actions)
 
             self.do_action(self.curr_player, self.full_action)
 
@@ -314,7 +313,7 @@ class Game:
         self.allowed_actions = self.get_allowed_actions(self.curr_player)
 
         # If the only allowed action is no_op, we can skip to the next loop
-        if(len(allowed_actions['allowed_actions']) == 1 and NO_OP in allowed_actions['allowed_actions']):
+        if(len(self.allowed_actions['allowed_actions']) == 1 and NO_OP in self.allowed_actions['allowed_actions']):
             self.set_next_curr_player()
             return
         #     #TODO
@@ -326,12 +325,12 @@ class Game:
 
         if(self.print_mode):
             print('Allowed Actions')
-            actions = [action_types[x] for x in allowed_actions['allowed_actions']]
+            actions = [action_types[x] for x in self.allowed_actions['allowed_actions']]
             print(actions)
 
         # Agent conducts its turn and produces actions
         # TODO: self.full_action?
-        self.full_action = self.curr_player.do_turn(allowed_actions)
+        self.full_action = self.curr_player.do_turn(self.allowed_actions)
 
         #     print('Allowed Actions')
         #     print(allowed_actions['allowed_actions'])
@@ -435,151 +434,147 @@ class Game:
             # print('Roll: ' + str(self.roll))
             # print()
 
+    # def run(self):
+
+    #     # Set up the game
+    #     if(not self.init):
+    #         self.setup()
+
+    #     player_index = self.initial_player_index
+
+    #     # Game Loop
+
+    #     # Initial Placements loop
+    #     # in this loop, we
+
+
+
+    #     # Cycle over all players per turn steps to allow for responses to trades
+    #     self.turn_counter = 0
+    #     game_over = False
+    #     turn_over = False
+    #     cycle_complete = False        
+    #     while(not self.has_ended):
+    #         # Reset roll
+    #         self.can_roll = True
+
+    #         # Iterate to next player with turn
+    #         curr_player = self.players[player_index]
+    #         self.player_with_turn = curr_player
+    #         self.player_with_turn_index = player_index
+    #         self.player_with_turn.turn_over = turn_over = False
+
+    #         # Reset number of trades the player has conducted
+    #         self.player_with_turn.num_trades_in_turn = 0
+
+    #         # Cycle, starting with the player playing their turn, through all other players
+    #         while(not turn_over):
+
+    #             curr_player = self.players[player_index]
+
+    #             # Check if the action taken is valid 
+    #             action_okay = False
+    #             while(not action_okay):
+
+    #                 allowed_actions = self.get_allowed_actions(curr_player)
+
+    #                 # If the player only has one available action, and that action is NO_OP
+    #                 # Skip their step
+    #                 if(len(allowed_actions['allowed_actions']) == 1 and (NO_OP in allowed_actions['allowed_actions'])):
+    #                     action_okay = True
+    #                     continue
+
+    #                 if(self.print_mode):
+    #                     self.display.displayBoard()
+    #                     self.display.displayGameInfo()
+    #                     self.display.displayPlayerGameInfo(curr_player)
+
+    #                 # Save Game state 
+
+
+    #                 full_action = curr_player.do_turn(allowed_actions)
+
+
+
+    #                 if(self.print_mode):
+    #                     print('Allowed Actions')
+    #                     print(allowed_actions['allowed_actions'])
+    #                     print('Full action:')
+    #                     print(full_action)
+    #                     print(action_types[full_action[0]])
+    #                     for i in full_action:
+    #                         if(isinstance(i, Player)):
+    #                             print('player: ' + str(i.num))
 
 
 
 
+    #                 status = self.do_action(curr_player, full_action)
 
-    def run(self):
+    #                 self.set_longest_road()
 
-        # Set up the game
-        if(not self.init):
-            self.setup()
+    #                 if status == Statuses.ALL_GOOD:
+    #                     action_okay = True
+    #                 elif status == Statuses.ROLLED_SEVEN:
+    #                     self.rolled_seven = True
+    #                     self.robber_moved = False
+    #                     for p in self.players:
+    #                         if(len(p.cards) >= 8):
+    #                             # print('player', p.num)
+    #                             # print(p.cards)
+    #                             # print(len(p.cards))
+    #                             # print()
+    #                             p.forfeited_cards_left = math.floor(len(p.cards)/2)
+    #                 else:
+    #                     if(self.print_mode):
+    #                         print('Error: ')
+    #                         print(Statuses.status_list[int(status)])
 
-        player_index = self.initial_player_index
+    #                 # If the player still has cards to forfeit, stay on this player
+    #                 if(curr_player.forfeited_cards_left > 0):
+    #                     action_okay = False
 
-        # Game Loop
+    #                 # Pause
+    #                 if(self.user_mode):
+    #                     response = input("type anything to continue")
 
-        # Initial Placements loop
-        # in this loop, we
+    #             if(self.player_with_turn.get_VP(True) >= 10):
+    #                 self.has_ended = True
+    #                 self.winner = self.player_with_turn
+    #                 self.player_with_turn.turn_over = True
 
-
-
-        # Cycle over all players per turn steps to allow for responses to trades
-        self.turn_counter = 0
-        game_over = False
-        turn_over = False
-        cycle_complete = False        
-        while(not self.has_ended):
-            # Reset roll
-            self.can_roll = True
-
-            # Iterate to next player with turn
-            curr_player = self.players[player_index]
-            self.player_with_turn = curr_player
-            self.player_with_turn_index = player_index
-            self.player_with_turn.turn_over = turn_over = False
-
-            # Reset number of trades the player has conducted
-            self.player_with_turn.num_trades_in_turn = 0
-
-            # Cycle, starting with the player playing their turn, through all other players
-            while(not turn_over):
-
-                curr_player = self.players[player_index]
-
-                # Check if the action taken is valid 
-                action_okay = False
-                while(not action_okay):
-
-                    allowed_actions = self.get_allowed_actions(curr_player)
-
-                    # If the player only has one available action, and that action is NO_OP
-                    # Skip their step
-                    if(len(allowed_actions['allowed_actions']) == 1 and (NO_OP in allowed_actions['allowed_actions'])):
-                        action_okay = True
-                        continue
-
-                    if(self.print_mode):
-                        self.display.displayBoard()
-                        self.display.displayGameInfo()
-                        self.display.displayPlayerGameInfo(curr_player)
-
-                    # Save Game state 
+    #                  # Display turn relevant info
+    #                 self.display.displayBoard()
+    #                 print('Turn: ' + str(self.turn_counter))
+    #                 print('Player with turn: ' + colors[self.player_with_turn_index])
+    #                 print('Roll: ' + str(self.roll))
+    #                 print()
 
 
-                    full_action = curr_player.do_turn(allowed_actions)
+    #             turn_over = self.player_with_turn.turn_over 
+    #             self.rolled_seven = False
+    #             if(not turn_over):
+    #                 # 2 -> 3 -> 0 -> 1 -> 2
+    #                 if(player_index == 3):
+    #                     player_index = 0
+    #                 else:
+    #                     player_index += 1
 
 
-
-                    if(self.print_mode):
-                        print('Allowed Actions')
-                        print(allowed_actions['allowed_actions'])
-                        print('Full action:')
-                        print(full_action)
-                        print(action_types[full_action[0]])
-                        for i in full_action:
-                            if(isinstance(i, Player)):
-                                print('player: ' + str(i.num))
+    #         # Turn has ended
+    #         player_index = self.player_with_turn_index
+    #         self.turn_counter += 1
 
 
+    #         # 2 -> 3 -> 0 -> 1 -> 2
+    #         if(player_index == 3):
+    #             player_index = 0
+    #         else:
+    #             player_index += 1
 
+    #     print('Winner: ' + str(colors[self.winner.num]))
 
-                    status = self.do_action(curr_player, full_action)
-
-                    self.set_longest_road()
-
-                    if status == Statuses.ALL_GOOD:
-                        action_okay = True
-                    elif status == Statuses.ROLLED_SEVEN:
-                        self.rolled_seven = True
-                        self.robber_moved = False
-                        for p in self.players:
-                            if(len(p.cards) >= 8):
-                                # print('player', p.num)
-                                # print(p.cards)
-                                # print(len(p.cards))
-                                # print()
-                                p.forfeited_cards_left = math.floor(len(p.cards)/2)
-                    else:
-                        if(self.print_mode):
-                            print('Error: ')
-                            print(Statuses.status_list[int(status)])
-
-                    # If the player still has cards to forfeit, stay on this player
-                    if(curr_player.forfeited_cards_left > 0):
-                        action_okay = False
-
-                    # Pause
-                    if(self.user_mode):
-                        response = input("type anything to continue")
-
-                if(self.player_with_turn.get_VP(True) >= 10):
-                    self.has_ended = True
-                    self.winner = self.player_with_turn
-                    self.player_with_turn.turn_over = True
-
-                     # Display turn relevant info
-                    self.display.displayBoard()
-                    print('Turn: ' + str(self.turn_counter))
-                    print('Player with turn: ' + colors[self.player_with_turn_index])
-                    print('Roll: ' + str(self.roll))
-                    print()
-
-
-                turn_over = self.player_with_turn.turn_over 
-                self.rolled_seven = False
-                if(not turn_over):
-                    # 2 -> 3 -> 0 -> 1 -> 2
-                    if(player_index == 3):
-                        player_index = 0
-                    else:
-                        player_index += 1
-
-
-            # Turn has ended
-            player_index = self.player_with_turn_index
-            self.turn_counter += 1
-
-
-            # 2 -> 3 -> 0 -> 1 -> 2
-            if(player_index == 3):
-                player_index = 0
-            else:
-                player_index += 1
-
-        print('Winner: ' + str(colors[self.winner.num]))
-
+    # Register an action with the game state
     def do_action(self, player, args):
         action_type = args[0]
 
@@ -732,10 +727,7 @@ class Game:
 
         return Statuses.ALL_GOOD
 
-
-
-
-    # Get allowed actions
+    # Get the allowed actions a play can do
     def get_allowed_actions(self, player):
         actions = {
         'allowed_actions': [],
@@ -1291,4 +1283,3 @@ class Game:
     # simulates 2 dice rolling
     def get_roll(self):
         return (random.randint(1, 6) + random.randint(1, 6))
-

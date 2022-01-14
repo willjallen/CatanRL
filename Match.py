@@ -13,10 +13,14 @@ from agent import Agent
 from random_agent import RandomAgent
 import random
 
-import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
+
+
+import pickle as cPickle
+
+# import numpy as np
+# import tensorflow as tf
+# from tensorflow import keras
+# from tensorflow.keras import layers
 
 class Match():
     def __init__(self, num_of_players, print_mode, user_mode, agent_type_arr):
@@ -30,9 +34,11 @@ class Match():
         self.agent_type_arr = agent_type_arr
 
         # Record statistics
+        self.game_states = []
+        self.game_id = 0
+        self.version = 0.1
+        self.dump_file = open('data.txt', 'wb')
 
-
-        pass
 
     def begin(self):
         # num_inputs = 4
@@ -61,8 +67,17 @@ class Match():
             # Prompts action from player and updates game state
             self.game.step()
             # Save game state
-            self.game.serialize()
+            self.game_states.append(self.game)
 
+        # Save game states to disk
+        self.serialize()
+
+        cPickle_off = open("data.txt", "rb")
+        file = cPickle.load(cPickle_off)
+        print(file[0].longest_road_owner)
+
+    def serialize(self):
+        cPickle.dump(self.game_states, self.dump_file)
 
         # self.game.players[0].cards.append(ResCard(0))
         # self.game.players[0].cards.append(ResCard(1))
