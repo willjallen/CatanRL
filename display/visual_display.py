@@ -18,6 +18,9 @@ TILE_COLORS = {0: DESERT_COLOR, 1: FIELDS_COLOR, 2: PASTURE_COLOR, 3: MOUNTAINS_
 PLAYER_RGB_COLORS = {0: (255, 0, 0), 1: (0, 255, 255), 2: (0, 128, 0), 3: (0, 0, 255)}
 PLAYER_COLORS = ['Red', 'Cyan', 'Green', 'Yellow']
 
+action_types = ["no_op", "roll", "purchase_resource", "purchase_and_play_building", "purchase_dev_card", "play_dev_card", "play_robber", "start_trade", "accept_trade", "deny_trade", "forfeit_cards", "end_turn", "initial_placement_road", "initial_placement_building", "place_road"]
+
+
 # Returns the indexes of the tiles connected to a certain points
 # on the default, tileagonal Catan board
 @staticmethod
@@ -384,12 +387,24 @@ class InfoDisplay:
 
 
 
-
+	# This function is extremely slow, if this ever becomes an issue start with this
+	# https://stackoverflow.com/questions/60469344/rendering-text-in-pygame-causes-lag
 	def make_text(self, game):
+
+		self.size_helper_one = thorpy.make_text("                                            ")
+		self.size_helper_two = thorpy.make_text("                                            ")
+
+		# # Game info
+		self.game_info_header = thorpy.make_text("GAME INFO")
+
 		# # Game flags
 		self.game_flags_header = thorpy.make_text("GAME FLAGS")
 		self.initial_placement_mode_label = thorpy.make_text("Initial Placement Mode: " + str(game.initial_placement_mode))
 		self.give_initial_yield_label = thorpy.make_text("Give initial yield flag: " + str(game.give_initial_yield))
+		# self.give_initial_yield_label_box = thorpy.Box(give_initial_yield_label)
+		# thorpy.store(give_initial_yield_label_box,)
+		# thorpy.store(self.give_initial_yield_label, align="left")
+
 
 		if(game.longest_road_owner == None):
 			self.longest_road_owner_label = thorpy.make_text("Longest Road Owner: None")
@@ -403,13 +418,17 @@ class InfoDisplay:
 		self.game_has_ended_label = thorpy.make_text("Game Ended: " + str(game.has_ended))
 		self.dev_card_deck_label = thorpy.make_text("Dev Card Deck: ")
 
+		self.turn_counter_label = thorpy.make_text("Turn Counter: " + str(game.turn_counter))
+		self.step_counter_label = thorpy.make_text("Step Counter: " + str(game.step_count))
+
+
 		self.game_flags_header_box = thorpy.Box(elements=[self.game_flags_header])
 		# Formatting
 		# thorpy.store(game_flags_header_box, mode="v", align="center")
 
-		self.game_flags_label_box = thorpy.Box(elements=[self.initial_placement_mode_label, self.give_initial_yield_label, self.longest_road_owner_label, self.largest_army_owner_label, self.game_has_ended_label])
+		self.game_flags_label_box = thorpy.Box(elements=[self.size_helper_one, self.initial_placement_mode_label, self.give_initial_yield_label, self.longest_road_owner_label, self.largest_army_owner_label, self.game_has_ended_label, self.turn_counter_label, self.step_counter_label, self.size_helper_two])
 		# Formatting
-		thorpy.store(self.game_flags_label_box, mode="v", align="center")
+		# thorpy.store(self.game_flags_label_box, mode="v", align="left")
 
 		self.game_flags_box = thorpy.Box(elements=[self.game_flags_header_box, self.game_flags_label_box])
 
@@ -423,7 +442,13 @@ class InfoDisplay:
 			self.player_with_turn_label = thorpy.make_text("Player w/ Turn: None")
 		else:
 			self.player_with_turn_label = thorpy.make_text("Player w/ Turn: " + PLAYER_COLORS[game.player_with_turn.num] + "(" + str(game.player_with_turn.num) + ")")
- 
+		
+		if(game.curr_player == None):
+			self.curr_player_label = thorpy.make_text("Current player: None")
+		else:
+			self.curr_player_label = thorpy.make_text("Current Player: " + PLAYER_COLORS[game.curr_player.num] + "(" + str(game.curr_player.num) + ")")
+
+
 
 		self.can_roll_label = thorpy.make_text("Can Roll: " + str(game.can_roll))
 		self.last_roll_label = thorpy.make_text("Last Roll: " + str(game.last_roll))
@@ -432,21 +457,25 @@ class InfoDisplay:
 
 		# Formatting
 		# thorpy.store(game_flags_header_box, mode="v", align="center")
-
-		self.turn_flags_label_box = thorpy.Box(elements=[self.player_with_turn_label, self.can_roll_label, self.last_roll_label, self.rolled_seven_label, self.robber_moved_label])
+		# self.size_helper = thorpy.make_text("                                          ")
+		self.turn_flags_label_box = thorpy.Box(elements=[self.size_helper_one, self.player_with_turn_label, self.curr_player_label, self.can_roll_label, self.last_roll_label, self.rolled_seven_label, self.robber_moved_label, self.size_helper_two])
 		# Formatting
-		thorpy.store(self.turn_flags_label_box, mode="v", align="center")
-
+		# thorpy.store(self.turn_flags_label_box, mode="v", align="left")
+		# self.turn_flags_label_box.set_size(self.game_flags_label_box.get_size())
 		self.turn_flags_box = thorpy.Box(elements=[self.turn_flags_header_box, self.turn_flags_label_box])
-		# text = thorpy.make_text("GAME INFO")
 
-		# slider = thorpy.SliderX(100, (12, 35), "My Slider")
-		# button = thorpy.make_button("Quit", func=thorpy.functions.quit_func)
+		# self.allowed_actions_header_label = thorpy.make_text("Allowed Actions: ")
 
-		# self.game_info_text_box = thorpy.Box(elements=[text])
+		# if(game.allowed_actions):
+		# 	actions = ""
+		# 	for action in game.allowed_actions['allowed_actions']:
+		# 		actions += action_types[action]
+		# 	self.allowed_actions_label = thorpy.make_text(actions)
+		# else:
+		# 	self.allowed_actions_label = thorpy.make_text("None")
 
-		# self.box = thorpy.Box(elements=[text,slider,button])
-		#we regroup all elements on a menu, even if we do not launch the menu
+
+
 		self.master_box = thorpy.Box(elements=[self.game_flags_box, self.turn_flags_box])
 		# thorpy.store(self.master_box, mode="v", align="left")
 		# self.master_box.fit_children()
@@ -460,7 +489,7 @@ class InfoDisplay:
 		for element in self.menu.get_population():
 		    element.surface = self.screen
 		#use the elements normally...
-		self.master_box.set_topleft((600,100))
+		self.master_box.set_topleft((600,50))
 
 
 
