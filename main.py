@@ -30,12 +30,12 @@ def main():
 
     number_of_players = 4
 
-    number_of_matches = 10
+    number_of_matches = 500
     matches_played = 0
     turns_played = 0
 
     for i in range(0, number_of_matches):
-        match = Match(number_of_players, print_mode, user_mode, ['R', 'R', 'R', 'R'], display)
+        match = Match(game_number=i, num_of_players=number_of_players, agent_type_arr=['R', 'R', 'R', 'R'], display=display)
         match.begin()
 
         matches_played += 1

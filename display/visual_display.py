@@ -4,7 +4,7 @@ import thorpy
 import math
 import random
 from display.old_display import Display
-
+import thorpy
 
 DESERT_COLOR = (0,0,0)
 FIELDS_COLOR = (211, 181, 29)
@@ -15,7 +15,8 @@ FOREST_COLOR = (0,43,0)
 
 TILE_COLORS = {0: DESERT_COLOR, 1: FIELDS_COLOR, 2: PASTURE_COLOR, 3: MOUNTAINS_COLOR, 4: HILLS_COLOR, 5: FOREST_COLOR}
 # ['Red', 'Cyan', 'Green', 'Yellow']
-PLAYER_COLORS = {0: (255, 0, 0), 1: (0, 255, 255), 2: (0, 128, 0), 3: (0, 0, 255)}
+PLAYER_RGB_COLORS = {0: (255, 0, 0), 1: (0, 255, 255), 2: (0, 128, 0), 3: (0, 0, 255)}
+PLAYER_COLORS = ['Red', 'Cyan', 'Green', 'Yellow']
 
 # Returns the indexes of the tiles connected to a certain points
 # on the default, tileagonal Catan board
@@ -185,8 +186,9 @@ class HexTile():
 		# pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x, self.origin_y+self.big_radius), 1)
 
 class HexBoard(Container):
-	def __init__(self, game_tiles, roads):
+	def __init__(self, screen, game_tiles, roads):
 		super().__init__()
+		self.screen = screen
 		# Will be implemented as a container later
 		self.width = 500
 		self.height = 500
@@ -313,9 +315,9 @@ class HexBoard(Container):
 			tile_obj.update_hexagon_vertices()
 			itr += 1
 
-	def render(self, screen):
-		self.render_tiles(screen)
-		self.render_settlements_cities_roads(screen)
+	def render(self):
+		self.render_tiles(self.screen)
+		self.render_settlements_cities_roads(self.screen)
 
 	def render_tiles(self, screen):
 		for tile_obj in self.tiles:
@@ -344,17 +346,129 @@ class HexBoard(Container):
 								point_one_coords = tile_obj.point_ordered_hex_vertices[itr]
 								point_two = road.point_two
 								point_two_coords = tile_obj.point_ordered_hex_vertices[j]
-								pg.draw.line(pg.display.get_surface(), PLAYER_COLORS[road.owner], point_one_coords, point_two_coords, 5)
+								pg.draw.line(pg.display.get_surface(), PLAYER_RGB_COLORS[road.owner], point_one_coords, point_two_coords, 5)
 				# print(point)
 				if(not point.building == None):
 					# Settlement
 					if(point.building.type == 0):
 						# print(point)
-						pg.draw.circle(pg.display.get_surface(), PLAYER_COLORS[point.building.owner], tile_obj.point_ordered_hex_vertices[itr], 10)
+						pg.draw.circle(pg.display.get_surface(), PLAYER_RGB_COLORS[point.building.owner], tile_obj.point_ordered_hex_vertices[itr], 10)
 					# City
 					if(point.building.type == 2):
-						pg.draw.circle(pg.display.get_surface(), PLAYER_COLORS[point.building.owner], tile_obj.point_ordered_hex_vertices[itr], 10)
+						pg.draw.circle(pg.display.get_surface(), PLAYER_RGB_COLORS[point.building.owner], tile_obj.point_ordered_hex_vertices[itr], 10)
 						pg.draw.circle(pg.display.get_surface(), (0,0,0), tile_obj.point_ordered_hex_vertices[itr], 5)
+
+
+class InfoDisplay:
+	def __init__(self, screen, game):
+		self.screen = screen
+		self.game = game
+		#declaration of some ThorPy elements ...
+
+		# Game Info decided at game init
+		# game_info_label = thorpy.make_text("GAME INFO")
+
+		# num_of_players_label = thorpy.make_text("Number of players: ")
+		# agent_type_arr_label = thorpy.make_text("Agent Types: ")
+		
+		# initial_play_order_label = thorpy.make_text()
+		# play_order = thorpy.make_text()
+
+		# # Game info updated every step
+		self.make_text(self.game)
+
+
+
+
+
+
+
+
+
+	def make_text(self, game):
+		# # Game flags
+		self.game_flags_header = thorpy.make_text("GAME FLAGS")
+		self.initial_placement_mode_label = thorpy.make_text("Initial Placement Mode: " + str(game.initial_placement_mode))
+		self.give_initial_yield_label = thorpy.make_text("Give initial yield flag: " + str(game.give_initial_yield))
+
+		if(game.longest_road_owner == None):
+			self.longest_road_owner_label = thorpy.make_text("Longest Road Owner: None")
+		else:
+			self.longest_road_owner_label = thorpy.make_text("Longest Road Owner: " + PLAYER_COLORS[game.longest_road_owner] + "(" + str(game.longest_road_owner) + ")")
+
+		if(game.largest_army == None):
+			self.largest_army_owner_label = thorpy.make_text("Largest Army Owner: None")
+		else:
+			self.largest_army_owner_label = thorpy.make_text("Largest Army Owner: " + PLAYER_COLORS[game.largest_army] + "(" + str(game.largest_army) + ")")
+		self.game_has_ended_label = thorpy.make_text("Game Ended: " + str(game.has_ended))
+		self.dev_card_deck_label = thorpy.make_text("Dev Card Deck: ")
+
+		self.game_flags_header_box = thorpy.Box(elements=[self.game_flags_header])
+		# Formatting
+		# thorpy.store(game_flags_header_box, mode="v", align="center")
+
+		self.game_flags_label_box = thorpy.Box(elements=[self.initial_placement_mode_label, self.give_initial_yield_label, self.longest_road_owner_label, self.largest_army_owner_label, self.game_has_ended_label])
+		# Formatting
+		thorpy.store(self.game_flags_label_box, mode="v", align="center")
+
+		self.game_flags_box = thorpy.Box(elements=[self.game_flags_header_box, self.game_flags_label_box])
+
+
+		# # Turn flags
+		self.turn_flags_header = thorpy.make_text("TURN FLAGS")
+
+		self.turn_flags_header_box = thorpy.Box(elements=[self.turn_flags_header])
+
+		if(game.player_with_turn == None):
+			self.player_with_turn_label = thorpy.make_text("Player w/ Turn: None")
+		else:
+			self.player_with_turn_label = thorpy.make_text("Player w/ Turn: " + PLAYER_COLORS[game.player_with_turn.num] + "(" + str(game.player_with_turn.num) + ")")
+ 
+
+		self.can_roll_label = thorpy.make_text("Can Roll: " + str(game.can_roll))
+		self.last_roll_label = thorpy.make_text("Last Roll: " + str(game.last_roll))
+		self.rolled_seven_label = thorpy.make_text("Rolled Seven: " + str(game.rolled_seven))
+		self.robber_moved_label = thorpy.make_text('Robber Moved: ' + str(game.robber_moved))
+
+		# Formatting
+		# thorpy.store(game_flags_header_box, mode="v", align="center")
+
+		self.turn_flags_label_box = thorpy.Box(elements=[self.player_with_turn_label, self.can_roll_label, self.last_roll_label, self.rolled_seven_label, self.robber_moved_label])
+		# Formatting
+		thorpy.store(self.turn_flags_label_box, mode="v", align="center")
+
+		self.turn_flags_box = thorpy.Box(elements=[self.turn_flags_header_box, self.turn_flags_label_box])
+		# text = thorpy.make_text("GAME INFO")
+
+		# slider = thorpy.SliderX(100, (12, 35), "My Slider")
+		# button = thorpy.make_button("Quit", func=thorpy.functions.quit_func)
+
+		# self.game_info_text_box = thorpy.Box(elements=[text])
+
+		# self.box = thorpy.Box(elements=[text,slider,button])
+		#we regroup all elements on a menu, even if we do not launch the menu
+		self.master_box = thorpy.Box(elements=[self.game_flags_box, self.turn_flags_box])
+		# thorpy.store(self.master_box, mode="v", align="left")
+		# self.master_box.fit_children()
+		# self.master_box.refresh_lift()
+
+
+
+
+		self.menu = thorpy.Menu(self.master_box)
+		#important : set the screen as surface for all elements
+		for element in self.menu.get_population():
+		    element.surface = self.screen
+		#use the elements normally...
+		self.master_box.set_topleft((600,100))
+
+
+
+
+	def render(self):
+		self.make_text(self.game)
+		self.master_box.blit()
+		# self.box.update()
 
 
 class VisualDisplay:
@@ -373,14 +487,21 @@ class VisualDisplay:
 		self.clock = pg.time.Clock()
 		self.old_display = None
 
+		self.info_display = None
+
+
+
+
+
 	def new_game(self, game):
 		self.game = game
-		self.hex_board = HexBoard(self.game.board.tiles, self.game.board.roads)
+		self.hex_board = HexBoard(self.screen, self.game.board.tiles, self.game.board.roads)
 		self.old_display = Display(self.game)
-
+		self.info_display = InfoDisplay(self.screen, self.game)
 
 	def render(self):
-		self.hex_board.render(self.screen)
+		self.hex_board.render()
+		self.info_display.render()
 		# print(self.game.board.tiles)
 		# self.old_display.displayBoard()
 

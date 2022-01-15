@@ -38,8 +38,11 @@ PLACE_ROAD = 14
 class Game:
 
     # Initialize the  game
-    def __init__(self, num_of_players=4, print_mode=False, user_mode=False, agent_type_arr=['R','R','R','R'], on_win=None, starting_board=False, headless=False):
+    def __init__(self, game_number, num_of_players=4, print_mode=False, user_mode=False, agent_type_arr=['R','R','R','R'], on_win=None, starting_board=False, headless=False):
 
+        self.game_number = 0
+        self.step_count = 0
+        self.engine_version = 0.1
         # Game properties
         # Number of players
         self.num_of_players = num_of_players
@@ -96,7 +99,6 @@ class Game:
 
         # whether the game is in initial placement mode
         self.initial_placement_mode = False
-        self.initial_placement_ended = False
         # Set initial placement mode flag
         self.give_initial_yield = False
         
@@ -245,6 +247,7 @@ class Game:
     # Conduct one step of the game
     def step(self):
 
+        self.step_count += 1
         ## INITIAL PLACEMENT PHASE ##
         '''
         During the initial phase of the game, a random player is selected to begin by choosing a location

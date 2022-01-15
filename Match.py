@@ -21,24 +21,21 @@ import pickle as cPickle
 # from tensorflow.keras import layers
 
 class Match():
-    def __init__(self, num_of_players, print_mode, user_mode, agent_type_arr, display):
+    def __init__(self, game_number, num_of_players, agent_type_arr, display):
 
         # threading.Thread.__init__(self)
-        self.display = display
-
-        self.print_mode = print_mode
-        self.user_mode = user_mode
+        self.game_number = game_number
         self.num_of_players = num_of_players
-
         self.agent_type_arr = agent_type_arr
+        self.display = display
 
         # Record statistics
         self.game_states = []
         self.match_id = 0
-        self.engine_version = 0.1
         self.dump_file = open('data.txt', 'wb')
 
-        self.game = Game(num_of_players=self.num_of_players, print_mode=self.print_mode, user_mode=self.user_mode, agent_type_arr=self.agent_type_arr)
+        self.game = Game(game_number=self.game_number, 
+            num_of_players=self.num_of_players, agent_type_arr=self.agent_type_arr)
         # self.game.add_settlement(0, self.game.board.points[3][0], is_starting=True)
         # self.game.add_settlement(0, (0,1))
         # self.game.add_settlement(0, (0,2))
@@ -73,7 +70,7 @@ class Match():
 
         while(not self.game.has_ended):
             # Prompts action from player and updates game state
-            print(self.game.turn_counter)
+            # print(self.game.turn_counter)
             self.game.step()
             # print(self.game.board.roads)
             # Save game state
