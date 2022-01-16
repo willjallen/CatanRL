@@ -30,7 +30,7 @@ def main():
 
     number_of_players = 4
 
-    number_of_matches = 50
+    number_of_matches = 100000
     matches_played = 0
     turns_played = 0
 

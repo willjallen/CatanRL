@@ -5,6 +5,7 @@ import math
 import random
 from display.old_display import Display
 import thorpy
+from pycatan.card import ResCard, DevCard
 
 DESERT_COLOR = (0,0,0)
 FIELDS_COLOR = (211, 181, 29)
@@ -464,29 +465,110 @@ class InfoDisplay:
 		# self.turn_flags_label_box.set_size(self.game_flags_label_box.get_size())
 		self.turn_flags_box = thorpy.Box(elements=[self.turn_flags_header_box, self.turn_flags_label_box])
 
-		# self.allowed_actions_header_label = thorpy.make_text("Allowed Actions: ")
 
-		# if(game.allowed_actions):
-		# 	actions = ""
-		# 	for action in game.allowed_actions['allowed_actions']:
-		# 		actions += action_types[action]
-		# 	self.allowed_actions_label = thorpy.make_text(actions)
-		# else:
-		# 	self.allowed_actions_label = thorpy.make_text("None")
+		# # Player Flags
+
+        # # used to track which initial placements the player has made        
+        # self.num_initial_settlements = 2
+        # self.num_initial_roads = 2
+        # self.has_placed_initial_settlement = False
+        # self.has_placed_initial_road = False
+
+        # self.has_completed_initial_placement = False
+        # self.initial_settlement = None
+        # # used to determine the longest road
+        # self.starting_roads = []
+        # # the number of victory points
+        # self.victory_points = 0
+        # # the cards the player has
+        # # each will be a number corresponding with the static variables CARD_<type>
+        # self.cards = []
+        # # the development cards this player has
+        # self.dev_cards = []
+        # # the number of knight cards the player has played
+        # self.knight_cards = 0
+        # # the longest road segment this player has
+        # self.longest_road_length = 0
+        # # whether the player has ended their turn
+        # self.turn_over = True
+        # # whether the player has a pending trade
+        # self.pending_trade = False
+        # # how many trades this player has requested in a turn
+        # self.num_trades_in_turn = 0
+        # # trading player
+        # self.trading_player = None
+        # # which card the trading player wants in trade
+        # self.trade_forfeit_card = None
+        # # which card the player will receive in trade
+        # self.trade_receive_card = None
+        # # number of cards the player must discard (from a 7 roll)
+        # self.forfeited_cards_left = 0
+        # # whether the player has played a road building dev card
+        # self.played_road_building = False
+        # # how many roads the player has left to place
+        # self.roads_remaining = 0
+        # # store the last bought dev card and the turn it was bought on 
+        # self.last_bought_dev_card = 0
+        # self.last_bought_dev_card_turn = 0
+
+		curr_player = game.curr_player
+
+		if(curr_player != None):
+
+			self.curr_player_info_header = thorpy.make_text("CURR PLAYER INFO")
+
+			self.player_label = thorpy.make_text("Player: " + PLAYER_COLORS[game.curr_player.num] + "(" + str(game.curr_player.num) + ")")
+			self.agent_type_label = thorpy.make_text("Agent Type: " + str(curr_player.agent_type))
+
+			self.has_placed_initial_settlement_label = thorpy.make_text("Placed init settlement: " + str(curr_player.has_placed_initial_settlement))
+			self.has_placed_initial_road_label = thorpy.make_text("Placed initial road: " + str(curr_player.has_placed_initial_road))
+
+			self.knight_cards_label = thorpy.make_text("Played knight cards: " + str(curr_player.knight_cards))
+			self.longest_road_label = thorpy.make_text("Longest road: " + str(curr_player.longest_road_length))
+			
+			self.dev_cards_header = thorpy.make_text("Dev cards: ")
+			self.road_building_dev_label = thorpy.make_text("Road Building: " + str(curr_player.dev_cards.count(DevCard.Road)))
+			self.victory_point_dev_label = thorpy.make_text("Victory Point: " + str(curr_player.dev_cards.count(DevCard.VictoryPoint)))
+			self.knight_card_dev_label = thorpy.make_text("Road Building: " + str(curr_player.dev_cards.count(DevCard.Knight)))
+			self.monopoly_dev_label = thorpy.make_text("Road Building: " + str(curr_player.dev_cards.count(DevCard.Monopoly)))
+			self.year_of_plenty_dev_label = thorpy.make_text("Road Building: " + str(curr_player.dev_cards.count(DevCard.YearOfPlenty)))
 
 
+			self.victory_points_label = thorpy.make_text("Victory points: " + str(curr_player.victory_points))
+			
 
-		self.master_box = thorpy.Box(elements=[self.game_flags_box, self.turn_flags_box])
+
+			self.allowed_actions_header_label = thorpy.make_text("Allowed Actions: ")
+
+			if(game.allowed_actions):
+				actions = ""
+				for action in game.allowed_actions['allowed_actions']:
+					actions += action_types[action]
+				self.allowed_actions_label = thorpy.make_text(actions)
+			else:
+				self.allowed_actions_label = thorpy.make_text("None")
+
+			self.curr_player_info_header_box = thorpy.Box(elements=[self.curr_player_info_header])
+			self.curr_player_info_label_box = thorpy.Box(elements=[self.size_helper_one, self.player_label, self.agent_type_label, self.has_placed_initial_settlement_label,
+			 self.has_placed_initial_road_label, self.knight_cards_label, self.longest_road_label, self.dev_cards_header, self.road_building_dev_label,
+			 self.victory_point_dev_label, self.knight_card_dev_label, self.monopoly_dev_label, self.year_of_plenty_dev_label, self.victory_points_label, self.size_helper_two])
+			self.curr_player_info_box = thorpy.Box(elements=[self.curr_player_info_header_box, self.curr_player_info_label_box])
+			
+			self.master_box = thorpy.Box(elements=[self.game_flags_box, self.turn_flags_box, self.curr_player_info_box])
+		else:
+			self.master_box = thorpy.Box(elements=[self.game_flags_box, self.turn_flags_box])
+
+
 		# thorpy.store(self.master_box, mode="v", align="left")
 		# self.master_box.fit_children()
 		# self.master_box.refresh_lift()
 
 
+		# self.master_box = thorpy.Draggable(elements=self.master_box)
 
-
-		self.menu = thorpy.Menu(self.master_box)
+		# self.menu = thorpy.Menu(self.master_box)
 		#important : set the screen as surface for all elements
-		for element in self.menu.get_population():
+		for element in self.master_box.get_elements():
 		    element.surface = self.screen
 		#use the elements normally...
 		self.master_box.set_topleft((600,50))

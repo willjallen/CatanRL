@@ -1,7 +1,7 @@
 
 
 
-class NNSTate:
+class NNState:
     # Basically serialize game object
     def __init__(self, game):
         pass

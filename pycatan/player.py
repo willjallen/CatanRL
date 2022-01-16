@@ -33,12 +33,9 @@ class Player:
         # the player number for this player
         self.num = num
         # used to track which initial placements the player has made        
-        self.num_initial_settlements = 2
-        self.num_initial_roads = 2
         self.has_placed_initial_settlement = False
         self.has_placed_initial_road = False
 
-        self.has_completed_initial_placement = False
         self.initial_settlement = None
         # used to determine the longest road
         self.starting_roads = []
