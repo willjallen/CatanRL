@@ -529,9 +529,9 @@ class InfoDisplay:
 			self.dev_cards_header = thorpy.make_text("Dev cards: ")
 			self.road_building_dev_label = thorpy.make_text("Road Building: " + str(curr_player.dev_cards.count(DevCard.Road)))
 			self.victory_point_dev_label = thorpy.make_text("Victory Point: " + str(curr_player.dev_cards.count(DevCard.VictoryPoint)))
-			self.knight_card_dev_label = thorpy.make_text("Road Building: " + str(curr_player.dev_cards.count(DevCard.Knight)))
-			self.monopoly_dev_label = thorpy.make_text("Road Building: " + str(curr_player.dev_cards.count(DevCard.Monopoly)))
-			self.year_of_plenty_dev_label = thorpy.make_text("Road Building: " + str(curr_player.dev_cards.count(DevCard.YearOfPlenty)))
+			self.knight_card_dev_label = thorpy.make_text("Knight: " + str(curr_player.dev_cards.count(DevCard.Knight)))
+			self.monopoly_dev_label = thorpy.make_text("Monopoly: " + str(curr_player.dev_cards.count(DevCard.Monopoly)))
+			self.year_of_plenty_dev_label = thorpy.make_text("Year of Plenty: " + str(curr_player.dev_cards.count(DevCard.YearOfPlenty)))
 
 
 			self.victory_points_label = thorpy.make_text("Victory points: " + str(curr_player.victory_points))

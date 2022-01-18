@@ -6,9 +6,53 @@ class NNState:
     def __init__(self, game):
         pass
 
-    # # 
-    # def def_build_game_state():
-    #     pass
+    # 
+    def def_build_NN_state(self):
+        # Game info
+        self.initial_placement_mode = np.array([int(i == 5) for i in range(6)])
+        self.give_initial_yield_flag = np.array([int(i == 5) for i in range(1)])
+        self.longest_road_owner = np.array([int(i == 5) for i in range(1)])
+        self.largest_army_owner_label = np.array([int(i == 5) for i in range(1)])
+        # self.game_ended = np.array([int(i == 5) for i in range(1)])
+        self.turn_counter = np.array([int(i == 5) for i in range(1)])
+        self.step_counter = np.array([int(i == 5) for i in range(1)])
+
+        # Turn info
+        self.player_with_turn = np.array([int(i == 5) for i in range(1)])
+        self.current_player = np.array([int(i == 5) for i in range(1)])
+
+        self.can_roll = np.array([int(i == 5) for i in range(1)])
+        self.last_roll = np.array([int(i == 5) for i in range(1)])
+        self.rolled_seven = np.array([int(i == 5) for i in range(1)])
+        self.robber_moved = np.array([int(i == 5) for i in range(1)])
+
+        # Player info
+        self.player_num = np.array([int(i == 5) for i in range(1)])
+        self.placed_initial_settlement = np.array([int(i == 5) for i in range(1)])
+        self.placed_initial_road = np.array([int(i == 5) for i in range(1)])
+        self.knight_cards_played = np.array([int(i == 5) for i in range(1)])
+        self.longest_road = np.array([int(i == 5) for i in range(1)])
+        # self.dev_cards = 
+        # self.
+
+        self.current_player_playing = np.array([int(i == self.game.player_with_turn_index) for i in range(4)])
+        # Trade:
+        # player's trading partner [0,2] (OHE)
+        self.trading_player = np.array([int(i == self.game.) for i in range(2)])
+        # Offered resource cards [0, 4] (OHE)
+        self.offered_resource_cards = np.array([int(i == 5) for i in range(4)])
+        # Expected resource cards [0, 4] (OHE)
+        self.expected_resource_cards = np.array([int(i == 5) for i in range(4)])
+
+        # Player:
+        # turn to play [0,1] (OHE)
+        self.turn_to_play = np.array([int(i == 5) for i in range(1)])
+        # pending trade [0,1] (OHE)
+        self.pending_trade = np.array([int(i == 5) for i in range(1)])
+        # available actions [0, 14] (OHE)
+        self.available_actions = np.array([int(i == self.) for i in range(14)])
+
+        player_0_num_wheat_cards = np.array([])
 
     # def unpack_game_state():
     #     pass
@@ -30,28 +74,10 @@ class NNState:
 # ------------Categorical:------------------ 
 # Game:
 # assigned player num
-self.assigned_player_num = np.array([int(i == )])
+# self.assigned_player_num = np.array([int(i == )])
 
 # curent player playing [0, 3]
-self.current_player_playing = np.array([int(i == self.game.player_with_turn_index) for i in range(10)])
 
-# Trade:
-# player's trading partner [0,2] (OHE)
-self.trading_player = np.array([int(i == 5) for i in range(10)])
-# Offered resource cards [0, 4] (OHE)
-self.offered_resource_cards = np.array([int(i == 5) for i in range(10)])
-# Expected resource cards [0, 4] (OHE)
-self.expected_resource_cards = np.array([int(i == 5) for i in range(10)])
-
-# Player:
-# turn to play [0,1] (OHE)
-self.turn_to_play = np.array([int(i == 5) for i in range(10)])
-# pending trade [0,1] (OHE)
-self.pending_trade = np.array([int(i == 5) for i in range(10)])
-# available actions [0, 14] (OHE)
-self.available_actions = np.array([int(i == self.) for i in range(14)])
-
-player_0_num_wheat_cards = np.array([])
 # Player's cards (P_0):
 # 	resource cards [0,4]
 # 	-># of each [0, 9]
