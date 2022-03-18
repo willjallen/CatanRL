@@ -246,7 +246,7 @@ class HexBoard(Container):
 
 		# top
 		origin_x = genesis_x + (3 * r)
-		origin_y = genesis_y + big_r
+		origin_y = genesis_y + big_r	
 		for i in range(0, 3):
 			tile_obj = self.tiles[itr]
 			tile_obj.radius = r

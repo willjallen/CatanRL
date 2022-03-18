@@ -255,6 +255,7 @@ class Game:
         by means of snake order [0,1,2,3,3,2,1,0] or [2,3,0,1,1,0,3,2] 
         '''
 
+
         if(self.initial_placement_mode):
 
 

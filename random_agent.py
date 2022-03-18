@@ -131,6 +131,7 @@ class RandomAgent(Player):
             pass
 
         # Forfeit cards
+        # TODO: CRASH
         if(action == 10):
             if(len(allowed_actions['allowed_forfeit_cards']) == 0):
                 self.game.display.displayBoard()
