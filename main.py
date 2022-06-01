@@ -30,13 +30,17 @@ def main():
 
     number_of_players = 4
 
-    number_of_matches = 100000
+    number_of_matches = 500
     matches_played = 0
     turns_played = 0
+
+    winners = [0,0,0,0]
 
     for i in range(0, number_of_matches):
         match = Match(game_number=i, num_of_players=number_of_players, agent_type_arr=['R', 'R', 'R', 'R'], display=display)
         match.begin()
+
+        winners[match.winner] += 1
 
         matches_played += 1
         turns_played += match.game.turn_counter
@@ -44,7 +48,7 @@ def main():
 
 
 
-
+    print([winners[x]/number_of_matches for x in range(0, 4)])
     print('Total turns played', turns_played)
     print('Average time / turn')
 
@@ -56,6 +60,7 @@ if __name__ == "__main__":
     # Profiling
     cProfile.runctx('main()', globals(), locals(), 'restats')
     p = pstats.Stats('restats')
-    p.strip_dirs().sort_stats(SortKey.TIME).print_stats(10)
-    p.print_stats()
+    # p.strip_dirs().sort_stats(SortKey.TIME).print_stats(10)
+    # p.print_stats()
     # main()
+

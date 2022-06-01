@@ -192,6 +192,7 @@ class NNState:
 
 
     def preprocess_board(self):
+        # 
         pass
 
     # def unpack_game_state():

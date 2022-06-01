@@ -6,6 +6,8 @@ import random
 from display.old_display import Display
 import thorpy
 from pycatan.card import ResCard, DevCard
+from thorpy.painting.painters.imageframe import ImageButton
+
 
 DESERT_COLOR = (0,0,0)
 FIELDS_COLOR = (211, 181, 29)
@@ -363,6 +365,115 @@ class HexBoard(Container):
 						pg.draw.circle(pg.display.get_surface(), (0,0,0), tile_obj.point_ordered_hex_vertices[itr], 5)
 
 
+class ControlDisplay:
+	def __init__(self, surface, game):
+		self.surface = surface
+		self.game = game
+
+		self.make_buttons()
+
+	def make_buttons(self):
+		self.play_unpressed_img = ImageButton('display/img/play.png', alpha=255, force_convert_alpha=True)
+		self.play_pressed_img = ImageButton('display/img/play-pressed.png', force_convert_alpha=True)
+
+		# self.play_button = thorpy.make_("Play")	
+		
+
+		self.play_pressed = False
+		# self.play_button = thorpy.make_image_button('display/img/play-pressed.png',alpha=0,colorkey=(255,255,255), force_convert_alpha=True)
+			
+		# img = self.play_button._normal_imgs
+		# print(img)
+
+		# print(dir(self.play_button))
+
+		# pressed_reaction = thorpy.Reaction(reacts_to=pg.MOUSEBUTTONDOWN,
+  #                             reac_func=self.update_button, params={'button': 'play_button'})
+
+		# self.play_button = self.play_unpressed_img
+		# self.play_button = thorpy.make_button("", func=self.update_button, params={'button': 'play_button'})
+		self.play_button = thorpy.Togglable(">>")
+		self.play_button.user_func = self.update_button
+		self.play_button.user_params = {'button': 'play_button'}	
+		self.play_button.finish()
+
+		self.step_forward_button = thorpy.Togglable("|>")
+		self.step_forward_button.user_func = self.update_button
+		self.step_forward_button.user_params = {'button': 'step_forward_button'}	
+		self.step_forward_button.finish()
+
+		self.pause_button = thorpy.Togglable("||")
+		self.pause_button.user_func = self.update_button
+		self.pause_button.user_params = {'button': 'pause_button'}	
+		self.pause_button.finish()
+		
+		self.step_back_button = thorpy.Togglable("<|")
+		self.step_back_button.user_func = self.update_button
+		self.step_back_button.user_params = {'button': 'step_back_button'}	
+		self.step_back_button.finish()
+		
+
+
+
+		# self.
+
+		# self.play_button.set_painter(self.play_unpressed_img)
+		# self.play_button.set_size((512,512))
+	
+
+
+		# self.play_button_box = thorpy.Pressable(elements=[self.play_unpressed_img])
+		# self.play_button_box.add_reaction(pressed_reaction)
+		# self.play_button_box.finish()
+
+
+		self.master_box = thorpy.Box(elements=[self.step_back_button, self.pause_button, self.step_forward_button, self.play_button])
+		thorpy.store(self.master_box, mode='h')
+		self.master_box.fit_children()
+		self.menu = thorpy.Menu(self.master_box)
+
+		for element in self.menu.get_population():
+			element.surface = self.surface
+		#use the elements normally...
+		self.master_box.set_topleft((100,500))
+
+
+
+
+	def update_button(self, **kwargs):
+		print(kwargs)
+		if(kwargs['button']):
+
+			if(kwargs['button'] == 'play_button'):
+				self.play_pressed = not self.play_pressed
+				if self.play_pressed:
+					print('pressed')
+					# self.play_button.set_painter(self.play_pressed_img)
+				else:
+					print('unpressed')
+					# self.play_button.set_painter(self.play_unpressed_img)
+
+
+				# self.play_button.set_size((512,512))
+				# self.play_button.finish()
+				# self.master_box = thorpy.Box(elements=[self.play_button], size=(100,100))
+				# self.menu = thorpy.Menu(self.master_box)
+
+				# for element in self.menu.get_population():
+				# 	element.surface = self.surface
+				# #use the elements normally...
+				# self.master_box.set_topleft((100,500))
+
+
+				# self.master_box.unblit_and_reblit()
+
+
+
+	def render(self):
+		self.master_box.blit()
+		self.master_box.update()
+
+
 class InfoDisplay:
 	def __init__(self, screen, game):
 		self.screen = screen
@@ -380,13 +491,6 @@ class InfoDisplay:
 
 		# # Game info updated every step
 		self.make_text(self.game)
-
-
-
-
-
-
-
 
 	# This function is extremely slow, if this ever becomes an issue start with this
 	# https://stackoverflow.com/questions/60469344/rendering-text-in-pygame-causes-lag
@@ -573,12 +677,9 @@ class InfoDisplay:
 		#use the elements normally...
 		self.master_box.set_topleft((600,50))
 
-
-
-
 	def render(self):
 		self.make_text(self.game)
-		self.master_box.blit()
+		self.master_box.unblit()
 		# self.box.update()
 
 
@@ -588,54 +689,58 @@ class VisualDisplay:
 
 		# An array of tiles, where the vertices of each exist in rendering surface space
 		pg.init()
-		self.screen = pg.display.set_mode((860, 860), pg.SCALED | pg.RESIZABLE)
-		pg.display.set_caption("Monkey Fever")
+		self.screen = pg.display.set_mode((1280, 860), pg.SCALED | pg.RESIZABLE)
+		pg.display.set_caption("CatanRL")
 		# pg.mouse.set_visible(False)
+
+		# self.control_surface = pg.Surface(self.screen.get_size())
+
 		background = pg.Surface(self.screen.get_size())
 		background = background.convert()
 		background.fill((38, 13, 23))
 		self.background = background
 		self.clock = pg.time.Clock()
-		self.old_display = None
+		# self.old_display = None
 
 		self.info_display = None
-
-
-
-
+		self.control_display = None
 
 	def new_game(self, game):
 		self.game = game
 		self.hex_board = HexBoard(self.screen, self.game.board.tiles, self.game.board.roads)
-		self.old_display = Display(self.game)
 		self.info_display = InfoDisplay(self.screen, self.game)
+		self.control_display = ControlDisplay(self.screen, self.game)
+
+
 
 	def render(self):
 		self.hex_board.render()
 		self.info_display.render()
+		self.control_display.render()
+		# self.control_display.menu.play()
 		# print(self.game.board.tiles)
-		# self.old_display.displayBoard()
-
-				
-
-
 
 	def tick(self):
-		self.clock.tick()
+		self.clock.tick(45)
 
 		# Handle Input Events
 		for event in pg.event.get():
+			print(event)
 			if event.type == pg.QUIT:
-				going = False
+				exit()
 			elif event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
-				going = False
+				exit()
 			elif event.type == pg.VIDEORESIZE:
 				# screen.blit(pygame.transform.scale(pic, event.dict['size']), (0, 0))
 				pg.display.update()
+			self.control_display.menu.react(event)
+
+
+
+
 
 		self.screen.blit(self.background, (0, 0))
 		self.render()
-		# self.old_display.displayBoard()
 		pg.display.flip()
 		
 

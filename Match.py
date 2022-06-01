@@ -39,7 +39,9 @@ class Match():
         # self.game.add_settlement(0, self.game.board.points[3][0], is_starting=True)
         # self.game.add_settlement(0, (0,1))
         # self.game.add_settlement(0, (0,2))
-        self.display.new_game(self.game)
+        if(display):
+            self.display.new_game(self.game)
+        self.winner = 0
         print('new game')
 
 
@@ -81,10 +83,10 @@ class Match():
 
         # Save game states to disk
         self.serialize()
+        self.winner = self.game_states[len(self.game_states)-1].curr_player_index
 
         cPickle_off = open("data.txt", "rb")
         file = cPickle.load(cPickle_off)
-        print(file[0].longest_road_owner)
 
     def serialize(self):
         cPickle.dump(self.game_states, self.dump_file)
