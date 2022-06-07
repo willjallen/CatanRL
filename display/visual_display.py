@@ -404,26 +404,32 @@ class ControlDisplay:
 
 		# self.play_button = self.play_unpressed_img
 		# self.play_button = thorpy.make_button("", func=self.update_button, params={'button': 'play_button'})
-		self.play_button = thorpy.Togglable(">>")
-		self.play_button.user_func = self.update_button
-		self.play_button.user_params = {'speed_button': 'play_button'}	
-		self.play_button.finish()
+
+
+		self.rewind_button = thorpy.Togglable("<<")
+		self.rewind_button.user_func = self.update_button
+		self.rewind_button.user_params = {'speed_button': 'rewind_button'}	
+		self.rewind_button.finish()
+
+		self.step_back_button = thorpy.Clickable("<|")
+		self.step_back_button.user_func = self.update_button
+		self.step_back_button.user_params = {'speed_button': 'step_back_button'}	
+		self.step_back_button.finish()
+
+		self.pause_button = thorpy.Togglable("||")
+		self.pause_button.user_func = self.update_button
+		self.pause_button.user_params = {'speed_button': 'pause_button'}	
+		self.pause_button.finish()
 
 		self.step_forward_button = thorpy.Clickable("|>")
 		self.step_forward_button.user_func = self.update_button
 		self.step_forward_button.user_params = {'speed_button': 'step_forward_button'}	
 		self.step_forward_button.finish()
 
-		self.pause_button = thorpy.Togglable("||")
-		self.pause_button.user_func = self.update_button
-		self.pause_button.user_params = {'speed_button': 'pause_button'}	
-		self.pause_button.finish()
-		
-		self.step_back_button = thorpy.Clickable("<|")
-		self.step_back_button.user_func = self.update_button
-		self.step_back_button.user_params = {'speed_button': 'step_back_button'}	
-		self.step_back_button.finish()
-		
+		self.play_button = thorpy.Togglable(">>")
+		self.play_button.user_func = self.update_button
+		self.play_button.user_params = {'speed_button': 'play_button'}	
+		self.play_button.finish()
 
 
 
@@ -439,7 +445,7 @@ class ControlDisplay:
 		# self.play_button_box.finish()
 
 
-		self.master_box = thorpy.Box(elements=[self.step_back_button, self.pause_button, self.step_forward_button, self.play_button])
+		self.master_box = thorpy.Box(elements=[self.rewind_button, self.step_back_button, self.pause_button, self.step_forward_button, self.play_button])
 		thorpy.store(self.master_box, mode='h')
 		self.master_box.fit_children()
 		self.menu = thorpy.Menu(self.master_box)
@@ -461,12 +467,21 @@ class ControlDisplay:
 		print(self.play_button.toggled)
 
 		if(kwargs['speed_button']):
+			if(kwargs['speed_button'] == 'rewind_button'):
+				if(self.pause_button.toggled):
+					self.pause_button._force_unpress()
+				if(self.play_button.toggled):
+					self.play_button._force_unpress()
+
+
 			if(kwargs['speed_button'] == 'step_back_button'):
 				self.step_back_button_toggled = True
 
 			if(kwargs['speed_button'] == 'pause_button'):
 				if(self.play_button.toggled):
 					self.play_button._force_unpress()
+				if(self.rewind_button.toggled):
+					self.rewind_button._force_unpress()
 
 			if(kwargs['speed_button'] == 'step_forward_button'):
 				self.step_forward_button_toggled = True
@@ -474,6 +489,10 @@ class ControlDisplay:
 			if(kwargs['speed_button'] == 'play_button'):
 				if(self.pause_button.toggled):
 					self.pause_button._force_unpress()
+				if(self.rewind_button.toggled):
+					self.rewind_button._force_unpress()
+
+
 
 
 
