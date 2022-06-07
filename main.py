@@ -30,7 +30,7 @@ def main():
 
     number_of_players = 4
 
-    number_of_matches = 500
+    number_of_matches = 1
     matches_played = 0
     turns_played = 0
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     # Profiling
     cProfile.runctx('main()', globals(), locals(), 'restats')
     p = pstats.Stats('restats')
-    # p.strip_dirs().sort_stats(SortKey.TIME).print_stats(10)
-    # p.print_stats()
+    p.strip_dirs().sort_stats(SortKey.TIME).print_stats(10)
+    p.print_stats()
     # main()
 

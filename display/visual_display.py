@@ -7,7 +7,8 @@ from display.old_display import Display
 import thorpy
 from pycatan.card import ResCard, DevCard
 from thorpy.painting.painters.imageframe import ImageButton
-
+from pygame.event import Event, post
+from thorpy.miscgui import constants
 
 DESERT_COLOR = (0,0,0)
 FIELDS_COLOR = (211, 181, 29)
@@ -192,7 +193,7 @@ class HexTile():
 		# pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x, self.origin_y+self.big_radius), 1)
 
 class HexBoard(Container):
-	def __init__(self, screen, game_tiles, roads):
+	def __init__(self, screen, game):
 		super().__init__()
 		self.screen = screen
 		# Will be implemented as a container later
@@ -202,11 +203,13 @@ class HexBoard(Container):
 		self.origin_x = 100
 		self.origin_y = 50
 
+		self.game = game
+
 		self.tiles = []
-		self.roads = roads
+		self.roads = self.game.board.roads
 
 		# Create board
-		for game_tile_row in game_tiles:
+		for game_tile_row in self.game.board.tiles:
 			for game_tile in game_tile_row:
 				self.tiles.append(HexTile(game_tile))
 
@@ -370,7 +373,16 @@ class ControlDisplay:
 		self.surface = surface
 		self.game = game
 
+		self.speed_button_pressed = False
+
 		self.make_buttons()
+
+		self.step_back_button_toggled = False
+		self.step_forward_button_toggled = False
+		
+
+		self.pause_button_toggled = False
+		self.play_button_toggled = False
 
 	def make_buttons(self):
 		self.play_unpressed_img = ImageButton('display/img/play.png', alpha=255, force_convert_alpha=True)
@@ -394,22 +406,22 @@ class ControlDisplay:
 		# self.play_button = thorpy.make_button("", func=self.update_button, params={'button': 'play_button'})
 		self.play_button = thorpy.Togglable(">>")
 		self.play_button.user_func = self.update_button
-		self.play_button.user_params = {'button': 'play_button'}	
+		self.play_button.user_params = {'speed_button': 'play_button'}	
 		self.play_button.finish()
 
-		self.step_forward_button = thorpy.Togglable("|>")
+		self.step_forward_button = thorpy.Clickable("|>")
 		self.step_forward_button.user_func = self.update_button
-		self.step_forward_button.user_params = {'button': 'step_forward_button'}	
+		self.step_forward_button.user_params = {'speed_button': 'step_forward_button'}	
 		self.step_forward_button.finish()
 
 		self.pause_button = thorpy.Togglable("||")
 		self.pause_button.user_func = self.update_button
-		self.pause_button.user_params = {'button': 'pause_button'}	
+		self.pause_button.user_params = {'speed_button': 'pause_button'}	
 		self.pause_button.finish()
 		
-		self.step_back_button = thorpy.Togglable("<|")
+		self.step_back_button = thorpy.Clickable("<|")
 		self.step_back_button.user_func = self.update_button
-		self.step_back_button.user_params = {'button': 'step_back_button'}	
+		self.step_back_button.user_params = {'speed_button': 'step_back_button'}	
 		self.step_back_button.finish()
 		
 
@@ -435,23 +447,36 @@ class ControlDisplay:
 		for element in self.menu.get_population():
 			element.surface = self.surface
 		#use the elements normally...
-		self.master_box.set_topleft((100,500))
+		self.master_box.set_topleft((100,650))
 
 
 
 
 	def update_button(self, **kwargs):
 		print(kwargs)
-		if(kwargs['button']):
+		# ev_untog = Event(constants.THORPY_EVENT,
+		# 	id=constants.EVENT_UNTOGGLE, el=self)
+		# post(ev_untog)		
+		# self.play_button.toggled = False
+		print(self.play_button.toggled)
 
-			if(kwargs['button'] == 'play_button'):
-				self.play_pressed = not self.play_pressed
-				if self.play_pressed:
-					print('pressed')
-					# self.play_button.set_painter(self.play_pressed_img)
-				else:
-					print('unpressed')
-					# self.play_button.set_painter(self.play_unpressed_img)
+		if(kwargs['speed_button']):
+			if(kwargs['speed_button'] == 'step_back_button'):
+				self.step_back_button_toggled = True
+
+			if(kwargs['speed_button'] == 'pause_button'):
+				if(self.play_button.toggled):
+					self.play_button._force_unpress()
+
+			if(kwargs['speed_button'] == 'step_forward_button'):
+				self.step_forward_button_toggled = True
+
+			if(kwargs['speed_button'] == 'play_button'):
+				if(self.pause_button.toggled):
+					self.pause_button._force_unpress()
+
+
+
 
 
 				# self.play_button.set_size((512,512))
@@ -707,10 +732,16 @@ class VisualDisplay:
 
 	def new_game(self, game):
 		self.game = game
-		self.hex_board = HexBoard(self.screen, self.game.board.tiles, self.game.board.roads)
+		self.hex_board = HexBoard(self.screen, self.game)
 		self.info_display = InfoDisplay(self.screen, self.game)
 		self.control_display = ControlDisplay(self.screen, self.game)
 
+
+	def set_game(self, game):
+		self.game = game
+		self.hex_board.game = game
+		self.info_display.game = game
+		self.control_display.game = game
 
 
 	def render(self):
@@ -725,7 +756,7 @@ class VisualDisplay:
 
 		# Handle Input Events
 		for event in pg.event.get():
-			print(event)
+			# print(event)
 			if event.type == pg.QUIT:
 				exit()
 			elif event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:

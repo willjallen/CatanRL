@@ -10,7 +10,7 @@ from pycatan.card import ResCard, DevCard
 from agent import Agent
 from random_agent import RandomAgent
 import random
-
+import copy
 
 
 import pickle as cPickle
@@ -32,7 +32,9 @@ class Match():
         # Record statistics
         self.game_states = []
         self.match_id = 0
-        self.dump_file = open('data.txt', 'wb')
+
+        self.currrent_step = 0
+        self.largest_step = 0
 
         self.game = Game(game_number=self.game_number, 
             num_of_players=self.num_of_players, agent_type_arr=self.agent_type_arr)
@@ -72,24 +74,56 @@ class Match():
 
         while(not self.game.has_ended):
             # Prompts action from player and updates game state
-            # print(self.game.turn_counter)
-            self.game.step()
-            # print(self.game.board.roads)
-            # Save game state
-            self.game_states.append(self.game)
+
             # Tick display
             if(self.display):
-                self.display.tick()
+                print('curr ', self.currrent_step)
+                print('largest ', self.largest_step)
+                # if(self.game_states): print(self.game_states[self.currrent_step - 1].step_count)
+                if(self.display.control_display.play_button.toggled or self.display.control_display.step_forward_button_toggled):
+                    self.currrent_step += 1
+                    if(self.currrent_step > self.largest_step):
+                        self.step_game()
+                        self.display.set_game(self.game)                        
+                    else:
+                        self.display.set_game(self.game_states[self.currrent_step - 1])
+
+
+
+                    self.display.control_display.step_forward_button_toggled = False
+
+                if(self.display.control_display.step_back_button_toggled):
+                    self.currrent_step -= 1
+                    if(self.currrent_step >= 0):
+                        self.display.set_game(self.game_states[self.currrent_step - 1])
+
+                    self.display.control_display.step_back_button_toggled = False
+
+                
+
+            else:
+                self.step_game()
+            # print(self.game.board.roads)
+
+            self.display.tick()
+
 
         # Save game states to disk
         self.serialize()
-        self.winner = self.game_states[len(self.game_states)-1].curr_player_index
+        # self.winner = self.game_states[len(self.game_states)-1].curr_player_index
 
-        cPickle_off = open("data.txt", "rb")
-        file = cPickle.load(cPickle_off)
+        # cPickle_off = open("data.txt", "rb")
+        # file = cPickle.load(cPickle_off)
+
+    def step_game(self):
+        self.game.step()
+        self.game_states.append(copy.deepcopy(self.game))
+        self.largest_step += 1
+        # Save game state
+        # self.serialize()
 
     def serialize(self):
-        cPickle.dump(self.game_states, self.dump_file)
+        self.game_states.append(cPickle.dumps(self.game))
 
         # self.game.players[0].cards.append(ResCard(0))
         # self.game.players[0].cards.append(ResCard(1))
