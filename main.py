@@ -38,7 +38,23 @@ def main():
 
     for i in range(0, number_of_matches):
         match = Match(game_number=i, num_of_players=number_of_players, agent_type_arr=['R', 'R', 'R', 'R'], display=display)
-        match.begin()
+        agents = match.game.players
+        while not match.game.game_over:
+            # self.full_action = self.curr_player.do_turn(self.allowed_actions)
+
+            for row in match.game.board.points:
+                for point in row:
+                    print(point.tiles)
+            # action = agent.act()
+
+            # Perform action
+            match.step()
+
+            # Remember
+            # next_state, reward, done, info
+
+            # Remember
+
 
         winners[match.winner] += 1
 

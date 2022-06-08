@@ -5,8 +5,6 @@ Game Engine Related:
 	- If two roads owned by a player are seperated by an empty edge,
 	there is an issue with using a two-point system to define a road and allowing
 	either point to constitute a connection. The connection will jump across the gap.
-- Add non human agent debug view
-- Saving states for undo, analysis and training
 - Arenas, matchmaking and ELO
 -** Test cases
 	-** Longest road
@@ -20,7 +18,8 @@ Crash: Forfeit cards is empty?
 
 Multithreading
 
-Game states saving
+
+Can only play one dev card per turn (1 knight card or 1 progress card)
 
 Done:
 - Implement initial placement actions
@@ -34,6 +33,7 @@ Done:
 
 - Dev card can only be played at least a turn after it was purchased
 - Edge case: road point pairs are empty when map is full of roads
+- Game states saving
 
 
 Effeciency Measurmenets:
