@@ -42,9 +42,9 @@ def main():
         while not match.game.game_over:
             # self.full_action = self.curr_player.do_turn(self.allowed_actions)
 
-            for row in match.game.board.points:
-                for point in row:
-                    print(point.tiles)
+            # for row in match.game.board.points:
+            #     for point in row:
+            #         print(point.tiles[0].type.value)
             # action = agent.act()
 
             # Perform action

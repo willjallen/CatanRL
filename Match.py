@@ -36,6 +36,8 @@ class Match():
         self.currrent_step = 0
         self.largest_step = 0
 
+        self.bind_game_obj = False
+
         self.game = Game(game_number=self.game_number, 
             num_of_players=self.num_of_players, agent_type_arr=self.agent_type_arr)
         # self.game.add_settlement(0, self.game.board.points[3][0], is_starting=True)
@@ -51,18 +53,23 @@ class Match():
 
     def step(self):
 
+
+
         # Tick display
         if(self.display):
-            print('curr ', self.currrent_step)
-            print('largest ', self.largest_step)
+
             # if(self.game_states): print(self.game_states[self.currrent_step - 1].step_count)
             if(self.display.control_display.play_button.toggled or self.display.control_display.step_forward_button_toggled):
                 self.currrent_step += 1
                 if(self.currrent_step > self.largest_step):
+                    if self.bind_game_obj:
+                        self.display.set_game(self.game)
+                        self.bind_game_obj = False
                     self.step_game()
-                    self.display.set_game(self.game)                        
+                    # self.display.set_game(self.game)                        
                 else:
-                    self.display.set_game(self.game_states[self.currrent_step - 1])
+                    self.display.set_game(self.game_states[self.currrent_step-1])
+                    self.bind_game_obj = True
 
 
 
@@ -70,15 +77,17 @@ class Match():
 
             if(self.display.control_display.rewind_button.toggled or self.display.control_display.step_back_button_toggled):
                 self.currrent_step -= 1
-                if(self.currrent_step >= 0):
-                    self.display.set_game(self.game_states[self.currrent_step - 1])
+                self.bind_game_obj = True
+                if(self.currrent_step >= 1):
+                    self.display.set_game(self.game_states[self.currrent_step-1])
                 else:
                     self.currrent_step = 0
 
                 self.display.control_display.step_back_button_toggled = False
 
             self.display.tick()
-
+            print('curr ', self.currrent_step)
+            print('largest ', self.largest_step)
         else:
             self.step_game()
 

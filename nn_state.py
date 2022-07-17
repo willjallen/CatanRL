@@ -197,9 +197,17 @@ class NNState:
         for row in game.board.points:
             for point in row:
                 # (Re_0, Rs_0, Re_1, Rs_1, Re_2, Rs_2, port, robber, Building, player #, buildable)
-                # one hot with maximum of 5
-                resource_type_one = np.array([int (i == [point.tiles[0]]) for i in range(2)])
+                if(point.tiles[0]):
+                    # one hot with maximum of 5
+                    resource_type_one = np.array([int (i == [point.tiles[0].type.value]) for i in range(5)])
+                
+                if(point.tiles[1]):
+                    # one hot with maximum of 5
+                    resource_type_two = np.array([int (i == [point.tiles[1].type.value]) for i in range(5)])
 
+                if(point.tiles[2]):
+                    # one hot with maximum of 5
+                    resource_type_two = np.array([int (i == [point.tiles[2].type.value]) for i in range(5)])
 
 
 

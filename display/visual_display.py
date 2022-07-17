@@ -153,9 +153,17 @@ class HexTile():
 		self.origin_x = 0
 		self.origin_y = 0
 
+	def set_tile(self, game_tile):
+		self.game_tile = game_tile
+		self.tile_type = self.game_tile.type
+		self.roll_sum = self.game_tile.token_num
+		if(self.roll_sum == None):
+			self.roll_sum = 0
 
 
-	def update_hexagon_vertices(self):
+
+
+	def set_hexagon_vertices(self):
 
 		# Update vertices
 		hex_vertices = []
@@ -213,11 +221,34 @@ class HexBoard(Container):
 			for game_tile in game_tile_row:
 				self.tiles.append(HexTile(game_tile))
 
-		self.update_board()
+		self.make_board()
+
+	def set_game(self, game):
+		self.game = game
+		self.roads = game.board.roads
+		# print('before')
+		# for tile in self.tiles:
+		# 	print(tile.game_tile)
+
+		itr = 0	
+		for i in range(0, len(self.game.board.tiles)):
+			for j in range(0, len(self.game.board.tiles[i])):
+				self.tiles[itr].set_tile(self.game.board.tiles[i][j])
+				itr += 1
+				
+		# print('after')
+		# for tile in self.tiles:
+		# 	print(tile.game_tile)
 
 
-	# As far as I am aware, this is the best way to render a grid of 3,4,5,4,3 hexagonal tiles without unncessary complexity
-	def update_board(self):
+
+		# self.tiles = []
+		# for game_tile_row in self.game.board.tiles:
+		# 	for game_tile in game_tile_row:
+		# 		self.tiles.append(HexTile(game_tile))
+
+
+	def make_board(self):
 		# constants
 		sqrt3o2 = 0.866025403784
 		inv_sqrt3o2 = 1.15470053838
@@ -260,7 +291,7 @@ class HexBoard(Container):
 			tile_obj.origin_y = origin_y
 			tile_obj.row = 2
 			origin_x += 2 * r
-			tile_obj.update_hexagon_vertices()
+			tile_obj.set_hexagon_vertices()
 			itr += 1
 
 		# 2nd from top
@@ -274,7 +305,7 @@ class HexBoard(Container):
 			tile_obj.origin_y = origin_y
 			tile_obj.row = 1
 			origin_x += 2 * r
-			tile_obj.update_hexagon_vertices()
+			tile_obj.set_hexagon_vertices()
 			itr += 1
 
 
@@ -290,7 +321,7 @@ class HexBoard(Container):
 			tile_obj.origin_y = origin_y
 			tile_obj.row = 0
 			origin_x += 2 * r
-			tile_obj.update_hexagon_vertices()
+			tile_obj.set_hexagon_vertices()
 			itr += 1
 
 
@@ -305,7 +336,7 @@ class HexBoard(Container):
 			tile_obj.origin_y = origin_y
 			tile_obj.row = 3
 			origin_x += 2 * r
-			tile_obj.update_hexagon_vertices()
+			tile_obj.set_hexagon_vertices()
 			itr += 1
 
 
@@ -321,7 +352,7 @@ class HexBoard(Container):
 			tile_obj.origin_y = origin_y
 			tile_obj.row = 4
 			origin_x += 2 * r
-			tile_obj.update_hexagon_vertices()
+			tile_obj.set_hexagon_vertices()
 			itr += 1
 
 	def render(self):
@@ -332,7 +363,8 @@ class HexBoard(Container):
 		for tile_obj in self.tiles:
 			if(tile_obj.hex_vertices):
 				tile_obj.render(screen)
-		pg.draw.circle(pg.display.get_surface(), (255, 255, 0), (self.origin_x, self.origin_y), 10)
+		# pg.draw.circle(pg.display.get_surface(), (255, 255, 0), (self.origin_x, self.origin_y), 10)
+
 
 
 	def render_settlements_cities_roads(self, screen):
@@ -383,6 +415,9 @@ class ControlDisplay:
 
 		self.pause_button_toggled = False
 		self.play_button_toggled = False
+
+	def set_game(self, game):
+		self.game = game
 
 	def make_buttons(self):
 		self.play_unpressed_img = ImageButton('display/img/play.png', alpha=255, force_convert_alpha=True)
@@ -459,12 +494,12 @@ class ControlDisplay:
 
 
 	def update_button(self, **kwargs):
-		print(kwargs)
+		# print(kwargs)
 		# ev_untog = Event(constants.THORPY_EVENT,
 		# 	id=constants.EVENT_UNTOGGLE, el=self)
 		# post(ev_untog)		
 		# self.play_button.toggled = False
-		print(self.play_button.toggled)
+		# print(self.play_button.toggled)
 
 		if(kwargs['speed_button']):
 			if(kwargs['speed_button'] == 'rewind_button'):
@@ -535,6 +570,9 @@ class InfoDisplay:
 
 		# # Game info updated every step
 		self.make_text(self.game)
+
+	def set_game(self, game):
+		self.game = game
 
 	# This function is extremely slow, if this ever becomes an issue start with this
 	# https://stackoverflow.com/questions/60469344/rendering-text-in-pygame-causes-lag
@@ -758,9 +796,9 @@ class VisualDisplay:
 
 	def set_game(self, game):
 		self.game = game
-		self.hex_board.game = game
-		self.info_display.game = game
-		self.control_display.game = game
+		self.hex_board.set_game(game)
+		self.info_display.set_game(game)
+		self.control_display.set_game(game)
 
 
 	def render(self):
@@ -784,9 +822,6 @@ class VisualDisplay:
 				# screen.blit(pygame.transform.scale(pic, event.dict['size']), (0, 0))
 				pg.display.update()
 			self.control_display.menu.react(event)
-
-
-
 
 
 		self.screen.blit(self.background, (0, 0))

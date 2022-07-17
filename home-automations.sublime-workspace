@@ -1,0 +1,997 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"game",
+				"game_states"
+			],
+			[
+				"play_butt",
+				"play_button_toggled"
+			],
+			[
+				"step_for",
+				"step_forward_button_toggled"
+			],
+			[
+				"step_ba",
+				"step_back_button_toggled"
+			],
+			[
+				"step_back_",
+				"step_back_button_toggled"
+			],
+			[
+				"step",
+				"step_forward_button_toggled"
+			],
+			[
+				"speed",
+				"speed_button_pressed"
+			],
+			[
+				"play_pr",
+				"play_pressed_img"
+			],
+			[
+				"unb",
+				"unblit_and_reblit"
+			],
+			[
+				"unbl",
+				"unblit_and_reblit"
+			],
+			[
+				"play_pre",
+				"play_unpressed_img"
+			],
+			[
+				"play_bu",
+				"play_button_box"
+			],
+			[
+				"play_pres",
+				"play_pressed_img"
+			],
+			[
+				"play_button",
+				"play_button_pressed"
+			],
+			[
+				"make",
+				"make_image_button"
+			],
+			[
+				"Togglable",
+				"KeyTogglable"
+			],
+			[
+				"upda",
+				"update_button"
+			],
+			[
+				"displ",
+				"display"
+			],
+			[
+				"number_of",
+				"number_of_matches"
+			],
+			[
+				"cur",
+				"curr_player_index"
+			],
+			[
+				"av",
+				"available_actions"
+			],
+			[
+				"forfei",
+				"forfeited_cards_left"
+			],
+			[
+				"trade_",
+				"trade_receive_card"
+			],
+			[
+				"turn_",
+				"turn_to_play"
+			],
+			[
+				"knight_",
+				"knight_cards_played"
+			],
+			[
+				"has_plac",
+				"has_placed_initial_road"
+			],
+			[
+				"has_",
+				"has_placed_initial_settlement"
+			],
+			[
+				"play",
+				"player_num"
+			],
+			[
+				"forf",
+				"forfeited_cards_left"
+			],
+			[
+				"trade_re",
+				"trade_forfeit_card"
+			],
+			[
+				"trad",
+				"trading_player"
+			],
+			[
+				"num",
+				"num_trades_in_turn"
+			],
+			[
+				"num_",
+				"num_trades_in_turn"
+			],
+			[
+				"pen",
+				"pending_trade"
+			],
+			[
+				"turn",
+				"turn_over"
+			],
+			[
+				"player_with",
+				"player_with_turn_index"
+			],
+			[
+				"knig",
+				"knight_cards_played"
+			],
+			[
+				"has_placed",
+				"has_placed_initial_road"
+			],
+			[
+				"has_pla",
+				"has_placed_initial_settlement"
+			],
+			[
+				"robb",
+				"robber_moved"
+			],
+			[
+				"long",
+				"longest_road_owner"
+			],
+			[
+				"give_",
+				"give_initial_yield_flag"
+			],
+			[
+				"init",
+				"initial_placement_mode"
+			],
+			[
+				"giv",
+				"give_initial_yield_flag"
+			],
+			[
+				"con",
+				"concatenated"
+			],
+			[
+				"largest",
+				"largest_army_owner_label"
+			],
+			[
+				"give",
+				"give_initial_yield"
+			],
+			[
+				"initial",
+				"initial_placement_mode"
+			],
+			[
+				"victyo",
+				"victory_point_dev_label"
+			],
+			[
+				"Vic",
+				"VictoryPoint"
+			],
+			[
+				"dev",
+				"dev_cards_label"
+			],
+			[
+				"kn",
+				"knight_cards_label"
+			],
+			[
+				"curr",
+				"curr_player_info_box"
+			],
+			[
+				"vic",
+				"victory_points"
+			],
+			[
+				"num_init",
+				"num_initial_roads"
+			],
+			[
+				"age",
+				"agent_type"
+			],
+			[
+				"size_",
+				"size_helper_two"
+			],
+			[
+				"size",
+				"size_helper_one"
+			],
+			[
+				"size_helper",
+				"size_helper_two"
+			],
+			[
+				"allowed",
+				"allowed_actions"
+			],
+			[
+				"multi",
+				"MultilineText"
+			],
+			[
+				"gi",
+				"give_initial_yield_label"
+			],
+			[
+				"curr_",
+				"curr_player_label"
+			],
+			[
+				"step_co",
+				"step_counter_label"
+			],
+			[
+				"turn_coun",
+				"turn_counter_label"
+			],
+			[
+				"player_wi",
+				"player_with_turn"
+			],
+			[
+				"turn_fl",
+				"turn_flags_header_box"
+			],
+			[
+				"rolled_",
+				"rolled_seven_label"
+			],
+			[
+				"last_r",
+				"last_roll_label"
+			],
+			[
+				"game_fla",
+				"game_flags_label_box"
+			],
+			[
+				"longest",
+				"longest_road_owner_label"
+			],
+			[
+				"give_in",
+				"give_initial_yield_label"
+			],
+			[
+				"large",
+				"largest_army"
+			],
+			[
+				"point",
+				"point_two"
+			],
+			[
+				"ren",
+				"render_tiles"
+			],
+			[
+				"agen",
+				"agent_type_arr"
+			],
+			[
+				"FORES",
+				"FOREST_COLOR"
+			],
+			[
+				"MOUNT",
+				"MOUNTAINS_COLOR"
+			],
+			[
+				"PAS",
+				"PASTURE_COLOR"
+			],
+			[
+				"FIELD",
+				"FIELDS_COLOR"
+			],
+			[
+				"DES",
+				"DESERT_COLOR"
+			],
+			[
+				"fon",
+				"font_size"
+			],
+			[
+				"big",
+				"big_radius"
+			],
+			[
+				"upd",
+				"update_board"
+			],
+			[
+				"or",
+				"origin_y"
+			],
+			[
+				"ori",
+				"origin_x"
+			],
+			[
+				"local",
+				"localHorizontalOffset"
+			],
+			[
+				"bo",
+				"boardHorizontalOffset"
+			],
+			[
+				"board",
+				"boardVerticalOffset"
+			],
+			[
+				"initial_placement_play",
+				"initial_placement_play_order"
+			],
+			[
+				"has_pl",
+				"has_placed_initial_settlement"
+			],
+			[
+				"initial_placemen",
+				"initial_placement_curr_player_index"
+			],
+			[
+				"player_",
+				"player_with_turn_index"
+			],
+			[
+				"startin",
+				"starting_play_order"
+			],
+			[
+				"curr_p",
+				"curr_player_index"
+			],
+			[
+				"displa",
+				"displayBoard"
+			],
+			[
+				"agent",
+				"agent_type_arr"
+			],
+			[
+				"n",
+				"num_of_players"
+			],
+			[
+				"set",
+				"setup"
+			],
+			[
+				"po",
+				"point_one"
+			],
+			[
+				"longes",
+				"longest_road_length"
+			],
+			[
+				"display",
+				"displayGameInfo"
+			],
+			[
+				"starting",
+				"starting_play_order"
+			],
+			[
+				"conn",
+				"connected_roads"
+			],
+			[
+				"conne",
+				"connected_road"
+			],
+			[
+				"st",
+				"starting_road"
+			],
+			[
+				"get_bui",
+				"get_building_connected_roads"
+			],
+			[
+				"bu",
+				"building_connected_roads"
+			],
+			[
+				"player",
+				"player_buildings"
+			],
+			[
+				"total",
+				"totalVolumnSoFar"
+			],
+			[
+				"getW",
+				"getWeight"
+			],
+			[
+				"action",
+				"action_okay"
+			],
+			[
+				"PLAY",
+				"PLAY_DEV_CARD"
+			],
+			[
+				"pla",
+				"player_with_turn"
+			],
+			[
+				"all",
+				"allowed_actions"
+			],
+			[
+				"PUR",
+				"PURCHASE_AND_PLAY_BUILDING"
+			],
+			[
+				"ava",
+				"available_buildings"
+			],
+			[
+				"PURC",
+				"PURCHASE_DEV_CARD"
+			],
+			[
+				"can",
+				"can_trade_to_bank"
+			],
+			[
+				"Y",
+				"YearOfPlenty\t(game.py)"
+			],
+			[
+				"dev_card",
+				"dev_card_response\tabc"
+			],
+			[
+				"disp",
+				"displayBoard\tabc"
+			],
+			[
+				"which",
+				"which_player_response\tabc"
+			],
+			[
+				"loc",
+				"loc_y_response\tabc"
+			],
+			[
+				"resourc",
+				"resource_response\tabc"
+			],
+			[
+				"prompt",
+				"promptActions\tabc"
+			],
+			[
+				"Game",
+				"GameWrapper\tabc"
+			],
+			[
+				"promp",
+				"promptActions\tabc"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/C/Users/WilliamAllen/Desktop/APP/HomeAutomations/cache.py",
+			"settings":
+			{
+				"buffer_size": 217,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+			]
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 784.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
+			[
+				"settings",
+				"Preferences: Settings"
+			],
+			[
+				"markdown",
+				"Set Syntax: Markdown"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"install pa",
+				"Package Control: Install Package"
+			],
+			[
+				"rename",
+				"Rename File"
+			],
+			[
+				"json",
+				"Pretty JSON: Format JSON Lines"
+			],
+			[
+				"ternjs",
+				"TernJS: Reload"
+			],
+			[
+				"ay",
+				"ayu: Activate theme"
+			],
+			[
+				"browse",
+				"Preferences: Browse Packages"
+			],
+			[
+				"error",
+				"TypeScript: Show Error List"
+			],
+			[
+				"build sy",
+				"Build: New Build System"
+			],
+			[
+				"packagae control remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"build",
+				"Build With: typescript_node"
+			],
+			[
+				"Package Control: upda",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"Package Control: inst",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"virtual",
+				"Virtualenv: Add directory"
+			],
+			[
+				"package ",
+				"Package Control: List Packages"
+			],
+			[
+				"virut",
+				"Virtualenv: Activate"
+			],
+			[
+				"Package Control: ins",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: add",
+				"Package Control: Add Repository"
+			],
+			[
+				" install pack",
+				"Package Control: Install Package"
+			],
+			[
+				"packag",
+				"Install Package Control"
+			],
+			[
+				"syntax javaS",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"syntax HTML",
+				"Set Syntax: HTML"
+			]
+		],
+		"width": 856.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": true,
+		"show_open_files": false,
+		"show_tabs": true,
+		"side_bar_visible": true,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/WilliamAllen/Desktop/APP/HomeAutomations",
+		"/C/Users/WilliamAllen/Desktop/APP/HomeAutomations/__pycache__"
+	],
+	"file_history":
+	[
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/data.txt",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/display/visual_display.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/pycatan/card.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/modelinfo.txt",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/random_agent.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/nn_state.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/match.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/main.py",
+		"/C/Users/WilliamAllen/Downloads/hw7.tex",
+		"/C/Users/WilliamAllen/Desktop/Other/stderr.txt",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/display/window.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/pycatan/tile.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/pycatan/default_board.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/pycatan/point.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/old_display.py",
+		"/C/Users/WilliamAllen/Downloads/res2.tex",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/04-AVL/driver.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/05-SK/mytest.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/ConsoleFluidSim/ConsoleFluidSim/main.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/old/Spring2021School/csce121/hw_mars_rover/Rover.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/old/Spring2021School/csce121/hw_mars_rover/RoverTest.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/old/Spring2021School/csce121/hw_mars_rover/MyString.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/05-SK/rqueue.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/04-AVL/utree.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/model/mlp_model.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/display/profiling.txt",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/.gitignore",
+		"/C/Users/WilliamAllen/Desktop/classes.txt",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/display/__init__.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/__init__.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/display/old_display.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/pycatan/game.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/todo.txt",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/pycatan/nn_state.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/visual_display.py",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/gui/renderer/board_renderer.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/gui/renderer/new_sprite_renderer.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/website/_config.yml",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/dumb_agent.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/pycatan/game_state.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/pycatan/building.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/display.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/player_statistics.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/board_renderer.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/human_agent.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/game_wrapper.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/tests.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/pycatan/player.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/info/detailed-architecture.txt",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/01-AmazonTruck/src/AmazonTruck.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/pycatan/board.py",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/catanrl.sublime-project",
+		"/C/Users/WilliamAllen/Downloads/bad3.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/CatanRL/agent.py",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/include/Package.h",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/include/Liquid.h",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/include/AmazonTruck.h",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/include/Address.h",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/CMakeLists.txt",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/src/input.txt",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/src/test.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/src/Driver.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/src/AmazonTruck.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/include/Dimension.h",
+		"/C/Users/WilliamAllen/Desktop/School/old/Spring2021School/csce121/lw_linked/compilefull.sh",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/Dimension.h",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/Liquid.h",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/Package.h",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/AmazonTruck.h",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/Address.h",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/src/Address.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/Address.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/AmazonTruck.cpp",
+		"/C/Users/WilliamAllen/Desktop/School/Fall2021School/221/Driver.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/CMakeLists.txt",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/board/actionpoint.h",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/gui/renderer/board_renderer.h",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/board/board.h",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/game/game.h",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/board/board.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/shaders/sprite.vs",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/game/game.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/board/actionpoint.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/board/tile.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/board/tile.h",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/constants/PortType.h",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/constants/ResourceType.h",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/constants/BuildingType.h",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/utils/print_utils.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/gui/renderer/resource_manager.cpp",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/hw_mars_rover/Rover.h",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/hw_cppers/compilefull.sh",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/hw_cppers/compile.sh",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/hw_dungeon_crawler/helper.h",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/hw_dungeon_crawler/helper.cpp",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/hw_dungeon_crawler/logic.h",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/hw_dungeon_crawler/dungeoncrawler.cpp",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/hw_dungeon_crawler/compile.sh",
+		"/C/Users/WilliamAllen/Downloads/lab7-1.py",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/hw_dungeon_crawler/logic.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/personal_website/public/index.html",
+		"/C/Users/WilliamAllen/Desktop/APP/personal_website/package.json",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/libs/nanogui/ext/glad/include/glad/glad.h",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/libs/nanogui/ext/glad/src/glad.c",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/glad.c",
+		"/C/Users/WilliamAllen/Downloads/glad/src/glad.c",
+		"/C/Users/WILLIA~1/AppData/Local/Temp/7zE40972303/glad.c",
+		"/C/Users/WilliamAllen/Desktop/APP/Catan/src/board.cpp",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/lw_2/nth_root.h",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/lw_2/test_helpers.h",
+		"/C/Users/WilliamAllen/Desktop/Spring2021School/csce121/lw_2/nth_root.cpp",
+		"/C/Users/WilliamAllen/Desktop/School Spring 2021/csce 121/hw_1/grade_calculator.cpp",
+		"/C/Users/WilliamAllen/Downloads/schedule.ics",
+		"/C/Users/WilliamAllen/Desktop/School Spring 2021/csce 121/grade_calculator.cpp",
+		"/C/Users/WilliamAllen/Desktop/APP/catalog_gen/app.js",
+		"/C/Users/WilliamAllen/Desktop/APP/catalog_gen/Page.ts",
+		"/C/Users/WilliamAllen/Desktop/APP/catalog_gen/Entity.ts",
+		"/C/Users/WilliamAllen/Desktop/APP/catalog_gen/Container.ts",
+		"/C/Users/WilliamAllen/Desktop/APP/catalog_gen/paginate.ts",
+		"/C/Users/WilliamAllen/AppData/Local/Temp/7zOCEF9D116/main.js",
+		"/C/Users/WilliamAllen/AppData/Local/Temp/7zO40D6EE20/Untitled.tex",
+		"/C/Users/WilliamAllen/Downloads/main.go",
+		"/C/Users/WilliamAllen/Downloads/testjson/19300102_1008.html.json",
+		"/C/Users/WilliamAllen/Downloads/testjson/19300102_1009.html.json",
+		"/C/Users/WilliamAllen/Downloads/testjson/19300102_1010.html.json",
+		"/C/Users/WilliamAllen/Downloads/testjson/19300102_1011.html.json",
+		"/C/Users/WilliamAllen/Downloads/testjson/19300102_1012.html.json",
+		"/C/Users/WilliamAllen/Downloads/testjson/19300101_1054.html.json"
+	],
+	"find":
+	{
+		"height": 38.0
+	},
+	"find_in_files":
+	{
+		"height": 208.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/Users/WilliamAllen/Desktop/APP/HomeAutomations/cache.py",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 217,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								217,
+								217
+							]
+						],
+						"settings":
+						{
+							"git_gutter_is_enabled": true,
+							"show_definitions": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 28.0
+	},
+	"input":
+	{
+		"height": 78.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.doc":
+	{
+		"height": 0.0
+	},
+	"output.errorlist":
+	{
+		"height": 102.0
+	},
+	"output.exec":
+	{
+		"height": 224.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.mdpopups":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/User/typescript_node.sublime-build",
+	"project": "home-automations.sublime-project",
+	"replace":
+	{
+		"height": 52.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"C:\\Users\\WilliamAllen\\Desktop\\APP\\website\\website.sublime-workspace"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 345.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 592.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 198.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
