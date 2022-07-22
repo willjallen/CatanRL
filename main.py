@@ -30,16 +30,17 @@ def main():
 
     number_of_players = 4
 
-    number_of_matches = 1
+    number_of_matches = 100000
     matches_played = 0
     turns_played = 0
 
     winners = [0,0,0,0]
+    
 
     for i in range(0, number_of_matches):
         match = Match(game_number=i, num_of_players=number_of_players, agent_type_arr=['R', 'R', 'R', 'R'], display=display)
         agents = match.game.players
-        while not match.game.game_over:
+        while not match.game.has_ended:
             # self.full_action = self.curr_player.do_turn(self.allowed_actions)
 
             # for row in match.game.board.points:
@@ -56,7 +57,7 @@ def main():
             # Remember
 
 
-        winners[match.winner] += 1
+        winners[match.game.winner.num] += 1
 
         matches_played += 1
         turns_played += match.game.turn_counter

@@ -1,4 +1,5 @@
-0import math
+import math
+import numpy as np
 
 def log_scale(L, k, x0, x):
     x = max(L, x)

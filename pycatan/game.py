@@ -780,11 +780,13 @@ class Game:
         ## FORFEIT_CARDS (Priority action, others ignored)
         # - A 7 is active player has cards left to forfeit
         if(player.forfeited_cards_left > 0):
-            actions['allowed_actions'].append(FORFEIT_CARDS)
             actions['allowed_forfeit_cards'] = player.get_types_of_cards_possessed()
+            if(len(actions['allowed_forfeit_cards']) > 0):
+                actions['allowed_actions'].append(FORFEIT_CARDS)
+                return actions
+
             # print(actions['allowed_forfeit_cards'])
             # print(player.cards)
-            return actions
 
         ## PLAY_ROBBER (Priority action, others ignored)
         # - It is the players turn
@@ -1050,8 +1052,8 @@ class Game:
 
         # moves the robber
         self.board.move_robber(tile)
-        # takes a random card from the victim
-        if victim != None:
+        # takes a random card from the victim (if victim has > 0 cards)
+        if victim != None and len(self.players[victim].cards) > 0:
             # removes a random card from the victim
             index = round(random.random() * (len(self.players[victim].cards) - 1))
             card = self.players[victim].cards[index]

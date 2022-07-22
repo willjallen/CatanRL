@@ -221,9 +221,10 @@ class Player:
                 points = tile.points
                 for p in points:
                     if p != None and p.building != None:
-                        # Check the victim owns the settlement/city and has > 0 cards
+                        # Check the victim owns the settlement/city
+                        # Victim may have 0 cards
                         for player in self.game.players:
-                            if(p.building.owner == player.num) and (player.num != self.num) and (len(player.cards) > 0):
+                            if(p.building.owner == player.num) and (player.num != self.num):
                                 robber_actions.append((tile, player))
         # print('Robber Actions: ', robber_actions)
         return robber_actions

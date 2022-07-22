@@ -10,16 +10,16 @@ from thorpy.painting.painters.imageframe import ImageButton
 from pygame.event import Event, post
 from thorpy.miscgui import constants
 
-DESERT_COLOR = (0,0,0)
+DESERT_COLOR = (237, 201, 175)
 FIELDS_COLOR = (211, 181, 29)
-PASTURE_COLOR = (40,255,55)
-MOUNTAINS_COLOR = (139, 236, 244)
-HILLS_COLOR = (165, 96, 21)
-FOREST_COLOR = (0,43,0)
+PASTURE_COLOR = (92, 146, 2)
+MOUNTAINS_COLOR = (162, 192, 210)
+HILLS_COLOR = (193, 68, 91)
+FOREST_COLOR = (41, 64, 6)
 
 TILE_COLORS = {0: DESERT_COLOR, 1: FIELDS_COLOR, 2: PASTURE_COLOR, 3: MOUNTAINS_COLOR, 4: HILLS_COLOR, 5: FOREST_COLOR}
 # ['Red', 'Cyan', 'Green', 'Yellow']
-PLAYER_RGB_COLORS = {0: (255, 0, 0), 1: (0, 255, 255), 2: (0, 128, 0), 3: (0, 0, 255)}
+PLAYER_RGB_COLORS = {0: (255, 0, 0), 1: (255, 231, 112), 2: (0, 128, 0), 3: (0, 0, 255)}
 PLAYER_COLORS = ['Red', 'Cyan', 'Green', 'Yellow']
 
 action_types = ["no_op", "roll", "purchase_resource", "purchase_and_play_building", "purchase_dev_card", "play_dev_card", "play_robber", "start_trade", "accept_trade", "deny_trade", "forfeit_cards", "end_turn", "initial_placement_road", "initial_placement_building", "place_road"]
@@ -127,8 +127,9 @@ class Percent():
 		self.value = parent_container #TODO wtf, lol
 
 class HexTile():
-	def __init__(self, game_tile):
+	def __init__(self, game_tile, game):
 
+		self.game = game
 		self.game_tile = game_tile
 		self.tile_type = self.game_tile.type
 		self.roll_sum = self.game_tile.token_num
@@ -149,6 +150,8 @@ class HexTile():
 		self.font_size = 0
 		self.font = pg.font.SysFont('5', self.font_size)
 		self.roll_sum_img = self.font.render('5', True, (255,0,0))
+		self.has_robber = False
+
 
 		self.origin_x = 0
 		self.origin_y = 0
@@ -178,10 +181,24 @@ class HexTile():
 
 
 		# Update roll sum img
+	def set_rollsum_img(self):
 		self.font_size = int(self.radius)
 		self.font = pg.font.SysFont(None, self.font_size)
 		ran = random.randint(1,12)
-		self.roll_sum_img = self.font.render(str(self.roll_sum), True, (255,0,0))
+
+		if(self.has_robber):
+			roll_sum_str = str(self.roll_sum) + '*'
+		else:
+			roll_sum_str = str(self.roll_sum)
+
+		if(self.roll_sum == 6 or self.roll_sum == 8):
+			roll_sum_color = (255,0,0)
+		else:
+			roll_sum_color = (0,0,0) 
+
+		self.roll_sum_img = self.font.render(roll_sum_str, True, roll_sum_color)
+
+
 
 
 	def render(self, screen):
@@ -192,8 +209,21 @@ class HexTile():
 		pg.draw.polygon(pg.display.get_surface(), (0,0,0), self.hex_vertices, 4)
 		
 		# Rollsum
-		screen.blit(self.roll_sum_img, (self.origin_x - self.font_size/4, self.origin_y - self.font_size/4))
+		robber = self.game.board.robber
+		
 
+		if(robber.position == self.game_tile.position):
+			self.has_robber = True
+			self.render_rollsum = True
+		else:
+			self.has_robber = False
+		
+
+		self.set_rollsum_img()
+		
+
+		screen.blit(self.roll_sum_img, (self.origin_x - self.font_size/4, self.origin_y - self.font_size/4))
+		
 
 
 		# pg.draw.circle(pg.display.get_surface(), (255, 0, 0), (self.origin_x, self.origin_y), 1)
@@ -219,7 +249,7 @@ class HexBoard(Container):
 		# Create board
 		for game_tile_row in self.game.board.tiles:
 			for game_tile in game_tile_row:
-				self.tiles.append(HexTile(game_tile))
+				self.tiles.append(HexTile(game_tile, self.game))
 
 		self.make_board()
 

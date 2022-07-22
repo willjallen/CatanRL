@@ -86,22 +86,21 @@ class Match():
                 self.display.control_display.step_back_button_toggled = False
 
             self.display.tick()
-            print('curr ', self.currrent_step)
-            print('largest ', self.largest_step)
+            # print('curr ', self.currrent_step)
+            # print('largest ', self.largest_step)
         else:
             self.step_game()
 
 
         # Save game states to disk
         # self.serialize()
-        # self.winner = self.game_states[len(self.game_states)-1].curr_player_index
 
         # cPickle_off = open("data.txt", "rb")
         # file = cPickle.load(cPickle_off)
 
     def step_game(self):
         self.game.step()
-        if(self.display or self.logging):
+        if( self.display):
             self.game_states.append(copy.deepcopy(self.game))
         self.largest_step += 1
         # Save game state
