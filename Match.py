@@ -7,8 +7,8 @@ from pycatan import Game
 from pycatan import Statuses
 from pycatan import Building
 from pycatan.card import ResCard, DevCard
-from agent import Agent
-from random_agent import RandomAgent
+from model.agents.agent import Agent
+from model.agents.random_agent import RandomAgent
 import random
 import copy
 

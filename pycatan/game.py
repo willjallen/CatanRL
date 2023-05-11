@@ -9,8 +9,8 @@ from pycatan.statuses import Statuses
 from pycatan.card import ResCard, DevCard
 from pycatan.building import Building
 from pycatan.harbor import Harbor
-from human_agent import HumanAgent
-from random_agent import RandomAgent
+from model.agents.human_agent import HumanAgent
+from model.agents.random_agent import RandomAgent
 
 import random
 import math

@@ -3,7 +3,6 @@ import pygame as pg
 import thorpy
 import math
 import random
-from display.old_display import Display
 import thorpy
 from pycatan.card import ResCard, DevCard
 from thorpy.painting.painters.imageframe import ImageButton
@@ -418,7 +417,7 @@ class HexBoard(Container):
 								point_two = road.point_two
 								point_two_coords = tile_obj.point_ordered_hex_vertices[j]
 								pg.draw.line(pg.display.get_surface(), PLAYER_RGB_COLORS[road.owner], point_one_coords, point_two_coords, 5)
-				# print(point)
+
 				if(not point.building == None):
 					# Settlement
 					if(point.building.type == 0):
