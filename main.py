@@ -75,9 +75,9 @@ def profile():
 if __name__ == "__main__":
 
     # Profiling
-    cProfile.runctx('main()', globals(), locals(), 'restats')
-    p = pstats.Stats('restats')
-    p.strip_dirs().sort_stats(SortKey.TIME).print_stats(10)
-    p.print_stats()
-    # main()
+    # cProfile.runctx('main()', globals(), locals(), 'restats')
+    # p = pstats.Stats('restats')
+    # p.strip_dirs().sort_stats(SortKey.TIME).print_stats(10)
+    # p.print_stats()
+    main()
 

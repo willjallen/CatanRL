@@ -139,6 +139,9 @@ class Game:
 
         self.curr_player = None
         self.curr_player_index = 0
+        
+        # Quick fix for visual display
+        self.player_with_turn = self.curr_player = self.players[self.initial_placement_play_order[self.initial_placement_curr_player_index]]
 
 
         self.turn_over = False

@@ -387,6 +387,7 @@ class ControlDisplay():
 
 		self.updater = None
 		self.make_buttons()
+		self.master_box.set_draggable()
 
 		self.step_back_button_toggled = False
 		self.step_forward_button_toggled = False
@@ -614,95 +615,97 @@ class GameInfoDisplay():
   
 	def render(self):
 		self.update_text()
-		# self.master_box.draw()
 
 class TurnInfoDisplay():
 	def __init__(self, screen, game):
 		self.screen = screen
 		self.game = game
 		self.updater = None
-		self.make_text(self.game)
+		self.make_text()
+  		# Make the box draggable
+		self.master_box.set_draggable()
+		# Set the updater
+		self.updater = self.master_box.get_updater()
 
 	def set_game(self, game):
 		self.game = game
 
-	# This function is extremely slow, if this ever becomes an issue start with this
-	# https://stackoverflow.com/questions/60469344/rendering-text-in-pygame-causes-lag
-	def make_text(self, game):
+	def make_text(self):
 
 		self.size_helper_one = thorpy.Text("                                            ")
 		self.size_helper_two = thorpy.Text("                                            ")
 
-		# # Game info
-		self.game_info_header = thorpy.Text("GAME INFO")
-
-		# # Game flags
-		self.game_flags_header = thorpy.Text("GAME FLAGS")
-		self.initial_placement_mode_label = thorpy.Text("Initial Placement Mode: " + str(game.initial_placement_mode))
-		self.give_initial_yield_label = thorpy.Text("Give initial yield flag: " + str(game.give_initial_yield))
-		# self.give_initial_yield_label_box = thorpy.Box(give_initial_yield_label)
-		# thorpy.store(give_initial_yield_label_box,)
-		# thorpy.store(self.give_initial_yield_label, align="left")
-
-
-		if(game.longest_road_owner == None):
-			self.longest_road_owner_label = thorpy.Text("Longest Road Owner: None")
-		else:
-			self.longest_road_owner_label = thorpy.Text("Longest Road Owner: " + PLAYER_COLORS[game.longest_road_owner] + "(" + str(game.longest_road_owner) + ")")
-
-		if(game.largest_army == None):
-			self.largest_army_owner_label = thorpy.Text("Largest Army Owner: None")
-		else:
-			self.largest_army_owner_label = thorpy.Text("Largest Army Owner: " + PLAYER_COLORS[game.largest_army] + "(" + str(game.largest_army) + ")")
-		self.game_has_ended_label = thorpy.Text("Game Ended: " + str(game.has_ended))
-		self.dev_card_deck_label = thorpy.Text("Dev Card Deck: ")
-
-		self.turn_counter_label = thorpy.Text("Turn Counter: " + str(game.turn_counter))
-		self.step_counter_label = thorpy.Text("Step Counter: " + str(game.step_count))
-
-
-		self.game_flags_header_box = thorpy.Box(children=[self.game_flags_header])
-		# Formatting
-		# thorpy.store(game_flags_header_box, mode="v", align="center")
-
-		self.game_flags_label_box = thorpy.Box(children=[self.size_helper_one, self.initial_placement_mode_label, self.give_initial_yield_label, self.longest_road_owner_label, self.largest_army_owner_label, self.game_has_ended_label, self.turn_counter_label, self.step_counter_label, self.size_helper_two])
-		# Formatting
-		# thorpy.store(self.game_flags_label_box, mode="v", align="left")
-
-		self.game_flags_box = thorpy.Box(children=[self.game_flags_header_box, self.game_flags_label_box])
-
-
-		# # Turn flags
+		# Turn flags
 		self.turn_flags_header = thorpy.Text("TURN FLAGS")
 
 		self.turn_flags_header_box = thorpy.Box(children=[self.turn_flags_header])
 
-		if(game.player_with_turn == None):
+		if(self.game.player_with_turn == None):
 			self.player_with_turn_label = thorpy.Text("Player w/ Turn: None")
 		else:
-			self.player_with_turn_label = thorpy.Text("Player w/ Turn: " + PLAYER_COLORS[game.player_with_turn.num] + "(" + str(game.player_with_turn.num) + ")")
+			self.player_with_turn_label = thorpy.Text("Player w/ Turn: " + PLAYER_COLORS[self.game.player_with_turn.num] + "(" + str(self.game.player_with_turn.num) + ")")
 		
-		if(game.curr_player == None):
+		if(self.game.curr_player == None):
 			self.curr_player_label = thorpy.Text("Current player: None")
 		else:
-			self.curr_player_label = thorpy.Text("Current Player: " + PLAYER_COLORS[game.curr_player.num] + "(" + str(game.curr_player.num) + ")")
+			self.curr_player_label = thorpy.Text("Current Player: " + PLAYER_COLORS[self.game.curr_player.num] + "(" + str(self.game.curr_player.num) + ")")
 
 
 
-		self.can_roll_label = thorpy.Text("Can Roll: " + str(game.can_roll))
-		self.last_roll_label = thorpy.Text("Last Roll: " + str(game.last_roll))
-		self.rolled_seven_label = thorpy.Text("Rolled Seven: " + str(game.rolled_seven))
-		self.robber_moved_label = thorpy.Text('Robber Moved: ' + str(game.robber_moved))
+		self.can_roll_label = thorpy.Text("Can Roll: " + str(self.game.can_roll))
+		self.last_roll_label = thorpy.Text("Last Roll: " + str(self.game.last_roll))
+		self.rolled_seven_label = thorpy.Text("Rolled Seven: " + str(self.game.rolled_seven))
+		self.robber_moved_label = thorpy.Text('Robber Moved: ' + str(self.game.robber_moved))
 
-		# Formatting
-		# thorpy.store(game_flags_header_box, mode="v", align="center")
-		# self.size_helper = thorpy.Text("                                          ")
 		self.turn_flags_label_box = thorpy.Box(children=[self.size_helper_one, self.player_with_turn_label, self.curr_player_label, self.can_roll_label, self.last_roll_label, self.rolled_seven_label, self.robber_moved_label, self.size_helper_two])
-		# Formatting
-		# thorpy.store(self.turn_flags_label_box, mode="v", align="left")
-		# self.turn_flags_label_box.set_size(self.game_flags_label_box.get_size())
 		self.turn_flags_box = thorpy.Box(children=[self.turn_flags_header_box, self.turn_flags_label_box])
 
+		self.master_box = thorpy.Box(children=[self.turn_flags_box])
+
+		self.master_box.set_topleft(600,50)
+		self.updater = self.master_box.get_updater()
+	
+	def update_text(self):
+		if(self.game.player_with_turn == None):
+			self.player_with_turn_label.set_text("Player w/ Turn: None")
+		else:
+			self.player_with_turn_label.set_text("Player w/ Turn: " + PLAYER_COLORS[self.game.player_with_turn.num] + "(" + str(self.game.player_with_turn.num) + ")")
+		
+		if(self.game.curr_player == None):
+			self.curr_player_label.set_text("Current player: None")
+		else:
+			self.curr_player_label.set_text("Current Player: " + PLAYER_COLORS[self.game.curr_player.num] + "(" + str(self.game.curr_player.num) + ")")
+
+
+
+		self.can_roll_label.set_text("Can Roll: " + str(self.game.can_roll))
+		self.last_roll_label.set_text("Last Roll: " + str(self.game.last_roll))
+		self.rolled_seven_label.set_text("Rolled Seven: " + str(self.game.rolled_seven))
+		self.robber_moved_label.set_text('Robber Moved: ' + str(self.game.robber_moved))
+  
+	def render(self):
+		self.update_text()
+
+
+    
+class PlayerInfoDisplay():
+	def __init__(self, screen, game):
+		self.screen = screen
+		self.game = game
+		self.updater = None
+		self.make_text()
+  		# Make the box draggable
+		self.master_box.set_draggable()
+		# Set the updater
+		self.updater = self.master_box.get_updater()
+
+	def set_game(self, game):
+		self.game = game
+
+	def make_text(self):
+
+		self.size_helper_one = thorpy.Text("                                            ")
+		self.size_helper_two = thorpy.Text("                                            ")
 
 		# # Player Flags
 
@@ -749,78 +752,90 @@ class TurnInfoDisplay():
         # self.last_bought_dev_card = 0
         # self.last_bought_dev_card_turn = 0
 
-		curr_player = game.curr_player
+		curr_player = self.game.curr_player
+
+
+		self.curr_player_info_header = thorpy.Text("CURR PLAYER INFO")
+
+		self.player_label = thorpy.Text("Player: " + PLAYER_COLORS[self.game.curr_player.num] + "(" + str(self.game.curr_player.num) + ")")
+		self.agent_type_label = thorpy.Text("Agent Type: " + str(curr_player.agent_type))
+
+		self.has_placed_initial_settlement_label = thorpy.Text("Placed init settlement: " + str(curr_player.has_placed_initial_settlement))
+		self.has_placed_initial_road_label = thorpy.Text("Placed initial road: " + str(curr_player.has_placed_initial_road))
+
+		self.knight_cards_label = thorpy.Text("Played knight cards: " + str(curr_player.knight_cards))
+		self.longest_road_label = thorpy.Text("Longest road: " + str(curr_player.longest_road_length))
+		
+		self.dev_cards_header = thorpy.Text("Dev cards: ")
+		self.road_building_dev_label = thorpy.Text("Road Building: " + str(curr_player.dev_cards.count(DevCard.Road)))
+		self.victory_point_dev_label = thorpy.Text("Victory Point: " + str(curr_player.dev_cards.count(DevCard.VictoryPoint)))
+		self.knight_card_dev_label = thorpy.Text("Knight: " + str(curr_player.dev_cards.count(DevCard.Knight)))
+		self.monopoly_dev_label = thorpy.Text("Monopoly: " + str(curr_player.dev_cards.count(DevCard.Monopoly)))
+		self.year_of_plenty_dev_label = thorpy.Text("Year of Plenty: " + str(curr_player.dev_cards.count(DevCard.YearOfPlenty)))
+
+
+		self.victory_points_label = thorpy.Text("Victory points: " + str(curr_player.victory_points))
+		
+
+
+		self.allowed_actions_header_label = thorpy.Text("Allowed Actions: ")
+
+		if(self.game.allowed_actions):
+			actions = ""
+			for action in self.game.allowed_actions['allowed_actions']:
+				actions += action_types[action]
+			self.allowed_actions_label = thorpy.Text(actions)
+		else:
+			self.allowed_actions_label = thorpy.Text("None")
+
+		self.curr_player_info_header_box = thorpy.Box(children=[self.curr_player_info_header])
+		self.curr_player_info_label_box = thorpy.Box(children=[self.size_helper_one, self.player_label, self.agent_type_label, self.has_placed_initial_settlement_label,
+			self.has_placed_initial_road_label, self.knight_cards_label, self.longest_road_label, self.dev_cards_header, self.road_building_dev_label,
+			self.victory_point_dev_label, self.knight_card_dev_label, self.monopoly_dev_label, self.year_of_plenty_dev_label, self.victory_points_label, self.size_helper_two])
+		self.curr_player_info_box = thorpy.Box(children=[self.curr_player_info_header_box, self.curr_player_info_label_box])
+		
+		self.master_box = thorpy.Box(children=[self.curr_player_info_box])
+
+
+	
+	def update_text(self):
+		curr_player = self.game.curr_player
 
 		if(curr_player != None):
 
-			self.curr_player_info_header = thorpy.Text("CURR PLAYER INFO")
+			self.curr_player_info_header.set_text("CURR PLAYER INFO")
 
-			self.player_label = thorpy.Text("Player: " + PLAYER_COLORS[game.curr_player.num] + "(" + str(game.curr_player.num) + ")")
-			self.agent_type_label = thorpy.Text("Agent Type: " + str(curr_player.agent_type))
+			self.player_label.set_text("Player: " + PLAYER_COLORS[self.game.curr_player.num] + "(" + str(self.game.curr_player.num) + ")")
+			self.agent_type_label.set_text("Agent Type: " + str(curr_player.agent_type))
 
-			self.has_placed_initial_settlement_label = thorpy.Text("Placed init settlement: " + str(curr_player.has_placed_initial_settlement))
-			self.has_placed_initial_road_label = thorpy.Text("Placed initial road: " + str(curr_player.has_placed_initial_road))
+			self.has_placed_initial_settlement_label.set_text("Placed init settlement: " + str(curr_player.has_placed_initial_settlement))
+			self.has_placed_initial_road_label.set_text("Placed initial road: " + str(curr_player.has_placed_initial_road))
 
-			self.knight_cards_label = thorpy.Text("Played knight cards: " + str(curr_player.knight_cards))
-			self.longest_road_label = thorpy.Text("Longest road: " + str(curr_player.longest_road_length))
+			self.knight_cards_label.set_text("Played knight cards: " + str(curr_player.knight_cards))
+			self.longest_road_label.set_text("Longest road: " + str(curr_player.longest_road_length))
 			
-			self.dev_cards_header = thorpy.Text("Dev cards: ")
-			self.road_building_dev_label = thorpy.Text("Road Building: " + str(curr_player.dev_cards.count(DevCard.Road)))
-			self.victory_point_dev_label = thorpy.Text("Victory Point: " + str(curr_player.dev_cards.count(DevCard.VictoryPoint)))
-			self.knight_card_dev_label = thorpy.Text("Knight: " + str(curr_player.dev_cards.count(DevCard.Knight)))
-			self.monopoly_dev_label = thorpy.Text("Monopoly: " + str(curr_player.dev_cards.count(DevCard.Monopoly)))
-			self.year_of_plenty_dev_label = thorpy.Text("Year of Plenty: " + str(curr_player.dev_cards.count(DevCard.YearOfPlenty)))
+			self.road_building_dev_label.set_text("Road Building: " + str(curr_player.dev_cards.count(DevCard.Road)))
+			self.victory_point_dev_label.set_text("Victory Point: " + str(curr_player.dev_cards.count(DevCard.VictoryPoint)))
+			self.knight_card_dev_label.set_text("Knight: " + str(curr_player.dev_cards.count(DevCard.Knight)))
+			self.monopoly_dev_label.set_text("Monopoly: " + str(curr_player.dev_cards.count(DevCard.Monopoly)))
+			self.year_of_plenty_dev_label.set_text("Year of Plenty: " + str(curr_player.dev_cards.count(DevCard.YearOfPlenty)))
 
 
-			self.victory_points_label = thorpy.Text("Victory points: " + str(curr_player.victory_points))
-			
-
-
-			self.allowed_actions_header_label = thorpy.Text("Allowed Actions: ")
-
-			if(game.allowed_actions):
+			self.victory_points_label.set_text("Victory points: " + str(curr_player.victory_points))
+	
+			if(self.game.allowed_actions):
 				actions = ""
-				for action in game.allowed_actions['allowed_actions']:
+				for action in self.game.allowed_actions['allowed_actions']:
 					actions += action_types[action]
-				self.allowed_actions_label = thorpy.Text(actions)
+				self.allowed_actions_label.set_text(actions)
 			else:
-				self.allowed_actions_label = thorpy.Text("None")
-
-			self.curr_player_info_header_box = thorpy.Box(children=[self.curr_player_info_header])
-			self.curr_player_info_label_box = thorpy.Box(children=[self.size_helper_one, self.player_label, self.agent_type_label, self.has_placed_initial_settlement_label,
-			 self.has_placed_initial_road_label, self.knight_cards_label, self.longest_road_label, self.dev_cards_header, self.road_building_dev_label,
-			 self.victory_point_dev_label, self.knight_card_dev_label, self.monopoly_dev_label, self.year_of_plenty_dev_label, self.victory_points_label, self.size_helper_two])
-			self.curr_player_info_box = thorpy.Box(children=[self.curr_player_info_header_box, self.curr_player_info_label_box])
-			
-			self.master_box = thorpy.Box(children=[self.game_flags_box, self.turn_flags_box, self.curr_player_info_box])
-		else:
-			self.master_box = thorpy.Box(children=[self.game_flags_box, self.turn_flags_box])
+				self.allowed_actions_label.set_text("None")
 
 
-		# thorpy.store(self.master_box, mode="v", align="left")
-		# self.master_box.fit_children()
-		# self.master_box.refresh_lift()
-
-
-		# self.master_box = thorpy.Draggable(elements=self.master_box)
-
-		# self.menu = thorpy.Menu(self.master_box)
-		#important : set the screen as surface for all elements
-		# for element in self.master_box.get_elements():
-		# 	element.surface = self.scrV
-		#use the elements normally...
-		self.master_box.set_topleft(600,50)
-		self.updater = self.master_box.get_updater()
   
 	def render(self):
-		self.make_text(self.game)
-		self.master_box.draw()
-		# self.box.update()
+		self.update_text()
 
-    
-class PlayerInfoDisplay():
-    def __init__(self):
-        pass
 
 class VisualDisplay():
 
@@ -849,6 +864,8 @@ class VisualDisplay():
 		self.game = game
 		self.hex_board = HexBoard(self.screen, self.game)
 		self.game_info_display = GameInfoDisplay(self.screen, self.game)
+		self.turn_info_display = TurnInfoDisplay(self.screen, self.game)
+		self.player_info_display = PlayerInfoDisplay(self.screen, self.game)
 		self.control_display = ControlDisplay(self.screen, self.game)
 
 
@@ -856,12 +873,16 @@ class VisualDisplay():
 		self.game = game
 		self.hex_board.set_game(game)
 		self.game_info_display.set_game(game)
+		self.turn_info_display.set_game(game)
+		self.player_info_display.set_game(game)
 		self.control_display.set_game(game)
 
 
 	def render(self):
 		self.hex_board.render()
 		self.game_info_display.render()
+		self.turn_info_display.render()
+		self.player_info_display.render()
 		# self.control_display.render()
 		# self.control_display.menu.play()
 		# print(self.game.board.tiles)
@@ -887,6 +908,8 @@ class VisualDisplay():
 		self.screen.blit(self.background, (0, 0))
 		self.render()
 		self.game_info_display.updater.update(events=events, mouse_rel=mouse_rel)
+		self.turn_info_display.updater.update(events=events, mouse_rel=mouse_rel)
+		self.player_info_display.updater.update(events=events, mouse_rel=mouse_rel)
 		self.control_display.updater.update(events=events, mouse_rel=mouse_rel)
 		pg.display.flip()
 		
