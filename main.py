@@ -23,14 +23,14 @@ def main():
     print_mode = False
     user_mode = False
 
-    display_mode = True
+    display_mode = True 
     display = None
     if(display_mode):
         display = VisualDisplay()
 
     number_of_players = 4
 
-    number_of_matches = 100000
+    number_of_matches = 100
     matches_played = 0
     turns_played = 0
 

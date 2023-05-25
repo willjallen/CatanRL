@@ -27,3 +27,10 @@ Done:
 	-X Might have to redo the entire purchase_play building into seperate purchase and play priority action (to preserve only having one set of (r,i) output neurons)
 
 - Dev card can only be played at least a turn after it was purchased
+
+
+=======================
+
+Transformer architecture 
+- 
+

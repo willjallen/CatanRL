@@ -59,7 +59,7 @@ class Match():
         if(self.display):
 
             # if(self.game_states): print(self.game_states[self.currrent_step - 1].step_count)
-            if(self.display.control_display.play_button.toggled or self.display.control_display.step_forward_button_toggled):
+            if(self.display.control_display.play_button.value or self.display.control_display.step_forward_button_toggled):
                 self.currrent_step += 1
                 if(self.currrent_step > self.largest_step):
                     if self.bind_game_obj:
@@ -75,7 +75,7 @@ class Match():
 
                 self.display.control_display.step_forward_button_toggled = False
 
-            if(self.display.control_display.rewind_button.toggled or self.display.control_display.step_back_button_toggled):
+            if(self.display.control_display.rewind_button.value or self.display.control_display.step_back_button_toggled):
                 self.currrent_step -= 1
                 self.bind_game_obj = True
                 if(self.currrent_step >= 1):

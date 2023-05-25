@@ -1,0 +1,148 @@
+Average time / turn
+Wed May 10 22:44:27 2023    restats
+
+         26689644 function calls (25957061 primitive calls) in 15.983 seconds
+
+   Ordered by: internal time
+   List reduced from 111 to 10 due to restriction <10>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+  1058259    2.491    0.000    2.491    0.000 player.py:393(road_location_is_valid)
+   521944    1.547    0.000    8.785    0.000 game.py:734(get_allowed_actions)
+  1539422    1.359    0.000    1.420    0.000 player.py:595(get_connected_roads)
+769711/37128    1.115    0.000    2.749    0.000 player.py:541(check_connected_roads)
+   521944    1.028    0.000   15.323    0.000 game.py:248(step)
+    84756    0.613    0.000    2.273    0.000 game.py:1066(cards_tradable_to_bank)
+  6282894    0.523    0.000    0.523    0.000 {method 'append' of 'list' objects}
+   691376    0.446    0.000    0.592    0.000 player.py:165(get_types_of_cards_possessed)
+    16845    0.446    0.000    2.972    0.000 player.py:232(get_available_road_point_pairs)
+     4680    0.437    0.000    0.438    0.000 player.py:300(get_available_settlement_points)
+
+
+Wed May 10 22:44:27 2023    restats
+
+         26689644 function calls (25957061 primitive calls) in 15.983 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+  1058259    2.491    0.000    2.491    0.000 player.py:393(road_location_is_valid)
+   521944    1.547    0.000    8.785    0.000 game.py:734(get_allowed_actions)
+  1539422    1.359    0.000    1.420    0.000 player.py:595(get_connected_roads)
+769711/37128    1.115    0.000    2.749    0.000 player.py:541(check_connected_roads)
+   521944    1.028    0.000   15.323    0.000 game.py:248(step)
+    84756    0.613    0.000    2.273    0.000 game.py:1066(cards_tradable_to_bank)
+  6282894    0.523    0.000    0.523    0.000 {method 'append' of 'list' objects}
+   691376    0.446    0.000    0.592    0.000 player.py:165(get_types_of_cards_possessed)
+    16845    0.446    0.000    2.972    0.000 player.py:232(get_available_road_point_pairs)
+     4680    0.437    0.000    0.438    0.000 player.py:300(get_available_settlement_points)
+    84756    0.366    0.000    0.438    0.000 board.py:126(get_buildings)
+   164187    0.328    0.000    0.975    0.000 random_agent.py:10(do_turn)
+   643530    0.324    0.000    0.324    0.000 harbor.py:55(get_card_from_harbor_type)
+    84756    0.313    0.000    0.764    0.000 player.py:502(get_connected_harbor_types)
+  1723824    0.299    0.000    0.299    0.000 enum.py:438(<genexpr>)
+   366842    0.288    0.000    0.432    0.000 player.py:148(has_cards)
+   521944    0.243    0.000   15.566    0.000 match.py:101(step_game)
+   375397    0.223    0.000    0.321    0.000 random.py:237(_randbelow_with_getrandbits)
+    27770    0.203    0.000    0.260    0.000 board.py:42(add_yield)
+  2743259    0.201    0.000    0.201    0.000 {built-in method builtins.len}
+   487396    0.199    0.000    0.199    0.000 game.py:226(set_next_curr_player)
+  1427464    0.197    0.000    0.197    0.000 {method 'index' of 'list' objects}
+  1146974    0.172    0.000    0.172    0.000 {method 'count' of 'list' objects}
+   164187    0.171    0.000    3.972    0.000 game.py:581(do_action)
+   497409    0.161    0.000    0.220    0.000 types.py:171(__get__)
+   521944    0.160    0.000   15.726    0.000 match.py:54(step)
+     7924    0.159    0.000    0.168    0.000 player.py:206(get_available_robber_placement_tiles_and_victims)
+    77031    0.148    0.000    0.410    0.000 player.py:172(get_available_buildings)
+   304313    0.148    0.000    0.442    0.000 random.py:343(choice)
+        1    0.136    0.136   15.983   15.983 main.py:19(main)
+   161787    0.136    0.000    0.156    0.000 game.py:1123(set_longest_road)
+   287304    0.125    0.000    0.125    0.000 enum.py:434(__iter__)
+   423780    0.123    0.000    0.193    0.000 player.py:350(has_at_least_num_cards)
+   162114    0.116    0.000    0.116    0.000 player.py:629(get_VP)
+    79238    0.076    0.000    0.153    0.000 player.py:133(can_build_dev)
+      303    0.063    0.000    0.063    0.000 {built-in method builtins.print}
+   637621    0.061    0.000    0.061    0.000 {method 'getrandbits' of '_random.Random' objects}     
+   497409    0.059    0.000    0.059    0.000 enum.py:792(value)
+    67613    0.057    0.000    0.160    0.000 player.py:361(remove_cards)
+   341954    0.047    0.000    0.047    0.000 {method 'remove' of 'list' objects}
+    64384    0.045    0.000    0.090    0.000 random.py:290(randrange)
+    29384    0.042    0.000    0.108    0.000 random_agent.py:119(<listcomp>)
+     7725    0.037    0.000    0.309    0.000 game.py:1098(trade_to_bank)
+   375397    0.036    0.000    0.036    0.000 {method 'bit_length' of 'int' objects}
+    16845    0.035    0.000    0.044    0.000 player.py:259(<listcomp>)
+    94528    0.034    0.000    0.043    0.000 player.py:356(add_cards)
+    50893    0.032    0.000    0.032    0.000 board.py:188(get_card_from_tile)
+     5003    0.031    0.000    2.804    0.001 player.py:527(get_longest_road)
+      100    0.028    0.000    0.074    0.001 default_board.py:13(__init__)
+    14649    0.027    0.000    0.093    0.000 game.py:1019(trade)
+    90381    0.026    0.000    0.026    0.000 game.py:826(<listcomp>)
+    64384    0.026    0.000    0.116    0.000 random.py:334(randint)
+     6262    0.025    0.000    0.050    0.000 game.py:1036(move_robber)
+    32142    0.025    0.000    0.140    0.000 game.py:1289(get_roll)
+     5003    0.021    0.000    2.873    0.001 player.py:470(build_road)
+    32148    0.017    0.000    0.017    0.000 game.py:215(set_next_turn_player)
+    29384    0.016    0.000    0.016    0.000 random_agent.py:109(<listcomp>)
+     5400    0.015    0.000    0.019    0.000 default_board.py:97(get_tile_indexes_for_point)        
+      800    0.014    0.000    0.017    0.000 player.py:263(get_available_initial_settlement_points) 
+     5003    0.014    0.000    0.017    0.000 player.py:604(get_roads)
+    25088    0.012    0.000    0.021    0.000 enum.py:358(__call__)
+    29384    0.011    0.000    0.011    0.000 random_agent.py:117(<listcomp>)
+     2233    0.009    0.000    0.010    0.000 player.py:445(get_available_upgrade_points)
+    29384    0.009    0.000    0.009    0.000 random_agent.py:111(<listcomp>)
+    25088    0.009    0.000    0.009    0.000 enum.py:670(__new__)
+    25026    0.008    0.000    0.008    0.000 game.py:859(<listcomp>)
+     5400    0.007    0.000    0.009    0.000 default_board.py:159(get_connected_points)
+    16304    0.006    0.000    0.007    0.000 enum.py:440(__len__)
+     1175    0.006    0.000    0.018    0.000 game.py:1154(use_dev_card)
+     1271    0.006    0.000    0.010    0.000 player.py:75(build_settlement)
+     2207    0.005    0.000    0.022    0.000 game.py:982(build_dev)
+     6274    0.005    0.000    0.005    0.000 building.py:11(__init__)
+     6164    0.004    0.000    0.004    0.000 {built-in method builtins.round}
+      100    0.004    0.000    0.005    0.000 default_board.py:189(get_outside_points)
+      400    0.003    0.000    0.007    0.000 random.py:348(shuffle)
+    14908    0.002    0.000    0.002    0.000 {built-in method math.floor}
+      100    0.002    0.000    0.081    0.001 game.py:41(__init__)
+     1321    0.002    0.000    0.002    0.000 player.py:377(remove_dev_card)
+     5003    0.002    0.000    0.002    0.000 board.py:84(add_road)
+     6262    0.002    0.000    0.002    0.000 board.py:137(move_robber)
+     5400    0.001    0.000    0.001    0.000 point.py:2(__init__)
+     1175    0.001    0.000    0.002    0.000 player.py:616(has_dev_cards)
+     6164    0.001    0.000    0.001    0.000 {method 'random' of '_random.Random' objects}
+     7600    0.001    0.000    0.001    0.000 {method 'pop' of 'list' objects}
+      100    0.001    0.000    0.003    0.000 board.py:144(get_shuffled_tile_deck)
+      800    0.001    0.000    0.001    0.000 player.py:285(get_available_initial_road_point_pairs)  
+      327    0.001    0.000    0.004    0.000 board.py:88(upgrade_settlement)
+     1900    0.001    0.000    0.001    0.000 tile.py:5(__init__)
+     2207    0.001    0.000    0.001    0.000 player.py:373(add_dev_card)
+      100    0.001    0.000    0.001    0.000 game.py:156(set_initial_placement_play_order)
+      400    0.001    0.000    0.001    0.000 player.py:29(__init__)
+      100    0.001    0.000    0.002    0.000 board.py:167(get_shuffled_tile_nums)
+      100    0.001    0.000    0.099    0.001 match.py:24(__init__)
+      100    0.000    0.000    0.008    0.000 game.py:236(add_initial_placement_yield)
+      327    0.000    0.000    0.004    0.000 game.py:1142(add_city)
+      400    0.000    0.000    0.001    0.000 random_agent.py:7(__init__)
+     1271    0.000    0.000    0.000    0.000 board.py:79(add_building)
+      900    0.000    0.000    0.000    0.000 harbor.py:19(__init__)
+      700    0.000    0.000    0.000    0.000 default_board.py:201(<lambda>)
+      100    0.000    0.000    0.000    0.000 game.py:193(set_play_order)
+     1200    0.000    0.000    0.000    0.000 {method 'extend' of 'list' objects}
+      800    0.000    0.000    0.000    0.000 default_board.py:210(<lambda>)
+      600    0.000    0.000    0.000    0.000 default_board.py:47(<lambda>)
+      800    0.000    0.000    0.000    0.000 default_board.py:209(<lambda>)
+      700    0.000    0.000    0.000    0.000 default_board.py:203(<lambda>)
+      100    0.000    0.000    0.000    0.000 board.py:23(__init__)
+      500    0.000    0.000    0.000    0.000 default_board.py:32(<lambda>)
+        1    0.000    0.000   15.983   15.983 {built-in method builtins.exec}
+        1    0.000    0.000   15.983   15.983 <string>:1(<module>)
+        1    0.000    0.000    0.000    0.000 main.py:68(<listcomp>)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}   
+
+
+
+
+
+
+
+
+        
